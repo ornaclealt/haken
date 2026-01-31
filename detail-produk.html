@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Produk - Haken Studio</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        stone: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            200: '#e7e5e4',
+                            800: '#292524',
+                            900: '#1c1917',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white font-sans text-stone-800 antialiased">
+
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-200">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html#shop" class="group flex items-center gap-2 text-sm font-bold text-stone-600 hover:text-orange-600 transition-colors">
+                <div class="p-2 bg-stone-100 rounded-full group-hover:bg-orange-100 transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                </div>
+                Kembali ke Katalog
+            </a>
+            <div class="font-serif font-bold text-stone-900">Haken Studio.</div>
+        </div>
+    </nav>
+
+    <section class="py-12 md:py-20">
+        <div class="container mx-auto px-6">
+            <div id="loadingState" class="text-center py-20">
+                <div class="animate-spin w-8 h-8 border-4 border-stone-200 border-t-orange-600 rounded-full mx-auto mb-4"></div>
+                <p class="text-stone-500">Memuat detail produk...</p>
+            </div>
+
+            <div id="errorState" class="hidden text-center py-20">
+                <div class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="package-x" class="w-8 h-8 text-stone-400"></i>
+                </div>
+                <h1 class="text-2xl font-serif font-bold text-stone-900 mb-2">Produk Tidak Ditemukan</h1>
+                <p class="text-stone-500 mb-6">Mungkin link yang Anda tuju salah atau produk sudah dihapus.</p>
+                <a href="index.html" class="inline-block px-6 py-3 bg-stone-900 text-white rounded-full font-bold text-sm hover:bg-orange-600 transition-colors">Kembali ke Beranda</a>
+            </div>
+
+            <div id="productContent" class="hidden grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-start max-w-6xl mx-auto">
+                
+                <div class="space-y-4">
+                    <div class="aspect-[4/3] md:aspect-square bg-stone-50 rounded-3xl overflow-hidden border border-stone-100 shadow-sm relative group">
+                        <div class="absolute inset-0 flex items-center justify-center bg-stone-100 text-stone-300">
+                           <i data-lucide="shopping-bag" class="w-20 h-20 stroke-[1]"></i>
+                        </div>
+                        <img id="mainImage" src="" alt="Product Image" class="relative z-10 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+                        
+                        <span id="badge" class="hidden absolute top-6 left-6 px-4 py-1.5 bg-orange-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg shadow-lg z-20"></span>
+                    </div>
+                </div>
+
+                <div class="md:sticky md:top-32">
+                    <div class="mb-6">
+                        <span id="category" class="inline-block px-3 py-1 bg-stone-100 text-stone-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">Category</span>
+                        <h1 id="productName" class="text-3xl md:text-5xl font-serif font-bold text-stone-900 mb-4 leading-tight">Nama Produk</h1>
+                        <p id="price" class="text-2xl md:text-3xl font-bold text-orange-600">IDR 0</p>
+                    </div>
+
+                    <div class="h-px w-full bg-stone-200 my-8"></div>
+
+                    <div class="prose prose-stone prose-lg text-stone-600 mb-10">
+                        <h3 class="text-stone-900 font-bold text-sm uppercase tracking-wide mb-2">Deskripsi</h3>
+                        <p id="description" class="leading-relaxed">Deskripsi produk akan muncul di sini.</p>
+                        
+                        <div class="mt-6 p-4 bg-stone-50 rounded-xl border border-stone-100">
+                            <h4 class="text-stone-900 font-bold text-xs uppercase tracking-wide mb-3 flex items-center gap-2">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-orange-600"></i> Haken Promise
+                            </h4>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-start gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-stone-400 mt-1.5"></span>
+                                    100% Handmade (Rajutan Tangan)
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-stone-400 mt-1.5"></span>
+                                    Material Premium & Ramah Lingkungan
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-stone-400 mt-1.5"></span>
+                                    Pre-Order 3-7 Hari Kerja
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-4">
+                        <a id="btnWhatsapp" href="#" target="_blank" class="w-full py-4 bg-stone-900 text-white rounded-xl font-bold text-center hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/20 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 text-lg">
+                            <i data-lucide="message-circle" class="w-6 h-6"></i>
+                            Pesan Sekarang
+                        </a>
+                        <p class="text-center text-xs text-stone-400">
+                            Anda akan diarahkan ke WhatsApp Admin untuk konfirmasi pesanan.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-stone-50 py-8 border-t border-stone-200 mt-auto">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-stone-400 text-xs">&copy; 2026 Haken Studio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+    let currentProduct = null;
+    const adminPhone = "6285959180745";
+
+    const productsDB = [
+        {
+            id: 1,
+            name: "Amigurumi Keychain",
+            category: "Small Items",
+            price: 35000,
+            desc: "Gantungan kunci rajut karakter hewan lucu. Cocok untuk mempercantik tas sekolah atau totebag.",
+            badge: "Best Seller",
+            image: "https://images.unsplash.com/photo-1619250907409-d3f3f5a8c278?q=80&w=600&auto=format&fit=crop"
+        },
+        {
+            id: 2,
+            name: "Eco Tote Bag",
+            category: "Medium Items",
+            price: 185000,
+            desc: "Tas bahu estetik dengan pola jaring (mesh) yang kuat. Dibuat dari benang daur ulang.",
+            badge: "Limited",
+            image: "https://image2url.com/r2/default/images/1769821438260-3a3441e1-998a-4b02-a1b4-002b757efb6b.jpeg"
+        },
+        {
+            id: 3,
+            name: "Vintage Coaster Set",
+            category: "Home Decor",
+            price: 65000,
+            desc: "Set isi 4 alas gelas (coaster) dengan nuansa warna earth tone.",
+            badge: null,
+            image: "https://images.unsplash.com/photo-1628151016024-5d5d852033db?q=80&w=600&auto=format&fit=crop"
+        }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        const params = new URLSearchParams(window.location.search);
+        const productId = parseInt(params.get('id'));
+
+        currentProduct = productsDB.find(p => p.id === productId);
+        
+        const loading = document.getElementById('loadingState');
+        const content = document.getElementById('productContent');
+        const error = document.getElementById('errorState');
+
+        setTimeout(() => {
+            loading.classList.add('hidden');
+            if (currentProduct) {
+                renderProductData(currentProduct);
+                content.classList.remove('hidden');
+            } else {
+                error.classList.remove('hidden');
+            }
+        }, 500);
+    });
+
+    function renderProductData(data) {
+        document.getElementById('productName').textContent = data.name;
+        document.getElementById('category').textContent = data.category;
+        document.getElementById('price').textContent = `IDR ${data.price.toLocaleString('id-ID')}`;
+        document.getElementById('description').textContent = data.desc;
+
+        const imgEl = document.getElementById('mainImage');
+        imgEl.src = data.image;
+        imgEl.onload = () => imgEl.classList.remove('opacity-0');
+
+        if(data.badge) {
+            const badgeEl = document.getElementById('badge');
+            badgeEl.textContent = data.badge;
+            badgeEl.classList.remove('hidden');
+        }
+
+        const btn = document.getElementById('btnWhatsapp');
+        btn.onclick = (e) => {
+            e.preventDefault();
+            openModal();
+        };
+    }
+
+    function openModal() {
+        document.getElementById('checkoutName').textContent = currentProduct.name;
+        document.getElementById('checkoutPrice').textContent = `IDR ${currentProduct.price.toLocaleString('id-ID')}`;
+        document.getElementById('checkoutImg').src = currentProduct.image;
+        updateTotal();
+        
+        const modal = document.getElementById('checkoutModal');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.querySelector('div').classList.remove('scale-95');
+        }, 10);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('checkoutModal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    function updateTotal() {
+        const qty = document.getElementById('custQty').value;
+        const total = currentProduct.price * qty;
+        document.getElementById('grandTotal').textContent = `IDR ${total.toLocaleString('id-ID')}`;
+    }
+
+    function sendToWhatsapp() {
+        const name = document.getElementById('custName').value;
+        const phone = document.getElementById('custPhone').value;
+        const address = document.getElementById('custAddress').value;
+        const qty = document.getElementById('custQty').value;
+
+        if(!name || !address || !phone) {
+            alert("Harap isi data diri dengan lengkap.");
+            return;
+        }
+
+        const message = `*PESANAN BARU - HAKEN STUDIO*\n\n*Produk:* ${currentProduct.name}\n*Jumlah:* ${qty}\n*Total:* IDR ${(currentProduct.price * qty).toLocaleString('id-ID')}\n\n*Data Pemesan:*\n- Nama: ${name}\n- WA: ${phone}\n- Alamat: ${address}\n\n_Saya sudah melakukan pembayaran via QRIS._`;
+        
+        window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`, '_blank');
+        closeModal();
+    }
+</script>
+    <div id="checkoutModal" class="hidden fixed inset-0 z-[100] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all opacity-0">
+    <div class="bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in-up">
+        
+        <div class="sticky top-0 bg-white z-10 p-6 border-b border-stone-100 flex justify-between items-center">
+            <h2 class="font-serif font-bold text-xl text-stone-900">Form Pemesanan</h2>
+            <button onclick="closeModal()" class="p-2 bg-stone-100 rounded-full hover:bg-stone-200 transition-colors">
+                <i data-lucide="x" class="w-5 h-5 text-stone-600"></i>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6">
+            
+            <div class="bg-stone-50 p-4 rounded-xl flex gap-4 items-center border border-stone-100">
+                <img id="checkoutImg" src="" class="w-16 h-16 rounded-lg object-cover bg-white">
+                <div>
+                    <h3 id="checkoutName" class="font-bold text-stone-900 text-sm">Nama Produk</h3>
+                    <p id="checkoutPrice" class="text-xs text-orange-600 font-bold">IDR 0</p>
+                </div>
+            </div>
+
+            <form id="orderForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Nama Lengkap</label>
+                    <input type="text" id="custName" required placeholder="Contoh: Budi Santoso" 
+                        class="w-full px-4 py-3 rounded-xl bg-white border border-stone-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none text-sm transition-all">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-stone-500 mb-1">No. WhatsApp</label>
+                        <input type="tel" id="custPhone" required placeholder="08xxxxxxxx" 
+                            class="w-full px-4 py-3 rounded-xl bg-white border border-stone-200 focus:border-orange-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Jumlah</label>
+                        <input type="number" id="custQty" value="1" min="1" onchange="updateTotal()"
+                            class="w-full px-4 py-3 rounded-xl bg-white border border-stone-200 focus:border-orange-500 outline-none text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Alamat Pengiriman</label>
+                    <textarea id="custAddress" rows="2" required placeholder="Jalan, No. Rumah, Kecamatan, Kota..." 
+                        class="w-full px-4 py-3 rounded-xl bg-white border border-stone-200 focus:border-orange-500 outline-none text-sm"></textarea>
+                </div>
+
+                <div class="pt-4 border-t border-stone-100">
+                    <label class="block text-xs font-bold uppercase text-stone-500 mb-3 text-center">Scan QRIS untuk Pembayaran</label>
+                    <div class="flex flex-col items-center justify-center p-4 bg-white border-2 border-dashed border-orange-200 rounded-xl">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" 
+                             alt="QRIS Payment" class="w-40 h-40 object-contain mb-2">
+                        <p class="text-[10px] text-stone-400">Mandiri a.n Haken Studio</p>
+                    </div>
+                    <p class="mt-2 text-[10px] text-stone-500 text-center bg-yellow-50 p-2 rounded-lg border border-yellow-100">
+                        <span class="font-bold text-yellow-700">Info:</span> Silakan screenshot bukti transfer Anda setelah scan.
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <div class="sticky bottom-0 bg-white p-6 border-t border-stone-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-stone-500 text-sm font-medium">Total Pembayaran</span>
+                <span id="grandTotal" class="text-xl font-bold text-stone-900">IDR 0</span>
+            </div>
+            <button onclick="sendToWhatsapp()" class="w-full py-4 bg-stone-900 text-white rounded-xl font-bold hover:bg-green-600 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-green-600/20">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                Konfirmasi Pembayaran via WA
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
