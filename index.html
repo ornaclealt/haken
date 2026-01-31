@@ -1,967 +1,456 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haken Studio - Dari Benang Menjadi Karya</title>
-    
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Haken Admin Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Custom Config -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Merriweather', 'serif'],
-                    },
-                    colors: {
-                        stone: {
-                            50: '#fafaf9',
-                            100: '#f5f5f4',
-                            200: '#e7e5e4',
-                            800: '#292524',
-                            900: '#1c1917',
-                        }
-                    },
-                    animation: {
-                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-                    },
-                    keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-    
-        /* Animasi Infinite Scroll */
-        @keyframes scroll {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-        }
-        .animate-scroll {
-            display: flex;
-            width: max-content;
-            animation: scroll 30s linear infinite;
-        }
-        /* Memastikan area hover tetap stabil */
-        .animate-scroll:hover {
-            animation-play-state: paused;
-        }
-        
-        .product-item {transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-          transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .filter-btn {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        /* Custom scrollbar for webkit */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #d6d3d1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a29e;
-        }
-        ::selection {
-            background-color: #fed7aa; /* orange-200 */
-            color: #1c1917;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap'); 
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        /* Hilangkan Scrollbar tapi tetap bisa scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-white font-sans text-stone-800 antialiased">
+<body class="bg-stone-50 text-stone-800 h-screen overflow-hidden">
 
-
-    <!-- NAVBAR -->
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-6 text-white bg-transparent">
-        <div class="container mx-auto px-6 flex justify-between items-center">
-            <!-- Logo -->
-            <div class="flex items-center gap-2">
-                <div id="nav-logo-bg" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm bg-white text-orange-600 transition-colors">
-                    H
-                </div>
-                <span class="text-2xl font-serif font-bold tracking-tight">
-                    Haken Studio.
-                </span>
+    <div id="loginGate" class="fixed inset-0 z-[100] bg-stone-900 flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-3xl w-full max-w-sm text-center shadow-2xl">
+            <div class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i data-lucide="shield-lock" class="w-8 h-8 text-stone-900"></i>
             </div>
-
-            <!-- Desktop Menu -->
-            <div id="nav-links" class="hidden md:flex items-center gap-8 font-medium text-sm text-white/90 transition-colors">
-                <a href="#home" class="hover:text-orange-500 transition-colors">Beranda</a>
-                <a href="#about" class="hover:text-orange-500 transition-colors">Cerita Kami</a>
-                <a href="#shop" class="hover:text-orange-500 transition-colors">Koleksi</a>
-                <a href="#team" class="hover:text-orange-500 transition-colors">Tim</a>
-                <button id="nav-cta" class="px-5 py-2.5 rounded-full transition-all duration-300 shadow-lg bg-white text-stone-900 hover:bg-orange-50">
-                    Belanja Sekarang
-                </button>
-            </div>
-
-            <!-- Mobile Toggle -->
-            <button id="mobile-menu-btn" class="md:hidden text-current focus:outline-none">
-                <i data-lucide="menu" class="w-7 h-7"></i>
+            <h2 class="text-2xl font-bold mb-2">Haken Admin</h2>
+            <p class="text-stone-500 text-sm mb-8">Restricted Access.</p>
+            <button id="btnLogin" class="w-full py-3 bg-stone-900 text-white rounded-xl font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
+                Masuk Admin
             </button>
-        </div>
-
-        <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-white border-b border-stone-100 p-6 flex flex-col gap-4 shadow-xl text-stone-800">
-            <a href="#home" class="mobile-link text-lg font-medium">Beranda</a>
-            <a href="#about" class="mobile-link text-lg font-medium">Cerita Kami</a>
-            <a href="#shop" class="mobile-link text-lg font-medium">Koleksi</a>
-            <a href="#team" class="mobile-link text-lg font-medium">Tim</a>
-            <button class="w-full py-3 bg-stone-900 text-white rounded-lg hover:bg-stone-800 transition-colors">Belanja Sekarang</button>
-        </div>
-    </nav>
-
-    <!-- HERO SECTION -->
-    <section id="home" class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden bg-stone-900">
-        <!-- Background Slider Container -->
-        <div id="hero-slider" class="absolute inset-0 w-full h-full">
-            <!-- Slide 1 -->
-            <div class="hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100">
-                <img src="https://image2url.com/r2/default/images/1769824294181-67f0cb40-e45b-4c7c-9452-73dbc6a54969.jpeg" alt="Haken Collection 1" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-black/40 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-            </div>
-            <!-- Slide 2 -->
-            <div class="hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0">
-                <img src="https://image2url.com/r2/default/images/1769824320867-2801d941-f9e3-44c2-8ab9-726783856f79.jpeg" alt="Haken Collection 2" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-black/40 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-            </div>
-            <!-- Slide 3 -->
-            <div class="hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0">
-                <img src="https://image2url.com/r2/default/images/1769824367485-50de29d3-1bd5-44cd-9a88-3fc21c04c946.jpeg" alt="Haken Collection 3" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-black/40 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-            </div>
-        </div>
-
-        <!-- Content -->
-        <div class="container mx-auto px-6 relative z-10 pt-20">
-            <div class="max-w-4xl mx-auto text-center text-white">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur border border-white/30 text-white text-xs font-bold tracking-wide uppercase mb-6 animate-fade-in-up">
-                    <i data-lucide="star" class="w-3 h-3 fill-white text-white"></i>
-                    Handmade in Yogyakarta
-                </div>
-                <h1 class="text-5xl md:text-7xl font-poppins font-extrabold leading-[1.1] mb-6 drop-shadow-lg animate-fade-in-up" style="animation-delay: 0.1s;">
-                    Dari Benang <br/> Menjadi <span class="text-orange-400">Karya.</span>
-                </h1>
-                <p class="text-lg md:text-xl text-stone-100 mb-10 leading-relaxed max-w-2xl mx-auto drop-shadow-md animate-fade-in-up" style="animation-delay: 0.2s;">
-                    Menghadirkan seni rajut <i>(crochet)</i> yang relevan untuk generasi muda. 
-                    Setiap simpul menceritakan kisah tentang waktu, kesabaran, dan keberlanjutan.
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style="animation-delay: 0.3s;">
-                  <a href="#shop" class="group relative w-full sm:w-auto px-8 py-4 bg-white text-stone-900 rounded-full font-bold text-sm shadow-[0_10px_20px_-10px_rgba(255,255,255,0.5)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(255,255,255,0.7)] active:scale-90 active:translate-y-0 flex items-center justify-center gap-3 overflow-hidden">
-                <div class="absolute inset-0 bg-orange-50 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-                  <span class="relative z-10 group-hover:text-orange-600 transition-colors">Lihat Katalog</span>
-                    <i data-lucide="shopping-bag" class="relative z-10 w-4 h-4 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300 text-orange-500"></i>
-                  </a>
-                  <a href="#about" class="group w-full sm:w-auto px-8 py-4 bg-white/10 border border-white/30 text-white rounded-full font-bold text-sm backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-stone-900 hover:border-white active:scale-95 flex items-center justify-center gap-2">
-                  <span>Tentang Haken</span>
-                  <i data-lucide="arrow-right" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"></i>
-                  </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slider Indicators -->
-        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-            <button onclick="setSlide(0)" class="slider-dot w-8 h-2 rounded-full bg-white transition-all"></button>
-            <button onclick="setSlide(1)" class="slider-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white/80 transition-all"></button>
-            <button onclick="setSlide(2)" class="slider-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white/80 transition-all"></button>
-        </div>
-    </section>
-
-    <!-- SERVICES / VALUE PROPOSITION -->
-    <section class="py-20 bg-white border-b border-stone-100 overflow-hidden">
-    <div class="container mx-auto px-6">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-12">
-            
-            <div class="group flex flex-col items-center text-center p-6 rounded-3xl transition-all duration-500 hover:bg-stone-50 hover:-translate-y-2">
-                <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-orange-200 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-                    <div class="relative z-10 w-full h-full bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 transition-all duration-500 group-hover:bg-orange-600 group-hover:text-white group-hover:rotate-[10deg] shadow-sm group-hover:shadow-orange-200 group-hover:shadow-xl">
-                        <i data-lucide="truck" class="w-7 h-7"></i>
-                    </div>
-                </div>
-                <h3 class="font-bold text-stone-900 mb-2 text-lg transition-colors duration-300 group-hover:text-orange-600">Pengiriman Aman</h3>
-                <p class="text-sm text-stone-500 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">Packing rapi & aman ke seluruh Indonesia</p>
-            </div>
-
-            <div class="group flex flex-col items-center text-center p-6 rounded-3xl transition-all duration-500 hover:bg-stone-50 hover:-translate-y-2">
-                <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-green-200 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-                    <div class="relative z-10 w-full h-full bg-green-50 rounded-2xl flex items-center justify-center text-green-600 transition-all duration-500 group-hover:bg-green-600 group-hover:text-white group-hover:-rotate-[10deg] shadow-sm group-hover:shadow-green-200 group-hover:shadow-xl">
-                        <i data-lucide="leaf" class="w-7 h-7"></i>
-                    </div>
-                </div>
-                <h3 class="font-bold text-stone-900 mb-2 text-lg transition-colors duration-300 group-hover:text-green-600">Eco-Friendly</h3>
-                <p class="text-sm text-stone-500 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">Menggunakan sebagian material daur ulang</p>
-            </div>
-
-            <div class="group flex flex-col items-center text-center p-6 rounded-3xl transition-all duration-500 hover:bg-stone-50 hover:-translate-y-2">
-                <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-purple-200 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-                    <div class="relative z-10 w-full h-full bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 transition-all duration-500 group-hover:bg-purple-600 group-hover:text-white group-hover:rotate-[10deg] shadow-sm group-hover:shadow-purple-200 group-hover:shadow-xl">
-                        <i data-lucide="gift" class="w-7 h-7"></i>
-                    </div>
-                </div>
-                <h3 class="font-bold text-stone-900 mb-2 text-lg transition-colors duration-300 group-hover:text-purple-600">Gratis Gift Card</h3>
-                <p class="text-sm text-stone-500 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">Cocok untuk hadiah spesial orang tersayang</p>
-            </div>
-
-            <div class="group flex flex-col items-center text-center p-6 rounded-3xl transition-all duration-500 hover:bg-stone-50 hover:-translate-y-2">
-                <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-blue-200 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-                    <div class="relative z-10 w-full h-full bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 transition-all duration-500 group-hover:bg-blue-600 group-hover:text-white group-hover:-rotate-[10deg] shadow-sm group-hover:shadow-blue-200 group-hover:shadow-xl">
-                        <i data-lucide="shield-check" class="w-7 h-7"></i>
-                    </div>
-                </div>
-                <h3 class="font-bold text-stone-900 mb-2 text-lg transition-colors duration-300 group-hover:text-blue-600">Jaminan Kualitas</h3>
-                <p class="text-sm text-stone-500 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">100% Handmade dengan QC ketat</p>
-            </div>
-          </div>
-      </div>
-  </section>
-
-    <!-- FILOSOFI / STORY SECTION -->
-    <section id="about" class="pt-0 pb-24 bg-white relative overflow-hidden">
-    
-    <div class="container mx-auto px-6 relative z-20">
-        <div class="hidden md:block w-px h-16 bg-gradient-to-b from-transparent via-orange-200 to-orange-600 mx-auto mb-8"></div>
-    </div>
-
-    <div class="container mx-auto px-6 relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-[10px] font-bold uppercase tracking-widest mb-4">
-                    <span class="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
-                    Since 2024
-                </div>
-                
-                <h2 class="text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-6 leading-tight">
-                    Meredefinisikan Kembali <br>
-                    <span class="italic text-stone-500">Nilai Sebuah Waktu.</span>
-                </h2>
-                
-                <div class="space-y-6 text-stone-600 text-lg font-light leading-relaxed">
-                    <p>
-                        Di dunia yang serba cepat, kami memilih untuk melambat. <strong>Haken Studio</strong> lahir dari keresahan akan budaya konsumsi instan. Bagi kami, rajutan bukan sekadar "barang kecil", melainkan antitesis dari <i>fast fashion</i>.
-                    </p>
-                    <p>
-                        Dimulai pada tahun 2024 oleh Latiefa Cahyaning, sebuah keisengan berubah menjadi misi besar untuk menghadirkan karya seni yang membawa cerita, menghargai proses, dan peduli pada bumi melalui material daur ulang.
-                    </p>
-                </div>
-
-                <div class="mt-10 pt-8 border-t border-stone-100">
-                    <p class="font-serif italic text-xl text-stone-800 mb-2">"We knit stories, not just threads."</p>
-                    <p class="text-xs font-bold text-orange-600 uppercase tracking-widest">— Haken Studio Manifesto</p>
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                
-                <div class="group p-6 bg-white border border-stone-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-x-2">
-                    <div class="flex items-start gap-4">
-                        <div class="p-3 bg-stone-50 rounded-xl group-hover:bg-purple-600 transition-colors duration-300">
-                            <i data-lucide="leaf" class="w-6 h-6 text-stone-900 group-hover:text-white transition-colors"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-bold text-stone-900 mb-1">Sustainable & Upcycled</h4>
-                            <p class="text-stone-500 text-sm leading-relaxed">Menggunakan limbah tekstil dan material ramah lingkungan untuk mengurangi jejak karbon fashion.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="group p-6 bg-white border border-stone-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-x-2">
-                    <div class="flex items-start gap-4">
-                        <div class="p-3 bg-stone-50 rounded-xl group-hover:bg-green-600 transition-colors duration-300">
-                            <i data-lucide="hourglass" class="w-6 h-6 text-stone-900 group-hover:text-white transition-colors"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-bold text-stone-900 mb-1">The Value of Time</h4>
-                            <p class="text-stone-500 text-sm leading-relaxed">Setiap simpul dikerjakan manual dengan ketelitian tinggi, menawarkan kualitas yang tidak bisa ditiru mesin.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="group p-6 bg-white border border-stone-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-x-2">
-                    <div class="flex items-start gap-4">
-                        <div class="p-3 bg-stone-50 rounded-xl group-hover:bg-blue-600 transition-colors duration-300">
-                            <i data-lucide="fingerprint" class="w-6 h-6 text-stone-900 group-hover:text-white transition-colors"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-bold text-stone-900 mb-1">Authentically Yours</h4>
-                            <p class="text-stone-500 text-sm leading-relaxed">Diproduksi terbatas (</strong>limited</strong>). Item yang Anda miliki punya karakter unik dan tidak pasaran.</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            <p id="loginError" class="text-red-500 text-xs mt-4 hidden">Akses Ditolak.</p>
         </div>
     </div>
-</section>
- 
- <style>
-    @keyframes marquee {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-    }
-    .animate-marquee {
-        display: flex;
-        animation: marquee 20s linear infinite;
-    }
-</style>
 
-    <!-- PRODUCT SHOWCASE -->
-<section id="shop" class="scroll-mt-32 pt-10 pb-24 bg-white">
-    <div class="container mx-auto px-6 mt-16 pt-12 border-t border-stone-200">
+    <div id="dashboardUI" class="flex h-full hidden flex-col md:flex-row">
         
-        <div class="max-w-4xl mx-auto mb-12 text-center">
-            <h2 class="text-4xl font-serif font-bold text-stone-900 mb-2">Koleksi Terkurasi</h2>
-            <p class="text-stone-600 mb-8">Temukan produk rajut estetik untuk gaya hidupmu.</p>
-            
-            <div class="relative max-w-md mx-auto">
-                <input type="text" id="searchInput" placeholder="Cari produk (misal: Keychain, Tote Bag)..." 
-                    class="w-full pl-12 pr-4 py-3 rounded-full bg-stone-50 border border-stone-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all">
-                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400"></i>
-            </div>
-        </div>
-
-        <div class="flex flex-wrap justify-center gap-3 mb-10" id="filterContainer">
-            <button onclick="filterProducts('all')" class="filter-btn active px-5 py-2 rounded-full text-xs font-bold transition-all bg-stone-900 text-white shadow-lg" data-filter="all">All</button>
-            <button onclick="filterProducts('Small Items')" class="filter-btn px-5 py-2 rounded-full text-xs font-bold transition-all bg-white text-stone-600 border border-stone-200 hover:bg-stone-50" data-filter="Small Items">Small Items</button>
-            <button onclick="filterProducts('Medium')" class="filter-btn px-5 py-2 rounded-full text-xs font-bold transition-all bg-white text-stone-600 border border-stone-200 hover:bg-stone-50" data-filter="Medium">Medium</button>
-            <button onclick="filterProducts('Statement')" class="filter-btn px-5 py-2 rounded-full text-xs font-bold transition-all bg-white text-stone-600 border border-stone-200 hover:bg-stone-50" data-filter="Statement">Statement</button>
-        </div>
-
-        <div id="shopContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[400px]">
-            </div>
-
-        <div id="notFound" class="hidden text-center py-12">
-            <i data-lucide="search-x" class="mx-auto w-12 h-12 text-stone-300 mb-4"></i>
-            <p class="text-stone-500">Produk yang kamu cari tidak ditemukan.</p>
-        </div>
-    </div>
-</section>
-
-    <!-- TEAM SECTION -->
-    <section id="team" class="py-6 bg-white border-t border-stone-100 overflow-hidden">
-    <div class="container mx-auto px-6 mb-4">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-            <div>
-                <h2 class="text-3xl font-serif font-bold text-stone-900 mb-1">Energi di Balik Haken</h2>
-                <p class="text-stone-500 text-sm">Sentuh untuk berhenti sejenak.</p>
-            </div>
-            <div class="hidden md:block w-16 h-1 bg-orange-600 rounded-full"></div>
-        </div>
-    </div>
-
-    <div class="relative w-full flex overflow-visible"> <div class="animate-scroll gap-6 py-12 px-4">
-            
-            <div class="w-[260px] bg-white p-4 rounded-[2.5rem] border border-stone-100 group transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 flex-shrink-0">
-                <div class="relative aspect-square overflow-hidden rounded-[2rem] bg-stone-100 mb-5">
-                    <img src="https://image2url.com/r2/default/images/1769822811947-03b01d8b-8d47-4f36-90d5-9f58abcc675c.jpeg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+        <aside class="hidden md:flex w-64 bg-white border-r border-stone-200 flex-col z-20">
+            <div class="p-6 border-b border-stone-100">
+                <div class="flex items-center gap-2 mb-1">
+                    <img src="https://image2url.com/r2/default/images/1769841539779-0d5772d3-1c34-4b3b-9d7a-984c2a64b403.png" class="w-6 h-6 object-contain">
+                    <span class="text-lg font-bold tracking-tight text-stone-900">Haken Admin.</span>
                 </div>
-                <div class="text-center pb-2">
-                    <h3 class="font-bold text-stone-900 text-base">Latiefa Cahyaning</h3>
-                    <p class="text-orange-600 text-[10px] font-extrabold uppercase tracking-widest mb-3">Founder</p>
-                    <p class="text-stone-500 text-xs leading-relaxed px-2 line-clamp-2">Creative Director & Desain Produk.</p>
-                </div>
+                <p id="adminEmailDisplay" class="text-[10px] text-stone-400 truncate">Loading...</p>
             </div>
-
-            <div class="w-[260px] bg-white p-4 rounded-[2.5rem] border border-stone-100 group transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 flex-shrink-0">
-                <div class="relative aspect-square overflow-hidden rounded-[2rem] bg-stone-100 mb-5">
-                    <img src="https://image2url.com/r2/default/images/1769822877637-7670221c-8c8a-4cce-bf84-8a60b72d66b0.jpeg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                </div>
-                <div class="text-center pb-2">
-                    <h3 class="font-bold text-stone-900 text-base">Muhamad Billy</h3>
-                    <p class="text-orange-600 text-[10px] font-extrabold uppercase tracking-widest mb-3">Finance</p>
-                    <p class="text-stone-500 text-xs leading-relaxed px-2 line-clamp-2">Strategi Finansial & Arus Kas.</p>
-                </div>
-            </div>
-
-            <div class="w-[260px] bg-white p-4 rounded-[2.5rem] border border-stone-100 group transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 flex-shrink-0">
-                <div class="relative aspect-square overflow-hidden rounded-[2rem] bg-stone-100 mb-5">
-                    <img src="https://image2url.com/r2/default/images/1769822967703-e7660806-e100-448a-8df6-0ecc08ff53fc.jpeg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                </div>
-                <div class="text-center pb-2">
-                    <h3 class="font-bold text-stone-900 text-base">Haris Nadwi</h3>
-                    <p class="text-orange-600 text-[10px] font-extrabold uppercase tracking-widest mb-3">Operations</p>
-                    <p class="text-stone-500 text-xs leading-relaxed px-2 line-clamp-2">Logistik & Manajemen Produksi.</p>
-                </div>
-            </div>
-
-            <div class="w-[260px] bg-white p-4 rounded-[2.5rem] border border-stone-100 group transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 flex-shrink-0">
-                <div class="relative aspect-square overflow-hidden rounded-[2rem] bg-stone-100 mb-5">
-                    <img src="https://image2url.com/r2/default/images/1769822811947-03b01d8b-8d47-4f36-90d5-9f58abcc675c.jpeg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                </div>
-                <div class="text-center pb-2">
-                    <h3 class="font-bold text-stone-900 text-base">Latiefa Cahyaning</h3>
-                    <p class="text-orange-600 text-[10px] font-extrabold uppercase tracking-widest mb-3">Founder</p>
-                    <p class="text-stone-500 text-xs leading-relaxed px-2 line-clamp-2">Creative Director & Desain Produk.</p>
-                </div>
-            </div>
-            </div>
-    </div>
-</section>
-
-    <!-- FUTURE ROADMAP (WORKSHOP TEASER) -->
-    <section id="roadmap" class="py-24 bg-stone-900 text-white relative overflow-hidden">
-    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#ea580c_1px,transparent_1px)] [background-size:20px_20px]"></div>
-    <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-stone-900 to-transparent z-10"></div>
-    <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-stone-900 to-transparent z-10"></div>
-
-    <div class="container mx-auto px-6 relative z-20">
-        <div class="text-center max-w-3xl mx-auto mb-20">
-            <span class="inline-block px-4 py-1.5 bg-orange-600 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] mb-6 shadow-[0_0_20px_rgba(234,88,12,0.4)]">Visi Jangka Panjang</span>
-            <h2 class="text-4xl md:text-6xl font-serif font-bold mb-6">Road Map Haken</h2>
-            <p class="text-stone-400 text-lg font-extrabold">
-                Dari pencarian validasi pasar hingga memimpin ekosistem slow fashion yang berkelanjutan di Indonesia.
-            </p>
-        </div>
-
-        <div class="relative max-w-5xl mx-auto">
-            
-            <div class="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-stone-800 rounded-full overflow-hidden">
-                <div id="progress-line" class="w-full bg-gradient-to-b from-orange-500 via-orange-400 to-stone-800 h-0 transition-all duration-100 ease-out"></div>
-            </div>
-            <div class="md:hidden absolute left-8 w-1 h-full bg-stone-800 rounded-full">
-                <div id="progress-line-mobile" class="w-full bg-gradient-to-b from-orange-500 via-orange-400 to-stone-800 h-0 transition-all duration-100 ease-out"></div>
-            </div>
-
-            <div class="roadmap-item flex flex-col md:flex-row items-center justify-between mb-24 relative group">
-                <div class="w-full md:w-5/12 pl-20 md:pl-0 md:pr-12 md:text-right opacity-0 translate-y-10 transition-all duration-700" data-observe>
-                    <div class="p-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl hover:bg-white/10 hover:border-orange-500/30 transition-all hover:-translate-y-2 shadow-2xl">
-                        <h3 class="text-3xl font-bold text-orange-500 mb-2">Tahun 1</h3>
-                        <h4 class="text-xl font-bold text-white mb-4">Validasi & Pondasi</h4>
-                        <p class="text-stone-400 text-sm leading-relaxed mb-4">
-                            Fokus pada kesehatan model bisnis, standarisasi kualitas produksi, dan penyelesaian 100 pcs pertama untuk WIRAGAMA. Membangun 3 lini inti: Small, Medium, & Statement Piece.
-                        </p>
-                        <div class="flex flex-wrap gap-2 md:justify-end">
-                            <span class="px-3 py-1 bg-stone-800 rounded-lg text-[10px] uppercase tracking-wide text-stone-300">Produksi</span>
-                            <span class="px-3 py-1 bg-stone-800 rounded-lg text-[10px] uppercase tracking-wide text-stone-300">Branding</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-6 h-6 bg-stone-900 border-4 border-orange-600 rounded-full z-10 shadow-[0_0_15px_rgba(234,88,12,0.8)]"></div>
-
-                <div class="hidden md:block w-5/12"></div>
-            </div>
-
-            <div class="roadmap-item flex flex-col md:flex-row-reverse items-center justify-between mb-24 relative group">
-                <div class="w-full md:w-5/12 pl-20 md:pl-12 opacity-0 translate-y-10 transition-all duration-700 delay-100" data-observe>
-                    <div class="p-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl hover:bg-white/10 hover:border-orange-500/30 transition-all hover:-translate-y-2 shadow-2xl">
-                        <h3 class="text-3xl font-bold text-orange-500 mb-2">Tahun 2</h3>
-                        <h4 class="text-xl font-bold text-white mb-4">Ekspansi & Komunitas</h4>
-                        <p class="text-stone-400 text-sm leading-relaxed mb-4">
-                            Membuka <strong>"Haken Workshop Class"</strong> untuk membangun komunitas pelanggan setia yang memiliki kemampuan dan pemahaman upcycling. Memperluas kanal penjualan agar tidak bergantung hanya pada pameran, tetapi stabil secara online serta dan menggerakan kampanye zero waste fashion movement untuk keberpihakan pada keberlanjutan
-                        </p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="px-3 py-1 bg-stone-800 rounded-lg text-[10px] uppercase tracking-wide text-stone-300">Workshop</span>
-                            <span class="px-3 py-1 bg-stone-800 rounded-lg text-[10px] uppercase tracking-wide text-stone-300">Community</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-6 h-6 bg-stone-900 border-4 border-stone-600 group-hover:border-orange-600 transition-colors rounded-full z-10"></div>
-                
-                <div class="hidden md:block w-5/12"></div>
-            </div>
-
-            <div class="roadmap-item flex flex-col md:flex-row items-center justify-between mb-24 relative group">
-                <div class="w-full md:w-5/12 pl-20 md:pl-0 md:pr-12 md:text-right opacity-0 translate-y-10 transition-all duration-700 delay-100" data-observe>
-                    <div class="p-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl hover:bg-white/10 hover:border-orange-500/30 transition-all hover:-translate-y-2 shadow-2xl">
-                        <h3 class="text-3xl font-bold text-orange-500 mb-2">Tahun 3</h3>
-                        <h4 class="text-xl font-bold text-white mb-4">Kolaborasi & B2B</h4>
-                        <p class="text-stone-400 text-sm leading-relaxed mb-4">
-                            Meluncurkan kolaborasi edisi khusus dengan kreator lokal. Membuka layanan suvenir korporat (B2B) dan memperkuat aset digital untuk pasar global.
-                        </p>
-                        <div class="flex flex-wrap gap-2 md:justify-end">
-                            <span class="px-3 py-1 bg-stone-800 rounded-lg text-[10px] uppercase tracking-wide text-stone-300">Collab</span>
-                            <span class="px-3 py-1 bg-stone-800 rounded-lg text-[10px] uppercase tracking-wide text-stone-300">B2B</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-6 h-6 bg-stone-900 border-4 border-stone-600 group-hover:border-orange-600 transition-colors rounded-full z-10"></div>
-                <div class="hidden md:block w-5/12"></div>
-            </div>
-
-            <div class="roadmap-item flex flex-col md:flex-row-reverse items-center justify-between mb-24 relative group">
-                <div class="w-full md:w-5/12 pl-20 md:pl-12 opacity-0 translate-y-10 transition-all duration-700 delay-100" data-observe>
-                    <div class="p-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl hover:bg-white/10 hover:border-orange-500/30 transition-all hover:-translate-y-2 shadow-2xl">
-                        <h3 class="text-3xl font-bold text-orange-500 mb-2">Tahun 4</h3>
-                        <h4 class="text-xl font-bold text-white mb-4">Sustainable Innovation</h4>
-                        <p class="text-stone-400 text-sm leading-relaxed mb-4">
-                            Riset mendalam pengolahan limbah tekstil menjadi benang sendiri. Memperluas jangkauan pasar internasional melalui e-commerce lintas negara.
-                        </p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="px-3 py-1 bg-stone-800 rounded-lg text-[10px] uppercase tracking-wide text-stone-300">R&D</span>
-                            <span class="px-3 py-1 bg-stone-800 rounded-lg text-[10px] uppercase tracking-wide text-stone-300">Global</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-6 h-6 bg-stone-900 border-4 border-stone-600 group-hover:border-orange-600 transition-colors rounded-full z-10"></div>
-                <div class="hidden md:block w-5/12"></div>
-            </div>
-
-             <div class="roadmap-item flex flex-col md:flex-row items-center justify-between mb-12 relative group">
-                <div class="w-full md:w-5/12 pl-20 md:pl-0 md:pr-12 md:text-right opacity-0 translate-y-10 transition-all duration-700 delay-100" data-observe>
-                    <div class="p-8 bg-gradient-to-br from-orange-600 to-orange-800 border border-orange-500 rounded-3xl hover:scale-105 transition-all shadow-[0_20px_50px_rgba(234,88,12,0.3)]">
-                        <h3 class="text-3xl font-bold text-white mb-2">Tahun 5</h3>
-                        <h4 class="text-xl font-bold text-white mb-4">Market Leader</h4>
-                        <p class="text-orange-100 text-sm leading-relaxed mb-4">
-                            Menjadi top-of-mind brand untuk produk slow fashion dan gaya hidup berkelanjutan di Indonesia dengan ekosistem bisnis yang sepenuhnya sirkular.
-                        </p>
-                        <div class="flex flex-wrap gap-2 md:justify-end">
-                            <span class="px-3 py-1 bg-white/20 rounded-lg text-[10px] uppercase tracking-wide text-white">Impact</span>
-                            <span class="px-3 py-1 bg-white/20 rounded-lg text-[10px] uppercase tracking-wide text-white">Sustainable</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-8 h-8 bg-orange-600 border-4 border-white rounded-full z-10 animate-pulse"></div>
-                <div class="hidden md:block w-5/12"></div>
-            </div>
-
-        </div>
-    </div>
-</section>
-    <!-- FOOTER -->
-   <footer class="bg-white pt-0">
-
-    <div class="relative bg-stone-900 py-16 overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-orange-600/20 rounded-full blur-[80px] pointer-events-none"></div>
-        
-        <div class="container mx-auto px-6 relative z-10 text-center">
-            <span class="inline-block py-1 px-3 rounded-full bg-orange-600/20 border border-orange-500/30 text-orange-400 text-[10px] font-bold uppercase tracking-widest mb-4">
-                Limited Circle
-            </span>
-            <h2 class="text-3xl md:text-5xl font-serif font-bold text-white mb-4">
-                Jangan Sampai Kehabisan <span class="italic text-orange-500">Lagi.</span>
-            </h2>
-            <p class="text-stone-400 max-w-lg mx-auto mb-8 text-sm md:text-base font-light">
-                Produk kami handmade dan stoknya sangat terbatas. Bergabunglah dengan <strong>2.000+ Haken Insiders</strong> untuk mendapatkan akses prioritas 24 jam sebelum peluncuran publik + Diskon 10%.
-            </p>
-
-            <form class="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
-                <input type="email" placeholder="Masukkan email aktifmu..." class="flex-1 px-6 py-4 rounded-full bg-white/10 border border-white/10 text-white placeholder-stone-500 focus:outline-none focus:bg-white/20 focus:border-orange-500 transition-all text-sm">
-                <button type="button" class="px-8 py-4 bg-orange-600 text-white font-bold rounded-full hover:bg-orange-500 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-orange-900/50 text-sm whitespace-nowrap">
-                    Klaim Diskon 10%
+            <nav class="flex-1 p-4 space-y-1">
+                <button onclick="window.switchTab('insight')" id="desk-insight" class="desk-nav active"><i data-lucide="bar-chart-3" class="w-4 h-4"></i> Overview</button>
+                <button onclick="window.switchTab('orders')" id="desk-orders" class="desk-nav"><i data-lucide="shopping-bag" class="w-4 h-4"></i> Pesanan</button>
+                <button onclick="window.switchTab('products')" id="desk-products" class="desk-nav"><i data-lucide="package" class="w-4 h-4"></i> Produk</button>
+                <button onclick="window.switchTab('discounts')" id="desk-discounts" class="desk-nav"><i data-lucide="ticket-percent" class="w-4 h-4"></i> Diskon</button>
+                <button onclick="window.switchTab('settings')" id="desk-settings" class="desk-nav"><i data-lucide="settings" class="w-4 h-4"></i> Setting</button>
+            </nav>
+            <div class="p-4 border-t border-stone-100">
+                <button id="btnLogout" class="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                    <i data-lucide="log-out" class="w-3 h-3"></i> Keluar
                 </button>
-            </form>
-            <p class="mt-4 text-[10px] text-stone-500">Kami benci spam. Anda hanya akan menerima update produk & promo.</p>
-        </div>
-    </div>
+            </div>
+        </aside>
 
+        <main class="flex-1 overflow-y-auto bg-stone-50/50 pb-24 md:pb-0 relative">
+            <div class="md:hidden sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-stone-200 px-6 py-4 flex justify-between items-center">
+                <span class="font-bold text-lg">Haken Dashboard</span>
+                <button onclick="window.logout()" class="text-red-500"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+            </div>
 
-    <div class="bg-white pt-16 pb-8">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16 text-center md:text-left">
+            <div class="p-6 md:p-10 max-w-7xl mx-auto">
                 
-                <div class="col-span-1 lg:col-span-1">
-                    <div class="flex items-center justify-center md:justify-start gap-2 mb-6">
-                        <div class="w-8 h-8 bg-stone-900 text-white rounded-lg flex items-center justify-center font-bold text-sm">H</div>
-                        <span class="text-xl font-serif font-bold text-stone-900">Haken Studio.</span>
+                <div id="tab-insight" class="animate-fade-in space-y-4">
+                    <h1 class="text-xl md:text-2xl font-bold mb-4">Ringkasan Bisnis</h1>
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <div class="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-stone-400 block mb-1">TOTAL USER</span>
+                                <h2 id="statUsers" class="text-2xl font-bold text-stone-900">0</h2>
+                            </div>
+                            <div class="p-3 bg-orange-50 rounded-xl text-orange-600"><i data-lucide="users" class="w-6 h-6"></i></div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-stone-400 block mb-1">TOTAL OMSET</span>
+                                <h2 id="statRevenue" class="text-2xl font-bold text-stone-900">Rp 0</h2>
+                            </div>
+                            <div class="p-3 bg-green-50 rounded-xl text-green-600"><i data-lucide="wallet" class="w-6 h-6"></i></div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-stone-400 block mb-1">BULAN INI</span>
+                                <h2 id="statMonth" class="text-2xl font-bold text-stone-900">Rp 0</h2>
+                            </div>
+                            <div class="p-3 bg-blue-50 rounded-xl text-blue-600"><i data-lucide="calendar" class="w-6 h-6"></i></div>
+                        </div>
                     </div>
-                    <p class="text-stone-500 text-sm leading-relaxed mb-6">
-                        Menghadirkan seni rajut yang relevan untuk generasi muda. Cerita tentang waktu, kesabaran, dan keberlanjutan.
-                    </p>
-                    <div class="flex justify-center md:justify-start gap-3">
-                        <a href="#" class="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-stone-900 hover:text-white transition-all"><i data-lucide="instagram" class="w-4 h-4"></i></a>
-                        <a href="#" class="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-stone-900 hover:text-white transition-all"><i data-lucide="tiktok" class="w-4 h-4"></i></a>
-                        <a href="#" class="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-stone-900 hover:text-white transition-all"><i data-lucide="message-circle" class="w-4 h-4"></i></a>
+                </div>
+
+                <div id="tab-orders" class="hidden animate-fade-in pb-20">
+                    <h1 class="text-xl md:text-2xl font-bold mb-4">Pesanan Masuk</h1>
+                    <div id="orderList" class="space-y-4"></div>
+                </div>
+
+                <div id="tab-products" class="hidden animate-fade-in pb-20">
+                    <div class="flex justify-between items-center mb-4">
+                        <h1 class="text-xl md:text-2xl font-bold">Stok Produk</h1>
+                        <button onclick="window.openProductModal()" class="w-10 h-10 bg-stone-900 text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                            <i data-lucide="plus" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-stone-50 text-stone-500 font-bold uppercase text-xs">
+                                    <tr><th class="p-4">Produk</th><th class="p-4">Stok</th><th class="p-4 text-right">Aksi</th></tr>
+                                </thead>
+                                <tbody id="productTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div>
-                    <h4 class="font-bold text-stone-900 mb-6 text-xs uppercase tracking-[0.2em]">Eksplorasi</h4>
-                    <ul class="space-y-3 text-sm text-stone-500">
-                        <li><a href="#home" class="hover:text-orange-600 transition-colors inline-block hover:translate-x-1 duration-200">Beranda</a></li>
-                        <li><a href="#shop" class="hover:text-orange-600 transition-colors inline-block hover:translate-x-1 duration-200">Koleksi Terbaru</a></li>
-                        <li><a href="#about" class="hover:text-orange-600 transition-colors inline-block hover:translate-x-1 duration-200">Tentang Kami</a></li>
-                        <li><a href="#team" class="hover:text-orange-600 transition-colors inline-block hover:translate-x-1 duration-200">Tim Kreatif</a></li>
-                    </ul>
+                <div id="tab-discounts" class="hidden animate-fade-in pb-20">
+                    <h1 class="text-xl md:text-2xl font-bold mb-4">Atur Promo</h1>
+                    <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm space-y-4">
+                        <div>
+                            <label class="text-xs font-bold text-stone-500 uppercase">Pilih Produk</label>
+                            <select id="discProductSelect" class="w-full mt-1 p-3 bg-stone-50 border border-stone-200 rounded-xl text-sm outline-none focus:border-orange-500"></select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-bold text-stone-500 uppercase">Harga Promo</label>
+                                <input type="number" id="discPrice" class="w-full mt-1 p-3 border border-stone-200 rounded-xl text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-stone-500 uppercase">Kuota</label>
+                                <input type="number" id="discStock" class="w-full mt-1 p-3 border border-stone-200 rounded-xl text-sm">
+                            </div>
+                        </div>
+                        <button onclick="window.applyDiscount()" class="w-full py-3 bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-orange-200 active:scale-95 transition-transform">Pasang Diskon</button>
+                    
+                        <div class="pt-4 border-t border-stone-100">
+                            <h3 class="font-bold text-sm mb-2">Sedang Promo:</h3>
+                            <ul id="activeDiscounts" class="space-y-2"></ul>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <h4 class="font-bold text-stone-900 mb-6 text-xs uppercase tracking-[0.2em]">Bantuan</h4>
-                    <ul class="space-y-3 text-sm text-stone-500">
-                        <li><a href="#" class="hover:text-orange-600 transition-colors">Cara Pemesanan</a></li>
-                        <li><a href="#" class="hover:text-orange-600 transition-colors">Info Pengiriman</a></li>
-                        <li><a href="#" class="hover:text-orange-600 transition-colors">Custom Order</a></li>
-                        <li><a href="#" class="hover:text-orange-600 transition-colors">FAQ</a></li>
-                    </ul>
+                <div id="tab-settings" class="hidden animate-fade-in">
+                    <h1 class="text-xl md:text-2xl font-bold mb-4">Pengaturan</h1>
+                    <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+                        <label class="text-xs font-bold text-stone-500 uppercase">Link QRIS (Gambar)</label>
+                        <input type="text" id="settingQris" class="w-full mt-2 mb-4 p-3 border border-stone-200 rounded-xl text-sm" placeholder="https://...">
+                        <button onclick="window.saveSettings()" class="w-full py-3 bg-stone-900 text-white rounded-xl font-bold active:scale-95 transition-transform">Simpan</button>
+                    </div>
                 </div>
 
-                <div>
-                    <h4 class="font-bold text-stone-900 mb-6 text-xs uppercase tracking-[0.2em]">Kontak</h4>
-                    <ul class="space-y-4 text-sm text-stone-500">
-                        <li class="flex flex-col md:flex-row items-center md:items-start gap-3">
-                            <i data-lucide="map-pin" class="w-4 h-4 mt-0.5 text-orange-600 shrink-0"></i>
-                            <span class="leading-relaxed">Universitas Gadjah Mada,<br>Yogyakarta, Indonesia</span>
-                        </li>
-                        <li class="flex flex-col md:flex-row items-center md:items-start gap-3">
-                            <i data-lucide="mail" class="w-4 h-4 text-orange-600 shrink-0"></i>
-                            <span>haken.studio@gmail.com</span>
-                        </li>
-                    </ul>
-                </div>
             </div>
+        </main>
 
-            <div class="border-t border-stone-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-stone-400">
-                <p>&copy; 2026 Haken Studio. All rights reserved.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="hover:text-stone-900 transition-colors">Privacy Policy</a>
-                    <a href="#" class="hover:text-stone-900 transition-colors">Terms & Conditions</a>
-                </div>
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-stone-200 flex justify-around items-center px-2 py-3 pb-safe z-40 shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
+            <button onclick="window.switchTab('insight')" id="mob-insight" class="mob-nav active flex flex-col items-center gap-1 w-full">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </button>
+            <button onclick="window.switchTab('orders')" id="mob-orders" class="mob-nav flex flex-col items-center gap-1 w-full relative">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Order</span>
+            </button>
+            <button onclick="window.switchTab('products')" id="mob-products" class="mob-nav flex flex-col items-center gap-1 w-full">
+                <i data-lucide="package" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Produk</span>
+            </button>
+            <button onclick="window.switchTab('discounts')" id="mob-discounts" class="mob-nav flex flex-col items-center gap-1 w-full">
+                <i data-lucide="percent" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Promo</span>
+            </button>
+            <button onclick="window.switchTab('settings')" id="mob-settings" class="mob-nav flex flex-col items-center gap-1 w-full">
+                <i data-lucide="settings" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Akun</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <div id="productModal" class="hidden fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center sm:p-4">
+        <div class="bg-white w-full md:max-w-md rounded-t-3xl md:rounded-3xl p-6 shadow-2xl animate-slide-up md:animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-bold">Edit / Tambah</h2>
+                <button onclick="window.closeProductModal()" class="p-2 bg-stone-100 rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
+            <form id="productForm" class="space-y-4">
+                <input type="hidden" id="editId">
+                <input type="text" id="pName" placeholder="Nama Produk" required class="w-full p-3 border rounded-xl text-sm bg-stone-50">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" id="pPrice" placeholder="Harga" required class="w-full p-3 border rounded-xl text-sm bg-stone-50">
+                    <input type="number" id="pStock" placeholder="Stok" required class="w-full p-3 border rounded-xl text-sm bg-stone-50">
+                </div>
+                <select id="pCategory" class="w-full p-3 border rounded-xl text-sm bg-stone-50">
+                    <option value="Small Items">Small Items</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Statement">Statement</option>
+                </select>
+                <input type="text" id="pImage" placeholder="URL Gambar" required class="w-full p-3 border rounded-xl text-sm bg-stone-50">
+                <textarea id="pDesc" placeholder="Deskripsi" rows="3" class="w-full p-3 border rounded-xl text-sm bg-stone-50"></textarea>
+                <button type="submit" class="w-full py-3 bg-stone-900 text-white rounded-xl font-bold text-sm">Simpan</button>
+            </form>
         </div>
     </div>
-</footer>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-      
-      const products = [
-        {
-            id: 1,
-            name: "Amigurumi Keychain",
-            category: "Small Items",
-            price: 35000,
-            image: "https://image2url.com/r2/default/images/1769821438260-3a3441e1-998a-4b02-a1b4-002b757efb6b.jpeg", // Ganti URL Gambar Asli
-            badge: "Best Seller",
-            desc: "Gantungan kunci rajut karakter lucu."
-        },
-        {
-            id: 2,
-            name: "Eco Tote Bag",
-            category: "Medium",
-            price: 185000,
-            image: "https://image2url.com/r2/default/images/1769821921205-305be59f-0ac6-4d2d-84a7-4c9fe01e3de8.jpeg",
-            badge: "Limited",
-            desc: "Tas bahu estetik dari benang daur ulang."
-        },
-        {
-            id: 3,
-            name: "Vintage Coaster Set",
-            category: "Small Items",
-            price: 65000,
-            image: "https://image2url.com/r2/default/images/1769821438260-3a3441e1-998a-4b02-a1b4-002b757efb6b.jpeg",
-            badge: null,
-            desc: "Alas gelas nuansa earth tone."
-        },
-        {
-            id: 4,
-            name: "Granny Square Cardigan",
-            category: "Statement",
-            price: 450000,
-            image: "https://image2url.com/r2/default/images/1769821438260-3a3441e1-998a-4b02-a1b4-002b757efb6b.jpeg",
-            badge: "New",
-            desc: "Cardigan rajut premium dengan pola klasik."
-        }
-    ];
+    <div id="statusModal" class="hidden fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center sm:p-4">
+        <div class="bg-white w-full md:max-w-sm rounded-t-3xl md:rounded-3xl p-6 shadow-2xl animate-slide-up md:animate-fade-in">
+            <h2 class="text-lg font-bold mb-4">Pilih Status Order</h2>
+            <input type="hidden" id="statusOrderId">
+            <div class="space-y-2 overflow-y-auto max-h-[60vh]">
+                <button onclick="window.setStatus('Pesanan Sedang Ditinjau')" class="w-full text-left p-3 rounded-xl bg-orange-50 text-orange-700 font-bold text-sm">1. Ditinjau</button>
+                <button onclick="window.setStatus('Pesanan Sedang Dikemas')" class="w-full text-left p-3 rounded-xl bg-stone-50 text-stone-700 font-bold text-sm">2. Dikemas</button>
+                <button onclick="window.setStatus('Pesanan Sedang Diantarkan ke Jasa Logistik')" class="w-full text-left p-3 rounded-xl bg-stone-50 text-stone-700 font-bold text-sm">3. OTW Logistik</button>
+                <button onclick="window.setStatus('Pesanan Sedang Diantarkan oleh Jasa Logistik')" class="w-full text-left p-3 rounded-xl bg-blue-50 text-blue-700 font-bold text-sm">4. Dikirim Kurir</button>
+                <button onclick="window.setStatus('Pesanan Diterima')" class="w-full text-left p-3 rounded-xl bg-green-50 text-green-700 font-bold text-sm">5. Selesai (Diterima)</button>
+                <div class="h-px bg-stone-100 my-2"></div>
+                <button onclick="window.setStatus('Pesanan Dibatalkan')" class="w-full text-left p-3 rounded-xl bg-red-50 text-red-700 font-bold text-sm">X. Batalkan</button>
+            </div>
+            <button onclick="document.getElementById('statusModal').classList.add('hidden')" class="mt-4 w-full py-3 bg-stone-100 font-bold rounded-xl text-sm">Tutup</button>
+        </div>
+    </div>
 
-    // State Variables
-    let activeCategory = 'all';
-    let searchQuery = '';
-
-    // 2. FUNGSI RENDER PRODUK
-    function renderProducts() {
-        const container = document.getElementById('shopContainer');
-        const notFound = document.getElementById('notFound');
+    <style>
+        .desk-nav { @apply w-full flex items-center gap-3 px-4 py-3 text-stone-500 hover:bg-stone-50 rounded-xl text-sm font-bold transition-all; }
+        .desk-nav.active { @apply bg-stone-900 text-white shadow-lg shadow-stone-200; }
         
-        // ... (kode filter jangan diubah) ...
-        const filteredData = products.filter(product => {
-            const matchCategory = activeCategory === 'all' || product.category === activeCategory;
-            const matchSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-            return matchCategory && matchSearch;
-        });
+        .mob-nav { @apply text-stone-400 transition-colors; }
+        .mob-nav.active { @apply text-orange-600; }
+        .mob-nav.active i { @apply fill-orange-100; }
 
-        container.innerHTML = '';
-
-        if (filteredData.length === 0) {
-            notFound.classList.remove('hidden');
-        } else {
-            notFound.classList.add('hidden');
-            
-            filteredData.forEach(product => {
-                const card = `
-                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 hover:shadow-lg transition-all hover:-translate-y-1 group">
-                        
-                        <div class="aspect-[4/3] bg-stone-100 relative overflow-hidden">
-                            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            
-                            ${product.badge ? `<span class="absolute top-4 left-4 px-3 py-1 bg-orange-600 text-white text-[10px] font-bold uppercase tracking-widest rounded shadow-md">${product.badge}</span>` : ''}
-                        </div>
-
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-semibold text-orange-600 uppercase">${product.category}</span>
-                                <span class="font-bold text-stone-900">IDR ${product.price.toLocaleString('id-ID')}</span>
-                            </div>
-                            <h3 class="text-lg font-bold text-stone-900 mb-2">${product.name}</h3>
-                            <p class="text-stone-500 text-sm mb-6 truncate">${product.desc}</p>
-                            
-                            <a href="detail-produk.html?id=${product.id}" class="block w-full text-center py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-colors shadow-lg shadow-stone-200">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += card;
-            });
-            // Re-init icon lucide karena element baru ditambahkan
-            lucide.createIcons();
-        }
-    }
-
-    // 3. EVENT HANDLER UNTUK SEARCH
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        searchQuery = e.target.value;
-        renderProducts(); // Render ulang saat mengetik
-    });
-
-    // 4. EVENT HANDLER UNTUK TOMBOL FILTER
-    function filterProducts(category) {
-        activeCategory = category;
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         
-        // Update tampilan tombol aktif
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            if(btn.dataset.filter === category) {
-                btn.className = "filter-btn active px-5 py-2 rounded-full text-xs font-bold transition-all bg-stone-900 text-white shadow-lg transform scale-105";
-            } else {
-                btn.className = "filter-btn px-5 py-2 rounded-full text-xs font-bold transition-all bg-white text-stone-600 border border-stone-200 hover:bg-stone-50";
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+
+    <script type="module">
+        import { db, auth, provider, ref, set, onValue, remove, update, signInWithPopup, signOut, onAuthStateChanged, get } from './firebase-config.js';
+
+        const ALLOWED_EMAILS = ["latifacahyaningummah@gmail.com", "harisnadwi397@gmail.com", "ornaclealternatifa@gmail.com"];
+
+        // UI SETUP
+        onAuthStateChanged(auth, (user) => {
+            if (user && ALLOWED_EMAILS.includes(user.email)) {
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('dashboardUI').classList.remove('hidden');
+                document.getElementById('adminEmailDisplay').textContent = user.email;
+                lucide.createIcons();
+                initAdmin();
+            } else if (user) {
+                window.location.href = 'profile.html';
             }
         });
 
-        renderProducts(); // Render ulang sesuai kategori baru
-    }
+        document.getElementById('btnLogin').addEventListener('click', () => signInWithPopup(auth, provider));
+        document.getElementById('btnLogout').addEventListener('click', () => signOut(auth).then(()=>window.location.reload()));
+        window.logout = () => signOut(auth).then(()=>window.location.reload());
 
-    // Render pertama kali saat halaman dimuat
-    renderProducts();
-      
-      
-      // --- ROADMAP SCROLL ANIMATION ---
-const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.2
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.remove('opacity-0', 'translate-y-10');
-            entry.target.classList.add('opacity-100', 'translate-y-0');
+        function initAdmin() {
+            loadInsights();
+            loadProducts();
+            loadOrders();
+            loadSettings();
         }
-    });
-}, observerOptions);
 
-document.querySelectorAll('[data-observe]').forEach(el => {
-    observer.observe(el);
-});
-
-// Animate Central Line on Scroll
-window.addEventListener('scroll', () => {
-    const roadmapSection = document.getElementById('roadmap');
-    const progressLine = document.getElementById('progress-line');
-    const progressLineMobile = document.getElementById('progress-line-mobile');
-    
-    if (roadmapSection) {
-        const sectionTop = roadmapSection.offsetTop;
-        const sectionHeight = roadmapSection.clientHeight;
-        const scrollY = window.scrollY;
-        const windowHeight = window.innerHeight;
-        
-        // Hitung persentase scroll dalam section
-        let percentage = (scrollY + windowHeight / 2 - sectionTop) / (sectionHeight * 0.8) * 100;
-        
-        // Clamp value between 0 and 100
-        percentage = Math.max(0, Math.min(100, percentage));
-        
-        if (progressLine) progressLine.style.height = `${percentage}%`;
-        if (progressLineMobile) progressLineMobile.style.height = `${percentage}%`;
-    }
-});
-      
-        // Initialize Lucide Icons
-        lucide.createIcons();
-
-        // --- HERO SLIDER LOGIC ---
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.hero-slide');
-        const dots = document.querySelectorAll('.slider-dot');
-
-        function setSlide(index) {
-            // Remove active classes
-            slides.forEach(slide => slide.classList.replace('opacity-100', 'opacity-0'));
-            dots.forEach(dot => {
-                dot.classList.remove('w-8', 'bg-white');
-                dot.classList.add('w-2', 'bg-white/50');
+        // 1. INSIGHT
+        function loadInsights() {
+            onValue(ref(db, 'users'), (snap) => {
+                document.getElementById('statUsers').textContent = snap.exists() ? Object.keys(snap.val()).length : 0;
             });
-            
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const productItems = document.querySelectorAll('.product-item');
-            
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // 1. Animasi transisi status tombol
-                    filterBtns.forEach(b => {
-                        b.classList.remove('bg-stone-900', 'text-white', 'shadow-md', 'scale-105');
-                        b.classList.add('bg-white', 'text-stone-600', 'border', 'border-stone-100');
-                    });
-            
-                    // Efek aktif pada tombol yang diklik
-                    btn.classList.remove('bg-white', 'text-stone-600', 'border', 'border-stone-100');
-                    btn.classList.add('bg-stone-900', 'text-white', 'shadow-md', 'scale-105');
-                    
-                    // 2. Animasi Filter Produk (Fade Out - Fade In)
-                    const category = btn.getAttribute('data-category');
-                    productItems.forEach(item => {
-                        item.style.transition = "all 0.4s ease-in-out";
-                        if (category === 'All' || item.getAttribute('data-category') === category) {
-                            item.style.display = 'block';
-                            setTimeout(() => {
-                                item.style.opacity = '1';
-                                item.style.transform = 'scale(1)';
-                            }, 10);
-                        } else {
-                            item.style.opacity = '0';
-                            item.style.transform = 'scale(0.95)';
-                            setTimeout(() => {
-                                item.style.display = 'none';
-                            }, 400);
+            onValue(ref(db, 'orders'), (snap) => {
+                let total = 0; let monthTotal = 0;
+                const currentMonth = new Date().getMonth();
+                if (snap.exists()) {
+                    Object.values(snap.val()).forEach(o => {
+                        if (['Pesanan Diterima', 'Selesai', 'Lunas'].includes(o.status)) {
+                            total += o.total;
+                            if (new Date(o.timestamp).getMonth() === currentMonth) monthTotal += o.total;
                         }
                     });
-                });
+                }
+                document.getElementById('statRevenue').textContent = 'Rp ' + total.toLocaleString('id-ID');
+                document.getElementById('statMonth').textContent = 'Rp ' + monthTotal.toLocaleString('id-ID');
             });
-            
-            // Set active slide
-            currentSlide = index;
-            slides[currentSlide].classList.replace('opacity-0', 'opacity-100');
-            
-            // Set active dot
-            dots[currentSlide].classList.remove('w-2', 'bg-white/50');
-            dots[currentSlide].classList.add('w-8', 'bg-white');
         }
 
-        // Auto slide every 5 seconds
-        setInterval(() => {
-            let nextSlide = (currentSlide + 1) % slides.length;
-            setSlide(nextSlide);
-        }, 5000);
+        // 2. ORDERS
+        function loadOrders() {
+            onValue(ref(db, 'orders'), (snapshot) => {
+                const list = document.getElementById('orderList');
+                list.innerHTML = '';
+                const data = snapshot.val();
+                
+                if(data) {
+                    const orders = Object.entries(data).sort((a,b) => b.val().timestamp - a.val().timestamp);
+                    orders.forEach(([id, o]) => {
+                        // Auto-complete 3 days logic
+                        if (o.status === 'Pesanan Diterima' && (Date.now() - o.lastStatusUpdate > 259200000)) { // 3 days
+                            update(ref(db, 'orders/'+id), { status: 'Selesai' });
+                        }
 
-        // --- NAVBAR SCROLL LOGIC ---
-        const navbar = document.getElementById('navbar');
-        const navLinks = document.getElementById('nav-links');
-        const navLogoBg = document.getElementById('nav-logo-bg');
-        const navCta = document.getElementById('nav-cta');
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                        let colorClass = 'bg-stone-100 text-stone-600 border-stone-200';
+                        if(o.status.includes('Ditinjau')) colorClass = 'bg-orange-50 text-orange-700 border-orange-100';
+                        if(o.status.includes('Diterima') || o.status === 'Selesai') colorClass = 'bg-green-50 text-green-700 border-green-100';
+                        if(o.status.includes('Dibatalkan')) colorClass = 'bg-red-50 text-red-700 border-red-100';
 
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                // Scrolled state
-                navbar.classList.remove('bg-transparent', 'text-white', 'py-6');
-                navbar.classList.add('bg-white/90', 'backdrop-blur-md', 'shadow-sm', 'py-4', 'text-stone-800');
-                
-                navLinks.classList.replace('text-white/90', 'text-stone-600');
-                navLogoBg.classList.replace('bg-white', 'bg-orange-600');
-                navLogoBg.classList.replace('text-orange-600', 'text-white');
-                
-                navCta.classList.replace('bg-white', 'bg-stone-900');
-                navCta.classList.replace('text-stone-900', 'text-white');
-                navCta.classList.add('hover:bg-orange-600');
-                
-                // Mobile menu btn color fix
-                mobileMenuBtn.classList.remove('text-white');
-                mobileMenuBtn.classList.add('text-stone-800');
-            } else {
-                // Top state
-                navbar.classList.add('bg-transparent', 'text-white', 'py-6');
-                navbar.classList.remove('bg-white/90', 'backdrop-blur-md', 'shadow-sm', 'py-4', 'text-stone-800');
-                
-                navLinks.classList.replace('text-stone-600', 'text-white/90');
-                navLogoBg.classList.replace('bg-orange-600', 'bg-white');
-                navLogoBg.classList.replace('text-white', 'text-orange-600');
-                
-                navCta.classList.replace('bg-stone-900', 'bg-white');
-                navCta.classList.replace('text-white', 'text-stone-900');
-                navCta.classList.remove('hover:bg-orange-600');
-                
-                // Mobile menu btn color fix
-                mobileMenuBtn.classList.add('text-white');
-                mobileMenuBtn.classList.remove('text-stone-800');
-            }
-        });
-
-        // --- MOBILE MENU LOGIC ---
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
-        let isMenuOpen = false;
-
-        mobileMenuBtn.addEventListener('click', () => {
-            isMenuOpen = !isMenuOpen;
-            if (isMenuOpen) {
-                mobileMenu.classList.remove('hidden');
-                // Change icon to X (handled by re-render or just logic, here simple toggle)
-            } else {
-                mobileMenu.classList.add('hidden');
-            }
-        });
-
-        // Close menu when link clicked
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                isMenuOpen = false;
-                mobileMenu.classList.add('hidden');
+                        list.innerHTML += `
+                            <div class="bg-white p-4 rounded-2xl border border-stone-100 shadow-sm">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-bold text-stone-900">${o.customerName}</h4>
+                                        <div class="text-[10px] text-stone-400 font-mono mt-0.5">${new Date(o.timestamp).toLocaleDateString()} • ID: ${id.slice(-4)}</div>
+                                    </div>
+                                    <span class="px-2 py-1 rounded-lg text-[10px] font-bold uppercase border ${colorClass}">${o.status}</span>
+                                </div>
+                                <div class="flex gap-3 mb-3">
+                                    <div class="w-12 h-12 bg-stone-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+                                        <i data-lucide="package" class="w-5 h-5 text-stone-400"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-sm">${o.productName}</div>
+                                        <div class="text-xs text-stone-500">Qty: ${o.qty} x</div>
+                                        <div class="text-xs font-bold text-orange-600 mt-0.5">Total: Rp ${parseInt(o.total).toLocaleString()}</div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <a href="https://wa.me/${o.customerPhone}" target="_blank" class="flex-1 py-2.5 bg-stone-50 text-stone-600 rounded-xl text-xs font-bold text-center">Chat WA</a>
+                                    <button onclick="window.openStatusModal('${id}')" class="flex-1 py-2.5 bg-stone-900 text-white rounded-xl text-xs font-bold">Update Status</button>
+                                </div>
+                            </div>`;
+                    });
+                    lucide.createIcons();
+                } else {
+                    list.innerHTML = `<div class="text-center py-10 text-stone-400 text-sm">Belum ada pesanan.</div>`;
+                }
             });
-        });
+        }
 
-        // --- PRODUCT FILTER LOGIC ---
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const productItems = document.querySelectorAll('.product-item');
+        window.openStatusModal = (id) => {
+            document.getElementById('statusOrderId').value = id;
+            document.getElementById('statusModal').classList.remove('hidden');
+        };
+        window.setStatus = (status) => {
+            const id = document.getElementById('statusOrderId').value;
+            update(ref(db, 'orders/' + id), { status: status, lastStatusUpdate: Date.now() })
+            .then(() => document.getElementById('statusModal').classList.add('hidden'));
+        };
 
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // 1. Update active button style
-                filterBtns.forEach(b => {
-                    b.classList.remove('bg-stone-900', 'text-white', 'shadow-lg', 'transform', 'scale-105');
-                    b.classList.add('bg-white', 'text-stone-600', 'border', 'border-stone-200', 'hover:bg-stone-100');
-                });
-                btn.classList.remove('bg-white', 'text-stone-600', 'border', 'border-stone-200', 'hover:bg-stone-100');
-                btn.classList.add('bg-stone-900', 'text-white', 'shadow-lg', 'transform', 'scale-105');
-
-                // 2. Filter products
-                const category = btn.getAttribute('data-category');
-                productItems.forEach(item => {
-                    if (category === 'All' || item.getAttribute('data-category') === category) {
-                        item.classList.remove('hidden');
-                        // Optional: Add fade in animation
-                        item.style.opacity = '0';
-                        setTimeout(() => item.style.opacity = '1', 50);
-                    } else {
-                        item.classList.add('hidden');
-                    }
-                });
+        // 3. PRODUCTS
+        function loadProducts() {
+            const tbody = document.getElementById('productTableBody');
+            const select = document.getElementById('discProductSelect');
+            const discList = document.getElementById('activeDiscounts');
+            
+            onValue(ref(db, 'products'), (snap) => {
+                tbody.innerHTML = ''; select.innerHTML = '<option value="">Pilih...</option>'; discList.innerHTML = '';
+                const data = snap.val();
+                if(data) {
+                    Object.entries(data).forEach(([id, p]) => {
+                        // Product List
+                        tbody.innerHTML += `
+                            <tr class="border-b border-stone-50">
+                                <td class="p-4">
+                                    <div class="font-bold text-stone-800">${p.name}</div>
+                                    <div class="text-xs text-stone-400">Rp ${parseInt(p.price).toLocaleString()}</div>
+                                    ${p.discountStock > 0 ? '<span class="text-[10px] text-red-500 font-bold">Promo Aktif</span>' : ''}
+                                </td>
+                                <td class="p-4 font-bold ${p.stock<5?'text-red-500':''}">${p.stock}</td>
+                                <td class="p-4 text-right">
+                                    <button onclick="window.editProduct('${id}')" class="p-2 bg-stone-100 rounded-lg text-blue-600 mr-1"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+                                    <button onclick="window.deleteProduct('${id}')" class="p-2 bg-red-50 rounded-lg text-red-500"><i data-lucide="trash" class="w-3 h-3"></i></button>
+                                </td>
+                            </tr>`;
+                        
+                        // Dropdown Logic
+                        select.innerHTML += `<option value="${id}">${p.name}</option>`;
+                        
+                        // Promo List Logic
+                        if(p.discountStock > 0) {
+                            discList.innerHTML += `
+                                <li class="flex justify-between items-center bg-stone-50 p-3 rounded-xl border border-stone-100">
+                                    <div>
+                                        <div class="text-xs font-bold text-stone-900">${p.name}</div>
+                                        <div class="text-[10px] text-stone-500">Sisa Kuota: ${p.discountStock}</div>
+                                    </div>
+                                    <button onclick="window.stopDiscount('${id}')" class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded">Stop</button>
+                                </li>`;
+                        }
+                    });
+                    lucide.createIcons();
+                }
             });
+        }
+
+        // CRUD & UTILS
+        window.applyDiscount = () => {
+            const id = document.getElementById('discProductSelect').value;
+            const price = document.getElementById('discPrice').value;
+            const stock = document.getElementById('discStock').value;
+            if(!id || !price || !stock) return alert("Lengkapi data!");
+            update(ref(db, 'products/' + id), { discountPrice: parseInt(price), discountStock: parseInt(stock) }).then(()=>alert("Promo Aktif!"));
+        };
+        window.stopDiscount = (id) => update(ref(db, 'products/' + id), { discountStock: 0 });
+        
+        window.saveSettings = () => set(ref(db, 'settings'), { qrisUrl: document.getElementById('settingQris').value }).then(()=>alert("Disimpan!"));
+        function loadSettings() { onValue(ref(db, 'settings'), (snap) => { if(snap.val()?.qrisUrl) document.getElementById('settingQris').value = snap.val().qrisUrl; }); }
+
+        window.switchTab = (tab) => {
+            // Hide all tabs
+            ['insight', 'orders', 'products', 'discounts', 'settings'].forEach(t => {
+                document.getElementById('tab-'+t).classList.add('hidden');
+                // Reset nav styles
+                document.getElementById('desk-'+t)?.classList.remove('active');
+                document.getElementById('mob-'+t)?.classList.remove('active');
+            });
+            
+            // Show active tab
+            document.getElementById('tab-'+tab).classList.remove('hidden');
+            document.getElementById('desk-'+tab)?.classList.add('active');
+            document.getElementById('mob-'+tab)?.classList.add('active');
+        };
+
+        const form = document.getElementById('productForm');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value || Date.now().toString();
+            update(ref(db, 'products/' + id), {
+                name: document.getElementById('pName').value,
+                price: document.getElementById('pPrice').value,
+                stock: document.getElementById('pStock').value,
+                category: document.getElementById('pCategory').value,
+                image: document.getElementById('pImage').value,
+                desc: document.getElementById('pDesc').value
+            }).then(() => window.closeProductModal());
         });
+
+        window.deleteProduct = (id) => { if(confirm('Hapus?')) remove(ref(db, 'products/' + id)); };
+        window.editProduct = (id) => {
+            get(ref(db, 'products/' + id)).then((snapshot) => {
+                const p = snapshot.val();
+                document.getElementById('editId').value = id;
+                document.getElementById('pName').value = p.name;
+                document.getElementById('pPrice').value = p.price;
+                document.getElementById('pStock').value = p.stock;
+                document.getElementById('pCategory').value = p.category;
+                document.getElementById('pImage').value = p.image;
+                document.getElementById('pDesc').value = p.desc;
+                window.openProductModal();
+            });
+        };
+        window.openProductModal = () => { document.getElementById('productForm').reset(); document.getElementById('editId').value = ''; document.getElementById('productModal').classList.remove('hidden'); };
+        window.closeProductModal = () => document.getElementById('productModal').classList.add('hidden');
     </script>
 </body>
 </html>
