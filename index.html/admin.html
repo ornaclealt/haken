@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,76 +7,110 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        stone: {
+                            850: '#1c1917',
+                            950: '#0c0a09',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); 
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,700;1,700&display=swap');
+
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 3px; }
+        .dark ::-webkit-scrollbar-thumb { background: #44403c; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
         
         /* UI Components */
-        .desk-nav { @apply w-full flex items-center gap-3 px-4 py-3 text-stone-500 hover:bg-stone-50 rounded-xl text-sm font-medium transition-all duration-200; }
-        .desk-nav.active { @apply bg-stone-900 text-white shadow-lg shadow-stone-200 font-bold; }
+        .desk-nav { @apply w-full flex items-center gap-3 px-4 py-3 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-all duration-300; }
+        .desk-nav.active { @apply bg-stone-900 dark:bg-orange-600 text-white shadow-lg shadow-stone-200 dark:shadow-orange-900/20 font-bold translate-x-1; }
         
-        .mob-nav { @apply text-stone-400 transition-colors flex flex-col items-center gap-1 w-full p-2 rounded-xl; }
-        .mob-nav.active { @apply text-orange-600 bg-orange-50; }
+        .stat-card { @apply bg-white dark:bg-stone-900 p-6 rounded-3xl border border-stone-100 dark:border-stone-800 shadow-sm hover:shadow-lg dark:hover:shadow-stone-900/50 transition-all duration-300 hover:-translate-y-1; }
         
-        .stat-card { @apply bg-white p-6 rounded-2xl border border-stone-100 shadow-sm hover:shadow-md transition-shadow; }
-        .chart-btn { @apply px-4 py-2 text-xs font-bold rounded-full border border-stone-200 text-stone-500 hover:bg-stone-50 transition-all; }
-        .chart-btn.active { @apply bg-stone-900 text-white border-stone-900; }
+        .chart-btn { @apply px-4 py-1.5 text-xs font-bold rounded-full border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 transition-all; }
+        .chart-btn.active { @apply bg-stone-900 dark:bg-white text-white dark:text-stone-900 border-stone-900 dark:border-white shadow-md; }
 
-        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
-        .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .btn-primary { @apply py-3 px-6 bg-stone-900 dark:bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-stone-200 dark:shadow-orange-900/20 hover:scale-[1.02] active:scale-95 transition-all duration-300; }
+        .input-field { @apply w-full p-4 bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-xl text-sm text-stone-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-500 outline-none transition-colors; }
+
+        /* Animations */
+        .animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .glass { @apply backdrop-blur-xl bg-white/80 dark:bg-stone-900/80 border-b border-stone-200/50 dark:border-stone-800/50; }
     </style>
 </head>
-<body class="bg-[#FDFCFC] text-stone-800 h-screen overflow-hidden">
+<body class="bg-[#FDFCFC] dark:bg-stone-950 text-stone-800 dark:text-stone-200 h-screen overflow-hidden transition-colors duration-500">
 
-    <div id="loginGate" class="fixed inset-0 z-[100] bg-stone-900 flex items-center justify-center p-4">
-        <div class="bg-white p-10 rounded-3xl w-full max-w-sm text-center shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-orange-600"></div>
-            <div class="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <i data-lucide="shield-check" class="w-10 h-10 text-stone-900"></i>
-            </div>
-            <h2 class="text-3xl font-bold mb-2 tracking-tight text-stone-900">Haken Admin</h2>
-            <p class="text-stone-500 text-sm mb-10 leading-relaxed">Pusat kontrol database terenkripsi.<br>Login untuk melanjutkan.</p>
+    <div id="loginGate" class="fixed inset-0 z-[100] bg-stone-50/50 dark:bg-stone-950/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-500">
+        <div class="bg-white dark:bg-stone-900 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl border border-white/20 dark:border-stone-800 relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-400 to-orange-600"></div>
             
-            <button id="btnLogin" class="group w-full py-3.5 bg-stone-900 text-white rounded-xl font-bold flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-orange-600 hover:shadow-lg hover:shadow-orange-200">
-                <div class="bg-white p-1 rounded-full">
-                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4">
-                </div>
+            <div class="w-24 h-24 bg-stone-50 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                <i data-lucide="shield-check" class="w-10 h-10 text-stone-900 dark:text-orange-500"></i>
+            </div>
+            
+            <h2 class="text-3xl font-serif font-bold mb-2 text-stone-900 dark:text-white tracking-tight">Haken Admin</h2>
+            <p class="text-stone-500 dark:text-stone-400 text-sm mb-10 leading-relaxed">Akses database terenkripsi.<br>Khusus personel berwenang.</p>
+            
+            <button id="btnLogin" class="w-full py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-95 hover:shadow-xl transition-all duration-300 group-hover:ring-2 ring-orange-500/50">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
                 <span>Masuk dengan Google</span>
             </button>
-            <p id="loginStatus" class="text-orange-600 text-xs mt-6 font-medium animate-pulse hidden">Memverifikasi hak akses database...</p>
+            
+            <p id="loginStatus" class="text-orange-600 text-xs mt-8 font-bold animate-pulse hidden tracking-widest uppercase">Verifying Access...</p>
         </div>
     </div>
 
-    <div id="dashboardUI" class="flex h-full hidden flex-col md:flex-row">
+    <div id="dashboardUI" class="flex h-full hidden flex-col md:flex-row transition-opacity duration-500 opacity-0">
         
-        <aside class="hidden md:flex w-72 bg-white border-r border-stone-100 flex-col z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        <aside class="hidden md:flex w-72 bg-white dark:bg-stone-900 border-r border-stone-100 dark:border-stone-800 flex-col z-20 transition-colors duration-300">
             <div class="p-8">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg shadow-orange-200">H</div>
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-700 rounded-xl flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg shadow-orange-500/30">H</div>
                     <div>
-                        <span class="text-xl font-bold tracking-tight text-stone-900 block">Haken.</span>
-                        <span class="text-[10px] text-stone-400 uppercase tracking-widest font-bold">Admin Center</span>
+                        <span class="text-xl font-bold tracking-tight text-stone-900 dark:text-white block">Haken.</span>
+                        <span class="text-[10px] text-stone-400 uppercase tracking-widest font-bold">Control Center</span>
                     </div>
                 </div>
                 
-                <div class="p-4 bg-stone-50 rounded-2xl border border-stone-100 mb-2">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-stone-200 to-white border border-stone-200"></div>
+                <div class="p-4 bg-stone-50 dark:bg-stone-800/50 rounded-2xl border border-stone-100 dark:border-stone-700/50 mb-2 flex items-center justify-between group cursor-default">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-xs font-bold shrink-0">A</div>
                         <div class="overflow-hidden">
-                            <p class="text-[10px] text-stone-400 font-bold uppercase">Logged in as</p>
-                            <p id="adminEmailDisplay" class="text-xs font-bold text-stone-800 truncate">Verifying...</p>
+                            <p class="text-[10px] text-stone-400 font-bold uppercase">Admin</p>
+                            <p id="adminEmailDisplay" class="text-xs font-bold text-stone-800 dark:text-stone-200 truncate w-24">...</p>
                         </div>
                     </div>
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 </div>
             </div>
 
-            <nav class="flex-1 px-6 space-y-2">
+            <nav class="flex-1 px-6 space-y-2 overflow-y-auto no-scrollbar">
                 <button onclick="window.switchTab('insight')" id="desk-insight" class="desk-nav active"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard</button>
                 <button onclick="window.switchTab('orders')" id="desk-orders" class="desk-nav"><i data-lucide="shopping-bag" class="w-4 h-4"></i> Pesanan</button>
                 <button onclick="window.switchTab('products')" id="desk-products" class="desk-nav"><i data-lucide="package" class="w-4 h-4"></i> Inventaris</button>
@@ -84,153 +118,194 @@
                 <button onclick="window.switchTab('settings')" id="desk-settings" class="desk-nav"><i data-lucide="settings" class="w-4 h-4"></i> Pengaturan</button>
             </nav>
 
-            <div class="p-6 border-t border-stone-50">
-                <button id="btnLogout" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 rounded-xl transition-colors">
+            <div class="p-6 border-t border-stone-50 dark:border-stone-800 space-y-4">
+                <button onclick="window.toggleDarkMode()" class="w-full flex items-center justify-between px-4 py-3 bg-stone-50 dark:bg-stone-800 text-stone-600 dark:text-stone-300 rounded-xl text-xs font-bold hover:bg-stone-100 dark:hover:bg-stone-700 transition-all">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-orange-400"></i>
+                        <span class="dark:hidden">Dark Mode</span>
+                        <span class="hidden dark:block">Light Mode</span>
+                    </div>
+                    <div class="w-8 h-4 bg-stone-200 dark:bg-stone-600 rounded-full relative">
+                        <div class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-all dark:translate-x-4"></div>
+                    </div>
+                </button>
+
+                <button id="btnLogout" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors">
                     <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
                 </button>
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto bg-[#FDFCFC] pb-24 md:pb-0 relative">
-            <div class="md:hidden sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-stone-100 px-6 py-4 flex justify-between items-center">
+        <main class="flex-1 overflow-y-auto bg-[#FDFCFC] dark:bg-stone-950 pb-24 md:pb-0 relative scroll-smooth">
+            <div class="md:hidden sticky top-0 z-30 glass px-6 py-4 flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center text-white font-serif font-bold">H</div>
-                    <span class="font-bold text-lg">Dashboard</span>
+                    <span class="font-bold text-lg dark:text-white">Admin</span>
                 </div>
-                <button onclick="window.logout()" class="p-2 bg-stone-100 rounded-full text-stone-600"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+                <div class="flex items-center gap-3">
+                    <button onclick="window.toggleDarkMode()" class="p-2 bg-stone-100 dark:bg-stone-800 rounded-full text-stone-600 dark:text-stone-300">
+                        <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    </button>
+                    <button onclick="window.logout()" class="p-2 bg-red-50 dark:bg-red-900/20 rounded-full text-red-500"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+                </div>
             </div>
 
-            <div class="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
+            <div class="p-6 md:p-10 max-w-7xl mx-auto space-y-8 min-h-screen">
                 
                 <div id="tab-insight" class="animate-fade-in space-y-8">
                     
+                    <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-stone-900 dark:text-white mb-1">Overview</h1>
+                            <p class="text-stone-500 dark:text-stone-400 text-sm">Monitor performa Haken Studio secara real-time.</p>
+                        </div>
+                        <span class="text-xs font-mono text-stone-400" id="currentDate">...</span>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="stat-card group">
                             <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-stone-50 rounded-xl group-hover:bg-stone-900 group-hover:text-white transition-colors"><i data-lucide="users" class="w-6 h-6"></i></div>
-                                <span class="text-[10px] font-bold text-stone-400 bg-stone-50 px-2 py-1 rounded-full">TOTAL</span>
+                                <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded-2xl group-hover:scale-110 transition-transform"><i data-lucide="users" class="w-6 h-6 text-stone-900 dark:text-white"></i></div>
+                                <span class="text-[10px] font-bold text-stone-400 bg-stone-50 dark:bg-stone-800 px-3 py-1 rounded-full">TOTAL</span>
                             </div>
-                            <h3 class="text-3xl font-bold text-stone-900 mb-1" id="statUsers">0</h3>
-                            <p class="text-xs text-stone-500 font-medium">Pengguna Terdaftar</p>
+                            <h3 class="text-4xl font-bold text-stone-900 dark:text-white mb-1 tracking-tight" id="statUsers">0</h3>
+                            <p class="text-xs text-stone-500 dark:text-stone-400 font-medium">Pengguna Terdaftar</p>
                         </div>
                         
-                        <div class="stat-card group">
+                        <div class="stat-card group border-b-4 border-b-green-500">
                             <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-green-50 text-green-600 rounded-xl group-hover:bg-green-600 group-hover:text-white transition-colors"><i data-lucide="wallet" class="w-6 h-6"></i></div>
-                                <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">OMSET</span>
+                                <div class="p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl group-hover:scale-110 transition-transform"><i data-lucide="wallet" class="w-6 h-6"></i></div>
+                                <span class="text-[10px] font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full">OMSET</span>
                             </div>
-                            <h3 class="text-3xl font-bold text-stone-900 mb-1" id="statRevenue">Rp 0</h3>
-                            <p class="text-xs text-stone-500 font-medium">Total Pendapatan Bersih</p>
+                            <h3 class="text-4xl font-bold text-stone-900 dark:text-white mb-1 tracking-tight" id="statRevenue">Rp 0</h3>
+                            <p class="text-xs text-stone-500 dark:text-stone-400 font-medium">Total Pendapatan Bersih</p>
                         </div>
 
                         <div class="stat-card group">
                             <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="calendar" class="w-6 h-6"></i></div>
-                                <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">BULAN INI</span>
+                                <div class="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl group-hover:scale-110 transition-transform"><i data-lucide="calendar" class="w-6 h-6"></i></div>
+                                <span class="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full">BULAN INI</span>
                             </div>
-                            <h3 class="text-3xl font-bold text-stone-900 mb-1" id="statMonth">Rp 0</h3>
-                            <p class="text-xs text-stone-500 font-medium">Pendapatan Bulan Berjalan</p>
+                            <h3 class="text-4xl font-bold text-stone-900 dark:text-white mb-1 tracking-tight" id="statMonth">Rp 0</h3>
+                            <p class="text-xs text-stone-500 dark:text-stone-400 font-medium">Pendapatan Berjalan</p>
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 md:p-8 rounded-3xl border border-stone-100 shadow-sm">
-                        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                    <div class="bg-white dark:bg-stone-900 p-6 md:p-8 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 relative z-10">
                             <div>
-                                <h2 class="text-lg font-bold text-stone-900">Analitik Penjualan</h2>
-                                <p class="text-sm text-stone-400">Grafik performa pesanan berdasarkan waktu.</p>
+                                <h2 class="text-xl font-bold text-stone-900 dark:text-white">Analitik Penjualan</h2>
+                                <p class="text-sm text-stone-400">Grafik pertumbuhan transaksi.</p>
                             </div>
-                            <div class="flex bg-stone-100 p-1 rounded-full overflow-x-auto max-w-full">
-                                <button onclick="window.updateChart('day')" class="chart-btn active" id="btn-chart-day">Hari</button>
+                            <div class="flex bg-stone-100 dark:bg-stone-800 p-1.5 rounded-full overflow-x-auto max-w-full">
+                                <button onclick="window.updateChart('day')" class="chart-btn active" id="btn-chart-day">24 Jam</button>
                                 <button onclick="window.updateChart('week')" class="chart-btn" id="btn-chart-week">Minggu</button>
                                 <button onclick="window.updateChart('month')" class="chart-btn" id="btn-chart-month">Bulan</button>
                                 <button onclick="window.updateChart('year')" class="chart-btn" id="btn-chart-year">Tahun</button>
-                                <button onclick="window.updateChart('total')" class="chart-btn" id="btn-chart-total">Total</button>
                             </div>
                         </div>
                         
-                        <div class="relative h-80 w-full">
+                        <div class="relative h-80 w-full z-10">
                             <canvas id="salesChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-orders" class="hidden animate-fade-in pb-20">
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-2xl font-bold text-stone-900">Pesanan Masuk</h1>
-                        <span id="orderCountBadge" class="px-3 py-1 bg-stone-900 text-white text-xs font-bold rounded-full">0 Order</span>
+                    <div class="flex justify-between items-center mb-8">
+                        <h1 class="text-3xl font-bold text-stone-900 dark:text-white">Pesanan Masuk</h1>
+                        <span id="orderCountBadge" class="px-4 py-1.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 text-xs font-bold rounded-full shadow-lg">0 Order</span>
                     </div>
-                    <div id="orderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    <div id="orderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 </div>
 
                 <div id="tab-products" class="hidden animate-fade-in pb-20">
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex justify-between items-center mb-8">
                         <div>
-                            <h1 class="text-2xl font-bold text-stone-900">Stok Produk</h1>
-                            <p class="text-sm text-stone-400">Kelola inventaris toko.</p>
+                            <h1 class="text-3xl font-bold text-stone-900 dark:text-white">Inventaris</h1>
+                            <p class="text-sm text-stone-400">Kelola katalog produk Haken.</p>
                         </div>
-                        <button onclick="window.openProductModal()" class="px-4 py-2 bg-stone-900 text-white rounded-xl flex items-center gap-2 shadow-lg shadow-stone-200 hover:bg-orange-600 transition-colors">
-                            <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden md:inline text-sm font-bold">Tambah Produk</span>
+                        <button onclick="window.openProductModal()" class="btn-primary flex items-center gap-2">
+                            <i data-lucide="plus" class="w-5 h-5"></i> <span class="hidden md:inline">Tambah Produk</span>
                         </button>
                     </div>
-                    <div class="bg-white rounded-3xl border border-stone-100 shadow-sm overflow-hidden">
+                    
+                    <div class="bg-white dark:bg-stone-900 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm whitespace-nowrap">
-                                <thead class="bg-stone-50 text-stone-500 font-bold uppercase text-xs tracking-wider border-b border-stone-100">
-                                    <tr><th class="p-6">Produk</th><th class="p-6">Kategori</th><th class="p-6">Stok</th><th class="p-6 text-right">Aksi</th></tr>
+                                <thead class="bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-400 font-bold uppercase text-xs tracking-wider">
+                                    <tr>
+                                        <th class="p-6 rounded-tl-[2rem]">Produk</th>
+                                        <th class="p-6">Kategori</th>
+                                        <th class="p-6">Stok & Harga</th>
+                                        <th class="p-6 text-right rounded-tr-[2rem]">Aksi</th>
+                                    </tr>
                                 </thead>
-                                <tbody id="productTableBody" class="divide-y divide-stone-50"></tbody>
+                                <tbody id="productTableBody" class="divide-y divide-stone-50 dark:divide-stone-800 text-stone-600 dark:text-stone-300"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-discounts" class="hidden animate-fade-in pb-20">
-                    <h1 class="text-2xl font-bold text-stone-900 mb-6">Kelola Promo</h1>
+                    <h1 class="text-3xl font-bold text-stone-900 dark:text-white mb-8">Flash Sale & Promo</h1>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-2 bg-white p-8 rounded-3xl border border-stone-100 shadow-sm">
-                            <h3 class="font-bold text-lg mb-4">Buat Diskon Baru</h3>
-                            <div class="space-y-5">
+                        <div class="lg:col-span-2 bg-white dark:bg-stone-900 p-8 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                            
+                            <h3 class="font-bold text-lg mb-6 dark:text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-orange-500"></i> Buat Diskon Baru</h3>
+                            <div class="space-y-6 relative z-10">
                                 <div>
                                     <label class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 block">Pilih Produk</label>
-                                    <select id="discProductSelect" class="w-full p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:border-orange-500 transition-colors"></select>
+                                    <div class="relative">
+                                        <select id="discProductSelect" class="input-field appearance-none cursor-pointer"></select>
+                                        <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none"></i>
+                                    </div>
                                 </div>
-                                <div class="grid grid-cols-2 gap-5">
+                                <div class="grid grid-cols-2 gap-6">
                                     <div>
                                         <label class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 block">Harga Coret</label>
                                         <div class="relative">
                                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 font-bold text-xs">Rp</span>
-                                            <input type="number" id="discPrice" class="w-full pl-10 p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:border-orange-500 outline-none">
+                                            <input type="number" id="discPrice" class="input-field pl-10" placeholder="0">
                                         </div>
                                     </div>
                                     <div>
                                         <label class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 block">Kuota Promo</label>
-                                        <input type="number" id="discStock" class="w-full p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:border-orange-500 outline-none">
+                                        <input type="number" id="discStock" class="input-field" placeholder="Jumlah Pcs">
                                     </div>
                                 </div>
-                                <button onclick="window.applyDiscount()" class="w-full py-4 bg-stone-900 text-white rounded-xl font-bold shadow-lg hover:bg-orange-600 transition-all">Terapkan Diskon</button>
+                                <button onclick="window.applyDiscount()" class="btn-primary w-full">Terapkan Diskon</button>
                             </div>
                         </div>
 
-                        <div class="bg-white p-8 rounded-3xl border border-stone-100 shadow-sm h-fit">
-                            <h3 class="font-bold text-lg mb-4 text-orange-600">Sedang Aktif</h3>
-                            <ul id="activeDiscounts" class="space-y-3">
-                                <li class="text-sm text-stone-400 italic">Belum ada promo aktif.</li>
+                        <div class="bg-white dark:bg-stone-900 p-8 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm h-fit">
+                            <h3 class="font-bold text-lg mb-6 text-orange-600 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5"></i> Sedang Aktif</h3>
+                            <ul id="activeDiscounts" class="space-y-4">
+                                <li class="text-sm text-stone-400 italic text-center py-4">Belum ada promo aktif.</li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-settings" class="hidden animate-fade-in">
-                    <h1 class="text-2xl font-bold text-stone-900 mb-6">Pengaturan Toko</h1>
-                    <div class="max-w-2xl bg-white p-8 rounded-3xl border border-stone-100 shadow-sm">
-                        <label class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 block">URL Gambar QRIS</label>
-                        <div class="flex gap-4">
-                            <input type="text" id="settingQris" class="flex-1 p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:border-orange-500 outline-none" placeholder="https://...">
-                            <button onclick="window.saveSettings()" class="px-6 py-4 bg-stone-900 text-white rounded-xl font-bold hover:bg-orange-600 transition-colors">Simpan</button>
+                    <h1 class="text-3xl font-bold text-stone-900 dark:text-white mb-8">Pengaturan Toko</h1>
+                    <div class="max-w-2xl bg-white dark:bg-stone-900 p-8 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm">
+                        <label class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 block">URL Gambar QRIS</label>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <input type="text" id="settingQris" class="input-field" placeholder="https://...">
+                            <button onclick="window.saveSettings()" class="btn-primary whitespace-nowrap">Simpan</button>
                         </div>
-                        <div class="mt-6 p-4 bg-orange-50 text-orange-800 text-xs rounded-xl flex gap-3 items-start leading-relaxed">
+                        <div class="mt-8 p-4 bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-800/30 text-orange-800 dark:text-orange-200 text-xs rounded-2xl flex gap-3 items-start leading-relaxed">
                             <i data-lucide="shield-alert" class="w-5 h-5 shrink-0 mt-0.5"></i>
-                            <p><strong>Admin Zone:</strong> Perubahan di sini akan langsung berdampak pada halaman checkout customer. Pastikan link gambar valid.</p>
+                            <div>
+                                <p class="font-bold mb-1">Secure Admin Zone</p>
+                                <p>Hanya akun yang terdaftar dalam whitelist database yang dapat menyimpan perubahan ini. Log aktivitas dicatat.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -238,7 +313,7 @@
             </div>
         </main>
 
-        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-stone-200 flex justify-around items-center px-4 py-3 pb-safe z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
+        <nav class="md:hidden fixed bottom-0 left-0 w-full glass flex justify-around items-center px-4 py-3 pb-safe z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] dark:shadow-none border-t border-stone-200 dark:border-stone-800">
             <button onclick="window.switchTab('insight')" id="mob-insight" class="mob-nav active"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></button>
             <button onclick="window.switchTab('orders')" id="mob-orders" class="mob-nav relative"><i data-lucide="shopping-bag" class="w-5 h-5"></i></button>
             <button onclick="window.switchTab('products')" id="mob-products" class="mob-nav"><i data-lucide="package" class="w-5 h-5"></i></button>
@@ -248,55 +323,57 @@
 
     </div>
 
-    <div id="productModal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-        <div class="bg-white w-full md:max-w-lg rounded-t-[2rem] md:rounded-[2rem] p-8 shadow-2xl animate-slide-up md:animate-fade-in max-h-[90vh] overflow-y-auto">
+    <div id="productModal" class="hidden fixed inset-0 z-[60] bg-stone-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 transition-all">
+        <div class="bg-white dark:bg-stone-900 w-full md:max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-8 shadow-2xl animate-slide-up md:animate-fade-in max-h-[95vh] overflow-y-auto border dark:border-stone-800">
             <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-bold text-stone-900">Editor Produk</h2>
-                <button onclick="window.closeProductModal()" class="p-2 bg-stone-50 rounded-full hover:bg-stone-200 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <h2 class="text-2xl font-bold text-stone-900 dark:text-white">Editor Produk</h2>
+                <button onclick="window.closeProductModal()" class="p-3 bg-stone-50 dark:bg-stone-800 rounded-full hover:rotate-90 transition-transform"><i data-lucide="x" class="w-5 h-5 dark:text-white"></i></button>
             </div>
             <form id="productForm" class="space-y-5">
                 <input type="hidden" id="editId">
-                <input type="text" id="pName" placeholder="Nama Produk" required class="w-full p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:border-orange-500 outline-none font-bold">
+                <input type="text" id="pName" placeholder="Nama Produk" required class="input-field font-bold text-lg">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="number" id="pPrice" placeholder="Harga (Rp)" required class="w-full p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:border-orange-500 outline-none">
-                    <input type="number" id="pStock" placeholder="Stok" required class="w-full p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:border-orange-500 outline-none">
+                    <input type="number" id="pPrice" placeholder="Harga (Rp)" required class="input-field">
+                    <input type="number" id="pStock" placeholder="Stok" required class="input-field">
                 </div>
-                <select id="pCategory" class="w-full p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:border-orange-500 outline-none">
-                    <option value="Small Items">Small Items</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Statement">Statement</option>
-                </select>
-                <input type="text" id="pImage" placeholder="URL Gambar Produk" required class="w-full p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:border-orange-500 outline-none">
-                <textarea id="pDesc" placeholder="Deskripsi Singkat" rows="3" class="w-full p-4 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:border-orange-500 outline-none"></textarea>
-                <button type="submit" class="w-full py-4 bg-stone-900 text-white rounded-xl font-bold shadow-lg hover:bg-orange-600 transition-all">Simpan Perubahan</button>
+                <div class="relative">
+                     <select id="pCategory" class="input-field appearance-none cursor-pointer">
+                        <option value="Small Items">Small Items</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Statement">Statement</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none"></i>
+                </div>
+                <input type="text" id="pImage" placeholder="URL Gambar Produk" required class="input-field">
+                <textarea id="pDesc" placeholder="Deskripsi Singkat" rows="3" class="input-field"></textarea>
+                <button type="submit" class="btn-primary w-full">Simpan Perubahan</button>
             </form>
         </div>
     </div>
 
-    <div id="statusModal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-        <div class="bg-white w-full md:max-w-sm rounded-t-[2rem] md:rounded-[2rem] p-8 shadow-2xl animate-slide-up md:animate-fade-in">
-            <h2 class="text-xl font-bold mb-6 text-center">Update Status</h2>
+    <div id="statusModal" class="hidden fixed inset-0 z-[60] bg-stone-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 transition-all">
+        <div class="bg-white dark:bg-stone-900 w-full md:max-w-sm rounded-t-[2.5rem] md:rounded-[2.5rem] p-8 shadow-2xl animate-slide-up md:animate-fade-in border dark:border-stone-800">
+            <h2 class="text-xl font-bold mb-6 text-center dark:text-white">Update Status</h2>
             <input type="hidden" id="statusOrderId">
             <div class="space-y-3">
-                <button onclick="window.setStatus('Pesanan Sedang Ditinjau')" class="w-full text-left p-4 rounded-xl bg-orange-50 text-orange-700 font-bold text-sm hover:bg-orange-100 transition-colors border border-orange-100">1. Ditinjau</button>
-                <button onclick="window.setStatus('Pesanan Sedang Dikemas')" class="w-full text-left p-4 rounded-xl bg-stone-50 text-stone-700 font-bold text-sm hover:bg-stone-100 transition-colors">2. Dikemas</button>
-                <button onclick="window.setStatus('Pesanan Sedang Diantarkan ke Jasa Logistik')" class="w-full text-left p-4 rounded-xl bg-stone-50 text-stone-700 font-bold text-sm hover:bg-stone-100 transition-colors">3. OTW Logistik</button>
-                <button onclick="window.setStatus('Pesanan Sedang Diantarkan oleh Jasa Logistik')" class="w-full text-left p-4 rounded-xl bg-blue-50 text-blue-700 font-bold text-sm hover:bg-blue-100 transition-colors border border-blue-100">4. Dikirim Kurir</button>
-                <button onclick="window.setStatus('Pesanan Diterima')" class="w-full text-left p-4 rounded-xl bg-green-50 text-green-700 font-bold text-sm hover:bg-green-100 transition-colors border border-green-100">5. Selesai (Diterima)</button>
-                <div class="h-px bg-stone-100 my-2"></div>
-                <button onclick="window.setStatus('Pesanan Dibatalkan')" class="w-full text-left p-4 rounded-xl bg-red-50 text-red-700 font-bold text-sm hover:bg-red-100 transition-colors border border-red-100">X. Batalkan</button>
+                <button onclick="window.setStatus('Pesanan Sedang Ditinjau')" class="w-full text-left p-4 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 font-bold text-sm hover:scale-[1.02] transition-transform border border-orange-100 dark:border-orange-800/30">1. Ditinjau</button>
+                <button onclick="window.setStatus('Pesanan Sedang Dikemas')" class="w-full text-left p-4 rounded-xl bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-bold text-sm hover:scale-[1.02] transition-transform">2. Dikemas</button>
+                <button onclick="window.setStatus('Pesanan Sedang Diantarkan ke Jasa Logistik')" class="w-full text-left p-4 rounded-xl bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-bold text-sm hover:scale-[1.02] transition-transform">3. OTW Logistik</button>
+                <button onclick="window.setStatus('Pesanan Sedang Diantarkan oleh Jasa Logistik')" class="w-full text-left p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-bold text-sm hover:scale-[1.02] transition-transform border border-blue-100 dark:border-blue-800/30">4. Dikirim Kurir</button>
+                <button onclick="window.setStatus('Pesanan Diterima')" class="w-full text-left p-4 rounded-xl bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 font-bold text-sm hover:scale-[1.02] transition-transform border border-green-100 dark:border-green-800/30">5. Selesai (Diterima)</button>
+                <div class="h-px bg-stone-100 dark:bg-stone-800 my-2"></div>
+                <button onclick="window.setStatus('Pesanan Dibatalkan')" class="w-full text-left p-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 font-bold text-sm hover:scale-[1.02] transition-transform border border-red-100 dark:border-red-800/30">X. Batalkan</button>
             </div>
-            <button onclick="document.getElementById('statusModal').classList.add('hidden')" class="mt-6 w-full py-3 text-stone-400 font-bold text-sm hover:text-stone-900">Tutup</button>
+            <button onclick="document.getElementById('statusModal').classList.add('hidden')" class="mt-6 w-full py-3 text-stone-400 hover:text-stone-900 dark:hover:text-white font-bold text-sm transition-colors">Batalkan</button>
         </div>
     </div>
 
     <script type="module">
-        // Import fungsi yang dibutuhkan dari Firebase SDK v9+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Konfigurasi Project Anda
+        // Konfigurasi Project (JANGAN UBAH INI)
         const firebaseConfig = {
             apiKey: "AIzaSyApD7dueaFuPv9hHGajcwo17LADEVriqRw",
             authDomain: "entry-6a64d.firebaseapp.com",
@@ -308,49 +385,70 @@
             measurementId: "G-RPTFXQK08B"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // Variables for Chart
         let salesChartInstance = null;
         let allOrdersData = [];
 
-        // --- AUTH & SECURITY LOGIC ---
+        // --- DARK MODE LOGIC ---
+        window.toggleDarkMode = () => {
+            const html = document.documentElement;
+            if(html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            // Update chart colors if exists
+            if(salesChartInstance) window.updateChart(document.querySelector('.chart-btn.active').id.replace('btn-chart-', ''));
+        };
+
+        // Init Dark Mode on Load
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // --- AUTH LOGIC ---
         onAuthStateChanged(auth, async (user) => {
             const loginStatus = document.getElementById('loginStatus');
             const loginGate = document.getElementById('loginGate');
             const dashboardUI = document.getElementById('dashboardUI');
 
+            // Date Widget
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
             if (user) {
                 if(loginStatus) {
                     loginStatus.classList.remove('hidden');
-                    loginStatus.textContent = "Memverifikasi hak akses database...";
+                    loginStatus.textContent = "VERIFYING SECURE ACCESS...";
                 }
 
                 try {
-                    // Protokol Keamanan: Cek UID di node 'admins'
                     const snapshot = await get(ref(db, 'admins/' + user.uid));
-                    
                     if (snapshot.exists() && snapshot.val() === true) {
-                        loginGate.style.display = 'none';
+                        // Animate Transition
+                        loginGate.classList.add('opacity-0', 'pointer-events-none');
+                        setTimeout(() => loginGate.style.display = 'none', 500);
+                        
                         dashboardUI.classList.remove('hidden');
+                        setTimeout(() => dashboardUI.classList.remove('opacity-0'), 100);
+                        
                         document.getElementById('adminEmailDisplay').textContent = user.email;
                         lucide.createIcons();
                         initAdmin(); 
                     } else {
-                        alert("AKSES DITOLAK: UID Anda tidak terdaftar di database Admin.");
+                        alert("AKSES DITOLAK: UID tidak terdaftar.");
                         await signOut(auth);
                         window.location.reload();
                     }
                 } catch (error) {
-                    console.error("Auth Error:", error);
+                    console.error(error);
                     alert("Koneksi database bermasalah.");
                 }
-            } else {
-                if(loginStatus) loginStatus.classList.add('hidden');
             }
         });
 
@@ -365,171 +463,93 @@
             loadSettings();
         }
 
-        // --- 1. CHART & INSIGHT LOGIC ---
+        // --- CHART & INSIGHT ---
         function loadInsights() {
-            // User Count
-            onValue(ref(db, 'users'), (snap) => {
-                document.getElementById('statUsers').textContent = snap.exists() ? Object.keys(snap.val()).length : 0;
-            });
-
-            // Orders Analysis
+            onValue(ref(db, 'users'), (snap) => document.getElementById('statUsers').textContent = snap.exists() ? Object.keys(snap.val()).length : 0);
+            
             onValue(ref(db, 'orders'), (snap) => {
-                let total = 0; 
-                let monthTotal = 0;
-                const now = new Date();
-                
-                allOrdersData = []; // Reset for chart
+                let total = 0; let monthTotal = 0; const now = new Date();
+                allOrdersData = [];
 
                 if (snap.exists()) {
                     Object.values(snap.val()).forEach(o => {
-                        const orderDate = new Date(o.timestamp);
                         const isValid = ['Pesanan Diterima', 'Selesai', 'Lunas'].some(s => o.status.includes(s));
-                        
-                        // Push to chart data regardless of status (or valid only, depending on preference)
                         if(isValid) {
-                            allOrdersData.push({
-                                date: orderDate,
-                                total: o.total
-                            });
-
-                            // Calculate Stats Cards
+                            const d = new Date(o.timestamp);
+                            allOrdersData.push({ date: d, total: o.total });
                             total += o.total;
-                            if (orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear()) {
-                                monthTotal += o.total;
-                            }
+                            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) monthTotal += o.total;
                         }
                     });
                 }
-                
                 document.getElementById('statRevenue').textContent = 'Rp ' + total.toLocaleString('id-ID');
                 document.getElementById('statMonth').textContent = 'Rp ' + monthTotal.toLocaleString('id-ID');
-
-                // Initialize Chart (Default: Day)
                 window.updateChart('day');
             });
         }
 
-        // --- CHARTING ENGINE ---
         window.updateChart = (period) => {
-            // Update Buttons UI
             document.querySelectorAll('.chart-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-chart-${period}`).classList.add('active');
 
             const ctx = document.getElementById('salesChart').getContext('2d');
-            let labels = [];
-            let dataPoints = [];
-            const now = new Date();
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#a8a29e' : '#78716c';
+            const gridColor = isDark ? '#292524' : '#f5f5f4';
 
-            // Logic Processing
+            let labels = [], dataPoints = []; const now = new Date();
+
             if (period === 'day') {
-                // X: 0 - 23 Jam
                 labels = Array.from({length: 24}, (_, i) => `${i}:00`);
                 dataPoints = new Array(24).fill(0);
-                
-                allOrdersData.forEach(o => {
-                    if(o.date.toDateString() === now.toDateString()) {
-                        dataPoints[o.date.getHours()] += o.total;
-                    }
-                });
-
+                allOrdersData.forEach(o => { if(o.date.toDateString() === now.toDateString()) dataPoints[o.date.getHours()] += o.total; });
             } else if (period === 'week') {
-                // X: Senin - Minggu
-                labels = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+                labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
                 dataPoints = new Array(7).fill(0);
-                
-                // Get Monday of current week
                 const day = now.getDay() || 7; 
-                if(day !== 1) now.setHours(-24 * (day - 1)); 
-                const monday = new Date(now);
-                monday.setHours(0,0,0,0);
-
+                if(day !== 1) now.setHours(-24 * (day - 1));
+                const monday = new Date(now); monday.setHours(0,0,0,0);
                 allOrdersData.forEach(o => {
-                    const diffTime = o.date - monday;
-                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
-                    if (diffDays >= 0 && diffDays < 7) {
-                        dataPoints[diffDays] += o.total;
-                    }
+                    const diffDays = Math.floor((o.date - monday) / (86400000));
+                    if (diffDays >= 0 && diffDays < 7) dataPoints[diffDays] += o.total;
                 });
-
             } else if (period === 'month') {
-                // X: 1 - 31
                 const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-                labels = Array.from({length: daysInMonth}, (_, i) => `${i + 1}`);
+                labels = Array.from({length: daysInMonth}, (_, i) => `${i+1}`);
                 dataPoints = new Array(daysInMonth).fill(0);
-
-                allOrdersData.forEach(o => {
-                    if(o.date.getMonth() === now.getMonth() && o.date.getFullYear() === now.getFullYear()) {
-                        dataPoints[o.date.getDate() - 1] += o.total;
-                    }
-                });
-
+                allOrdersData.forEach(o => { if(o.date.getMonth() === now.getMonth()) dataPoints[o.date.getDate()-1] += o.total; });
             } else if (period === 'year') {
-                // X: Jan - Des
                 labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
                 dataPoints = new Array(12).fill(0);
-
-                allOrdersData.forEach(o => {
-                    if(o.date.getFullYear() === now.getFullYear()) {
-                        dataPoints[o.date.getMonth()] += o.total;
-                    }
-                });
-
-            } else if (period === 'total') {
-                // X: Tahun (2024, 2025...)
-                const years = [...new Set(allOrdersData.map(o => o.date.getFullYear()))].sort();
-                labels = years.length ? years : [now.getFullYear()];
-                dataPoints = labels.map(y => {
-                    return allOrdersData.filter(o => o.date.getFullYear() === y)
-                                      .reduce((sum, o) => sum + o.total, 0);
-                });
+                allOrdersData.forEach(o => { if(o.date.getFullYear() === now.getFullYear()) dataPoints[o.date.getMonth()] += o.total; });
             }
 
-            // Destroy old chart
             if (salesChartInstance) salesChartInstance.destroy();
-
-            // Render New Chart
             salesChartInstance = new Chart(ctx, {
-                type: 'bar', // Bisa diganti 'line'
+                type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Pendapatan (Rp)',
+                        label: 'Pendapatan',
                         data: dataPoints,
                         backgroundColor: '#ea580c',
-                        borderRadius: 4,
-                        barThickness: period === 'month' ? 6 : 12
+                        borderRadius: 6,
+                        barThickness: period === 'month' ? 4 : 16
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Rp ' + context.raw.toLocaleString('id-ID');
-                                }
-                            }
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#f5f5f4' },
-                            ticks: { font: { size: 10 } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { size: 10 } }
-                        }
+                        y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor, font: {size: 10} }, border: {display: false} },
+                        x: { grid: { display: false }, ticks: { color: textColor, font: {size: 10} }, border: {display: false} }
                     }
                 }
             });
         };
 
-
-        // --- 2. ORDER LIST LOGIC ---
+        // --- ORDER LIST ---
         function loadOrders() {
             onValue(ref(db, 'orders'), (snapshot) => {
                 const list = document.getElementById('orderList');
@@ -541,65 +561,59 @@
                     document.getElementById('orderCountBadge').textContent = `${orders.length} Order`;
 
                     orders.forEach(([id, o]) => {
-                        // Auto-complete
-                        if (o.status === 'Pesanan Diterima' && (Date.now() - o.lastStatusUpdate > 259200000)) { 
-                            update(ref(db, 'orders/'+id), { status: 'Selesai' });
-                        }
+                        // Auto-complete logic
+                        if (o.status === 'Pesanan Diterima' && (Date.now() - o.lastStatusUpdate > 259200000)) update(ref(db, 'orders/'+id), { status: 'Selesai' });
 
-                        let statusColor = 'bg-stone-100 text-stone-600';
-                        if(o.status.includes('Ditinjau')) statusColor = 'bg-orange-50 text-orange-700 ring-1 ring-orange-100';
-                        if(o.status.includes('Diterima') || o.status === 'Selesai') statusColor = 'bg-green-50 text-green-700 ring-1 ring-green-100';
-                        if(o.status.includes('Dibatalkan')) statusColor = 'bg-red-50 text-red-700 ring-1 ring-red-100';
+                        let statusColor = 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400';
+                        if(o.status.includes('Ditinjau')) statusColor = 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-100 dark:border-orange-800/30';
+                        if(o.status.includes('Diterima') || o.status === 'Selesai') statusColor = 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-100 dark:border-green-800/30';
+                        if(o.status.includes('Dibatalkan')) statusColor = 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-100 dark:border-red-800/30';
 
                         list.innerHTML += `
-                            <div class="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm hover:shadow-md transition-all group">
-                                <div class="flex justify-between items-start mb-4">
+                            <div class="stat-card group relative overflow-hidden">
+                                <div class="flex justify-between items-start mb-4 relative z-10">
                                     <div>
                                         <div class="flex items-center gap-2 mb-1">
-                                            <h4 class="font-bold text-stone-900">${o.customerName}</h4>
-                                            <a href="https://wa.me/${o.customerPhone}" target="_blank" class="text-stone-300 hover:text-green-500"><i data-lucide="message-circle" class="w-4 h-4"></i></a>
+                                            <h4 class="font-bold text-stone-900 dark:text-white text-lg">${o.customerName}</h4>
+                                            <a href="https://wa.me/${o.customerPhone}" target="_blank" class="p-1 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 hover:scale-110 transition-transform"><i data-lucide="message-circle" class="w-4 h-4"></i></a>
                                         </div>
                                         <div class="text-[10px] text-stone-400 font-mono">${new Date(o.timestamp).toLocaleDateString()} • ${id.slice(-4)}</div>
                                     </div>
-                                    <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase ${statusColor}">${o.status}</span>
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${statusColor}">${o.status}</span>
                                 </div>
                                 
-                                <div class="bg-stone-50 p-3 rounded-xl flex gap-3 mb-4">
-                                    <div class="w-10 h-10 bg-white rounded-lg border border-stone-100 flex-shrink-0 flex items-center justify-center">
-                                        <i data-lucide="package" class="w-5 h-5 text-stone-300"></i>
+                                <div class="bg-stone-50 dark:bg-stone-800/50 p-4 rounded-2xl flex gap-4 mb-5 border border-stone-100 dark:border-stone-800 relative z-10">
+                                    <div class="w-12 h-12 bg-white dark:bg-stone-800 rounded-xl flex-shrink-0 flex items-center justify-center shadow-sm">
+                                        <i data-lucide="package" class="w-6 h-6 text-stone-300 dark:text-stone-600"></i>
                                     </div>
                                     <div class="overflow-hidden">
-                                        <div class="font-bold text-sm truncate">${o.productName}</div>
-                                        <div class="flex justify-between items-center w-full mt-1">
+                                        <div class="font-bold text-sm truncate text-stone-800 dark:text-stone-200">${o.productName}</div>
+                                        <div class="flex justify-between items-center w-full mt-1 gap-4">
                                             <span class="text-xs text-stone-500">${o.qty} pcs</span>
-                                            <span class="text-xs font-bold text-orange-600">Rp ${parseInt(o.total).toLocaleString()}</span>
+                                            <span class="text-xs font-bold text-orange-600 dark:text-orange-400">Rp ${parseInt(o.total).toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <button onclick="window.openStatusModal('${id}')" class="w-full py-3 bg-stone-900 text-white rounded-xl text-xs font-bold hover:bg-orange-600 transition-colors">Update Status</button>
+                                <button onclick="window.openStatusModal('${id}')" class="w-full py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl text-xs font-bold hover:bg-orange-600 dark:hover:bg-stone-200 transition-colors shadow-lg shadow-stone-200 dark:shadow-none relative z-10">Update Status</button>
                             </div>`;
                     });
                     lucide.createIcons();
                 } else {
-                    list.innerHTML = `<div class="col-span-full text-center py-20 bg-white rounded-3xl border border-dashed border-stone-200 text-stone-400">Belum ada pesanan masuk.</div>`;
+                    list.innerHTML = `<div class="col-span-full text-center py-24 bg-stone-50 dark:bg-stone-900 rounded-[2.5rem] border-2 border-dashed border-stone-200 dark:border-stone-800 text-stone-400">Belum ada pesanan masuk.</div>`;
                 }
             });
         }
 
-        // Logic Modal Status (Linked to global window for HTML onclick)
-        window.openStatusModal = (id) => {
-            document.getElementById('statusOrderId').value = id;
-            document.getElementById('statusModal').classList.remove('hidden');
-        };
+        window.openStatusModal = (id) => { document.getElementById('statusOrderId').value = id; document.getElementById('statusModal').classList.remove('hidden'); };
         window.setStatus = (status) => {
             const id = document.getElementById('statusOrderId').value;
             update(ref(db, 'orders/' + id), { status: status, lastStatusUpdate: Date.now() })
             .then(() => document.getElementById('statusModal').classList.add('hidden'))
-            .catch((err) => alert("Gagal update: Izin Ditolak."));
+            .catch((err) => alert("Gagal: Izin Ditolak."));
         };
 
-        // --- 3. PRODUCTS LOGIC ---
+        // --- PRODUCT LOGIC ---
         function loadProducts() {
             const tbody = document.getElementById('productTableBody');
             const select = document.getElementById('discProductSelect');
@@ -613,67 +627,63 @@
                         const hasPromo = p.discountStock > 0;
                         
                         tbody.innerHTML += `
-                            <tr class="hover:bg-stone-50 transition-colors">
+                            <tr class="hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors group">
                                 <td class="p-6">
-                                    <div class="font-bold text-stone-900">${p.name}</div>
-                                    <div class="text-xs text-stone-400 mt-0.5">ID: ${id.slice(-4)}</div>
+                                    <div class="flex items-center gap-4">
+                                        <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover bg-stone-100 shadow-sm" onerror="this.src='https://via.placeholder.com/150'">
+                                        <div>
+                                            <div class="font-bold text-stone-900 dark:text-white">${p.name}</div>
+                                            <div class="text-[10px] text-stone-400 font-mono mt-0.5">${id.slice(-4)}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="p-6">
-                                    <span class="px-2 py-1 rounded text-[10px] font-bold bg-stone-100 text-stone-600 uppercase">${p.category}</span>
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 uppercase tracking-wide border border-stone-200 dark:border-stone-700">${p.category}</span>
                                 </td>
                                 <td class="p-6">
-                                    <div class="font-bold ${p.stock < 5 ? 'text-red-500' : 'text-stone-800'}">${p.stock} pcs</div>
+                                    <div class="font-bold ${p.stock < 5 ? 'text-red-500' : 'text-stone-800 dark:text-stone-200'}">${p.stock} pcs</div>
                                     <div class="text-xs text-stone-400">Rp ${parseInt(p.price).toLocaleString()}</div>
-                                    ${hasPromo ? '<span class="text-[10px] text-red-500 font-bold block mt-1">Promo Aktif</span>' : ''}
+                                    ${hasPromo ? '<span class="text-[10px] text-red-500 font-bold block mt-1 animate-pulse">🔥 Promo Aktif</span>' : ''}
                                 </td>
                                 <td class="p-6 text-right">
-                                    <button onclick="window.editProduct('${id}')" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 mr-2 transition-colors"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                                    <button onclick="window.deleteProduct('${id}')" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                                    <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button onclick="window.editProduct('${id}')" class="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 transition-colors"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                        <button onclick="window.deleteProduct('${id}')" class="p-2 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-lg hover:bg-red-100 transition-colors"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                                    </div>
                                 </td>
                             </tr>`;
                         
                         select.innerHTML += `<option value="${id}">${p.name}</option>`;
-                        
                         if(hasPromo) {
                             discList.innerHTML += `
-                                <li class="flex justify-between items-center bg-orange-50 p-4 rounded-xl border border-orange-100">
+                                <li class="flex justify-between items-center bg-orange-50 dark:bg-orange-900/10 p-4 rounded-2xl border border-orange-100 dark:border-orange-800/30">
                                     <div>
-                                        <div class="text-sm font-bold text-stone-900">${p.name}</div>
-                                        <div class="text-xs text-orange-600 font-bold mt-1">Rp ${parseInt(p.discountPrice).toLocaleString()}</div>
+                                        <div class="text-sm font-bold text-stone-900 dark:text-white">${p.name}</div>
+                                        <div class="text-xs text-orange-600 dark:text-orange-400 font-bold mt-1">Rp ${parseInt(p.discountPrice).toLocaleString()}</div>
                                         <div class="text-[10px] text-stone-500 mt-1">Sisa Kuota: ${p.discountStock}</div>
                                     </div>
-                                    <button onclick="window.stopDiscount('${id}')" class="text-xs font-bold text-red-500 bg-white px-3 py-2 rounded-lg hover:bg-red-50 shadow-sm">Stop</button>
+                                    <button onclick="window.stopDiscount('${id}')" class="text-xs font-bold text-red-500 bg-white dark:bg-stone-800 px-3 py-2 rounded-xl hover:bg-red-50 transition-colors shadow-sm">Stop</button>
                                 </li>`;
                         }
                     });
-                    if (discList.innerHTML === '') discList.innerHTML = '<li class="text-sm text-stone-400 italic">Belum ada promo aktif.</li>';
+                    if (discList.innerHTML === '') discList.innerHTML = '<li class="text-sm text-stone-400 italic text-center py-4">Belum ada promo aktif.</li>';
                     lucide.createIcons();
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-stone-400">Belum ada produk.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-stone-400">Belum ada produk.</td></tr>';
                 }
             });
         }
 
-        // --- UTILS & GLOBAL FUNCTIONS ---
+        // --- UTILS ---
         window.applyDiscount = () => {
             const id = document.getElementById('discProductSelect').value;
             const price = document.getElementById('discPrice').value;
             const stock = document.getElementById('discStock').value;
             if(!id || !price || !stock) return alert("Lengkapi data promo!");
-            
-            update(ref(db, 'products/' + id), { discountPrice: parseInt(price), discountStock: parseInt(stock) })
-                .then(()=>alert("Promo Berhasil Diaktifkan!"))
-                .catch(err => alert("Gagal: Izin Ditolak."));
+            update(ref(db, 'products/' + id), { discountPrice: parseInt(price), discountStock: parseInt(stock) }).then(()=>alert("Promo Berhasil!")).catch(err => alert("Gagal: Izin Ditolak."));
         };
-        
         window.stopDiscount = (id) => update(ref(db, 'products/' + id), { discountStock: 0 });
-        
-        window.saveSettings = () => {
-            set(ref(db, 'settings'), { qrisUrl: document.getElementById('settingQris').value })
-                .then(()=>alert("Pengaturan Disimpan!"))
-                .catch(err => alert("Gagal menyimpan. Pastikan Anda Admin."));
-        };
-        
+        window.saveSettings = () => set(ref(db, 'settings'), { qrisUrl: document.getElementById('settingQris').value }).then(()=>alert("Disimpan!")).catch(err => alert("Gagal: Izin Ditolak."));
         function loadSettings() { onValue(ref(db, 'settings'), (snap) => { if(snap.val()?.qrisUrl) document.getElementById('settingQris').value = snap.val().qrisUrl; }); }
 
         window.switchTab = (tab) => {
@@ -687,25 +697,17 @@
             document.getElementById('mob-'+tab)?.classList.add('active');
         };
 
-        // Product Form Handler
         const form = document.getElementById('productForm');
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value || Date.now().toString();
             update(ref(db, 'products/' + id), {
-                name: document.getElementById('pName').value,
-                price: document.getElementById('pPrice').value,
-                stock: document.getElementById('pStock').value,
-                category: document.getElementById('pCategory').value,
-                image: document.getElementById('pImage').value,
-                desc: document.getElementById('pDesc').value
-            })
-            .then(() => window.closeProductModal())
-            .catch(err => alert("Gagal menyimpan: Izin Ditolak."));
+                name: document.getElementById('pName').value, price: document.getElementById('pPrice').value, stock: document.getElementById('pStock').value,
+                category: document.getElementById('pCategory').value, image: document.getElementById('pImage').value, desc: document.getElementById('pDesc').value
+            }).then(() => window.closeProductModal()).catch(err => alert("Gagal: Izin Ditolak."));
         });
 
         window.deleteProduct = (id) => { if(confirm('Hapus produk ini?')) remove(ref(db, 'products/' + id)); };
-        
         window.editProduct = (id) => {
             get(ref(db, 'products/' + id)).then((snapshot) => {
                 const p = snapshot.val();
