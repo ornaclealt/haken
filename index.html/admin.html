@@ -1,477 +1,909 @@
 <!DOCTYPE html>
+
 <html lang="id" class="scroll-smooth">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>Haken Admin Center</title>
+
     
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+
+
     <script>
+
         tailwind.config = {
+
             darkMode: 'class',
+
             theme: {
+
                 extend: {
+
                     fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Merriweather', 'serif'] },
+
                     colors: { stone: { 850: '#1c1917', 950: '#0c0a09' } },
+
                     animation: { 'fade-in': 'fadeIn 0.5s ease-out' },
+
                     keyframes: { fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } } }
+
                 }
+
             }
+
         }
+
     </script>
 
+
+
     <style>
+
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); 
+
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+
         
+
         .input-field { 
+
             @apply w-full p-3 rounded-xl text-sm border outline-none transition-colors;
+
             @apply bg-white border-stone-200 text-stone-900 focus:border-orange-500; 
-            @apply dark:bg-stone-800 dark:border-stone-700 dark:text-white dark:focus:border-orange-500 dark:placeholder-stone-500; 
+
+            @apply dark:bg-stone-800 dark:border-stone-700 dark:text-white dark:focus:border-orange-500; 
+
         }
+
         
-        .chart-btn { @apply px-3 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer select-none; }
+
+        .chart-btn { @apply px-3 py-1 text-xs font-bold rounded-lg border transition-all; }
+
         .chart-btn.active { @apply bg-stone-900 text-white border-stone-900 dark:bg-orange-600 dark:border-orange-600; }
-        .chart-btn.inactive { @apply text-stone-500 border-stone-200 dark:text-stone-400 dark:border-stone-700 hover:bg-stone-50; }
+
+        .chart-btn.inactive { @apply text-stone-500 border-stone-200 dark:text-stone-400 dark:border-stone-700; }
+
+
 
         .glass-nav { 
+
             @apply backdrop-blur-xl border-stone-200 dark:border-stone-800;
+
             background-color: rgba(255, 255, 255, 0.9);
+
         }
+
         .dark .glass-nav { background-color: rgba(12, 10, 9, 0.9); }
+
     </style>
+
 </head>
+
 <body class="bg-[#FDFCFC] dark:bg-stone-950 text-stone-800 dark:text-stone-200 h-screen overflow-hidden transition-colors duration-500">
 
+
+
     <div id="loginGate" class="fixed inset-0 z-[100] bg-white dark:bg-stone-950 flex items-center justify-center p-4">
+
         <div class="text-center max-w-sm w-full">
+
             <div class="w-20 h-20 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-6">
+
                 <i data-lucide="shield-check" class="w-10 h-10 text-stone-900 dark:text-orange-500"></i>
+
             </div>
+
             <h2 class="text-2xl font-bold mb-2">Admin Access</h2>
-            <p class="text-xs text-stone-400 mb-6">Monitoring Realtime Database</p>
-            <button id="btnLogin" class="w-full py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold hover:scale-[1.02] transition-transform shadow-lg">
+
+            <button id="btnLogin" class="w-full py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold mt-6 hover:scale-[1.02] transition-transform">
+
                 Masuk dengan Google
+
             </button>
+
         </div>
+
     </div>
 
+
+
     <div id="dashboardUI" class="flex h-full hidden opacity-0 transition-opacity duration-500">
+
         
+
         <aside class="hidden md:flex w-64 bg-white dark:bg-stone-900 border-r border-stone-100 dark:border-stone-800 flex-col z-20">
+
             <div class="p-6">
+
                 <span class="text-xl font-bold tracking-tight block">Haken<span class="text-orange-600">.</span></span>
+
                 <span class="text-[10px] text-stone-400 uppercase tracking-widest font-bold">Admin Panel</span>
+
             </div>
+
             <nav class="flex-1 px-4 space-y-1">
+
                 <button onclick="switchTab('insight')" class="w-full text-left px-4 py-3 rounded-xl text-sm font-bold bg-stone-100 dark:bg-stone-800 nav-btn" id="nav-insight">Dashboard</button>
+
                 <button onclick="switchTab('orders')" class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 nav-btn" id="nav-orders">Pesanan</button>
+
                 <button onclick="switchTab('products')" class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 nav-btn" id="nav-products">Produk</button>
+
                 <button onclick="window.location.href='database.html'" class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-orange-600 bg-orange-50 dark:bg-orange-900/10 nav-btn">Database View</button>
+
             </nav>
+
             <div class="p-6 border-t border-stone-100 dark:border-stone-800">
+
                 <button onclick="window.toggleDarkMode()" class="w-full flex justify-center py-2 text-stone-400"><i data-lucide="moon" class="w-5 h-5"></i></button>
+
                 <button onclick="window.logout()" class="w-full mt-2 text-xs font-bold text-red-500">Logout</button>
+
             </div>
+
         </aside>
 
+
+
         <main class="flex-1 overflow-y-auto relative p-6 md:p-10 pb-24">
+
             
+
             <div id="tab-insight" class="space-y-8 animate-fade-in">
-                <div class="flex justify-between items-end">
-                    <h1 class="text-3xl font-bold">Ringkasan</h1>
-                    <span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded-lg animate-pulse">● Live Sync</span>
-                </div>
+
+                <h1 class="text-3xl font-bold">Ringkasan</h1>
+
                 
+
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
                     <div class="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800">
+
                         <div class="text-xs text-stone-400 mb-1">Hari Ini</div>
+
                         <div class="text-2xl font-bold" id="statToday">Rp 0</div>
+
                     </div>
+
                     <div class="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800">
+
                         <div class="text-xs text-stone-400 mb-1">Minggu Ini</div>
+
                         <div class="text-2xl font-bold" id="statWeek">Rp 0</div>
+
                     </div>
+
                     <div class="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800">
+
                         <div class="text-xs text-stone-400 mb-1">Total User</div>
+
                         <div class="text-2xl font-bold" id="statUsers">0</div>
+
                     </div>
+
                     <div class="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800">
+
                         <div class="text-xs text-stone-400 mb-1">Total Revenue</div>
+
                         <div class="text-2xl font-bold text-green-600" id="statRevenue">Rp 0</div>
+
                     </div>
+
                 </div>
+
+
 
                 <div class="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800 h-80 relative">
+
                     <div class="flex justify-between items-center mb-4">
+
                         <h3 class="font-bold">Grafik Penjualan</h3>
+
                         <div class="flex gap-2">
+
                             <button onclick="updateChart('day')" id="btn-day" class="chart-btn active">24H</button>
+
                             <button onclick="updateChart('week')" id="btn-week" class="chart-btn inactive">7D</button>
+
                             <button onclick="updateChart('month')" id="btn-month" class="chart-btn inactive">30D</button>
+
                         </div>
+
                     </div>
+
                     <div class="h-60 w-full">
+
                         <canvas id="salesChart"></canvas>
+
                     </div>
+
                 </div>
+
             </div>
+
+
 
             <div id="tab-orders" class="hidden space-y-6 animate-fade-in">
+
                 <div class="flex justify-between items-center">
+
                     <h1 class="text-3xl font-bold">Pesanan Masuk</h1>
+
                     <span id="orderBadge" class="bg-stone-900 text-white px-3 py-1 rounded-full text-xs font-bold">0</span>
+
                 </div>
-                <div id="orderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+                <div id="orderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    </div>
+
             </div>
 
+
+
             <div id="tab-products" class="hidden space-y-6 animate-fade-in">
+
                 <div class="flex justify-between items-center">
+
                     <h1 class="text-3xl font-bold">Inventaris</h1>
+
                     <button onclick="openProductModal()" class="bg-stone-900 text-white px-4 py-2 rounded-xl text-sm font-bold">+ Produk</button>
+
                 </div>
+
                 <div class="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 overflow-hidden">
+
                     <table class="w-full text-left text-sm">
+
                         <thead class="bg-stone-50 dark:bg-stone-800 text-stone-500">
+
                             <tr><th class="p-4">Produk</th><th class="p-4">Harga</th><th class="p-4 text-right">Aksi</th></tr>
+
                         </thead>
+
                         <tbody id="productList" class="divide-y divide-stone-100 dark:divide-stone-800"></tbody>
+
                     </table>
+
                 </div>
+
             </div>
+
+
 
         </main>
 
+
+
         <nav class="md:hidden fixed bottom-0 w-full glass-nav p-4 flex justify-around border-t border-stone-200 dark:border-stone-800 z-50">
+
             <button onclick="switchTab('insight')"><i data-lucide="layout-dashboard" class="w-6 h-6"></i></button>
+
             <button onclick="switchTab('orders')"><i data-lucide="shopping-bag" class="w-6 h-6"></i></button>
+
             <button onclick="switchTab('products')"><i data-lucide="package" class="w-6 h-6"></i></button>
+
         </nav>
+
     </div>
+
+
 
     <div id="statusModal" class="hidden fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-stone-900 w-full max-w-sm rounded-2xl p-6 shadow-2xl border dark:border-stone-800">
-            <h3 class="font-bold text-lg mb-4 text-stone-900 dark:text-white">Update Status</h3>
+
+        <div class="bg-white dark:bg-stone-900 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
+
+            <h3 class="font-bold text-lg mb-4">Update Status Pesanan</h3>
+
             <input type="hidden" id="statusOrderId">
+
             <div class="space-y-2">
-                <button onclick="setStatus('Pesanan Sedang Ditinjau')" class="w-full p-3 bg-orange-50 text-orange-700 rounded-xl text-sm font-bold text-left hover:bg-orange-100">1. Ditinjau</button>
-                <button onclick="setStatus('Pesanan Sedang Dikemas')" class="w-full p-3 bg-stone-50 text-stone-700 rounded-xl text-sm font-bold text-left hover:bg-stone-100">2. Dikemas</button>
-                <button onclick="setStatus('Pesanan Dikirim')" class="w-full p-3 bg-blue-50 text-blue-700 rounded-xl text-sm font-bold text-left hover:bg-blue-100">3. Dikirim</button>
-                <button onclick="setStatus('Pesanan Selesai')" class="w-full p-3 bg-green-50 text-green-700 rounded-xl text-sm font-bold text-left hover:bg-green-100">4. Selesai</button>
-                <button onclick="setStatus('Dibatalkan')" class="w-full p-3 bg-red-50 text-red-700 rounded-xl text-sm font-bold text-left hover:bg-red-100">X. Batalkan</button>
+
+                <button onclick="setStatus('Pesanan Sedang Ditinjau')" class="w-full p-3 bg-orange-50 text-orange-700 rounded-xl text-sm font-bold text-left">1. Ditinjau</button>
+
+                <button onclick="setStatus('Pesanan Sedang Dikemas')" class="w-full p-3 bg-stone-50 text-stone-700 rounded-xl text-sm font-bold text-left">2. Dikemas</button>
+
+                <button onclick="setStatus('Pesanan Dikirim')" class="w-full p-3 bg-blue-50 text-blue-700 rounded-xl text-sm font-bold text-left">3. Dikirim</button>
+
+                <button onclick="setStatus('Selesai')" class="w-full p-3 bg-green-50 text-green-700 rounded-xl text-sm font-bold text-left">4. Selesai</button>
+
+                <button onclick="setStatus('Dibatalkan')" class="w-full p-3 bg-red-50 text-red-700 rounded-xl text-sm font-bold text-left">X. Batalkan</button>
+
             </div>
-            <button onclick="document.getElementById('statusModal').classList.add('hidden')" class="mt-4 w-full py-3 font-bold text-stone-400 text-sm hover:text-stone-900 dark:hover:text-white">Batal</button>
+
+            <button onclick="document.getElementById('statusModal').classList.add('hidden')" class="mt-4 w-full py-3 font-bold text-stone-400 text-sm">Batal</button>
+
         </div>
+
     </div>
+
+
 
     <div id="productModal" class="hidden fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-2xl p-6 shadow-2xl overflow-y-auto max-h-[90vh] border dark:border-stone-800">
-            <h3 class="font-bold text-lg mb-4 text-stone-900 dark:text-white">Editor Produk</h3>
+
+        <div class="bg-white dark:bg-stone-900 w-full max-w-md rounded-2xl p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+
+            <h3 class="font-bold text-lg mb-4">Editor Produk</h3>
+
             <form id="productForm" class="space-y-4">
+
                 <input type="hidden" id="editId">
+
                 <input type="text" id="pName" placeholder="Nama Produk" required class="input-field">
+
                 <div class="grid grid-cols-2 gap-4">
+
                     <input type="number" id="pPrice" placeholder="Harga" required class="input-field">
+
                     <input type="number" id="pStock" placeholder="Stok" required class="input-field">
+
                 </div>
+
                 <input type="text" id="pCategory" placeholder="Kategori" required class="input-field">
+
                 <input type="text" id="pImage" placeholder="URL Gambar" required class="input-field">
+
                 <textarea id="pDesc" placeholder="Deskripsi" rows="3" class="input-field"></textarea>
-                <button type="submit" class="w-full py-3 bg-stone-900 text-white rounded-xl font-bold hover:bg-stone-800 dark:bg-white dark:text-stone-900">Simpan</button>
+
+                <button type="submit" class="w-full py-3 bg-stone-900 text-white rounded-xl font-bold">Simpan</button>
+
             </form>
-            <button onclick="closeProductModal()" class="mt-4 w-full py-2 font-bold text-stone-400 text-sm hover:text-stone-900 dark:hover:text-white">Tutup</button>
+
+            <button onclick="closeProductModal()" class="mt-4 w-full py-2 font-bold text-stone-400 text-sm">Tutup</button>
+
         </div>
+
     </div>
 
+
+
     <script type="module">
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
         import { getDatabase, ref, onValue, update, remove, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // FIREBASE CONFIG
+
+
+        // SETUP FIREBASE
+
         const firebaseConfig = {
+
             apiKey: "AIzaSyApD7dueaFuPv9hHGajcwo17LADEVriqRw",
+
             authDomain: "entry-6a64d.firebaseapp.com",
+
             databaseURL: "https://entry-6a64d-default-rtdb.firebaseio.com",
+
             projectId: "entry-6a64d",
+
             storageBucket: "entry-6a64d.firebasestorage.app",
+
             messagingSenderId: "939693440034",
+
             appId: "1:939693440034:web:ecd3d0366acf207add1e7b"
+
         };
 
+
+
         const app = initializeApp(firebaseConfig);
+
         const db = getDatabase(app);
+
         const auth = getAuth(app);
+
         const provider = new GoogleAuthProvider();
+
         provider.setCustomParameters({ prompt: 'select_account' });
 
+
+
         let allOrders = [];
+
         let chartInstance = null;
 
-        // AUTH CHECK
+
+
+        // AUTH & INIT
+
         onAuthStateChanged(auth, async (user) => {
+
             if (user) {
-                // BYPASS ADMIN CHECK UNTUK SEMENTARA (Supaya Anda bisa lihat data dulu)
-                // Nanti bisa dikembalikan ke check database jika sudah settle
-                document.getElementById('loginGate').style.display = 'none';
-                document.getElementById('dashboardUI').classList.remove('hidden');
-                setTimeout(() => document.getElementById('dashboardUI').classList.remove('opacity-0'), 100);
-                initDashboard();
+
+                const snap = await get(ref(db, 'admins/' + user.uid));
+
+                if (snap.exists() && snap.val() === true) {
+
+                    document.getElementById('loginGate').style.display = 'none';
+
+                    document.getElementById('dashboardUI').classList.remove('hidden');
+
+                    setTimeout(() => document.getElementById('dashboardUI').classList.remove('opacity-0'), 100);
+
+                    initDashboard();
+
+                } else {
+
+                    alert("Akses Ditolak: Bukan Admin");
+
+                    window.location.href = 'index.html';
+
+                }
+
             }
+
         });
 
+
+
         document.getElementById('btnLogin').addEventListener('click', () => signInWithPopup(auth, provider));
+
         window.logout = () => signOut(auth).then(() => window.location.reload());
 
-        function initDashboard() {
-            lucide.createIcons();
-            
-            // 1. MONITOR PESANAN (CORE LOGIC FIX)
-            onValue(ref(db, 'orders'), (snapshot) => {
-                const data = snapshot.val();
-                allOrders = [];
-                let totalToday = 0, totalWeek = 0, totalRev = 0;
-                
-                const now = new Date();
-                const todayStr = now.toDateString();
-                const oneWeekAgo = new Date();
-                oneWeekAgo.setDate(now.getDate() - 7);
 
-                const listEl = document.getElementById('orderList');
-                listEl.innerHTML = '';
+
+        // --- DASHBOARD REALTIME LOGIC ---
+
+        function initDashboard() {
+
+            lucide.createIcons();
+
+            
+
+            // 1. Listen Orders (Realtime)
+
+            onValue(ref(db, 'orders'), (snapshot) => {
+
+                const data = snapshot.val();
+
+                allOrders = [];
+
+                let totalToday = 0, totalWeek = 0, totalRev = 0;
+
+                const now = new Date();
+
+                const todayStr = now.toDateString();
+
+
 
                 if (data) {
-                    // FIX: Sorting menggunakan value object yang benar (b[1] bukan b.val())
-                    const sorted = Object.entries(data).sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+                    const sorted = Object.entries(data).sort((a,b) => b.val().timestamp - a.val().timestamp);
+
+                    const listEl = document.getElementById('orderList');
+
+                    listEl.innerHTML = '';
+
+                    
+
                     document.getElementById('orderBadge').textContent = sorted.length;
 
+
+
                     sorted.forEach(([id, o]) => {
-                        // SMART MAPPING: Cek semua kemungkinan struktur data
-                        const custName = o.customer?.name || o.customerName || 'Pelanggan';
+
+                        // Logic Data Mapping (Support Structure Lama & Baru)
+
+                        const custName = o.customer?.name || o.customerName || 'No Name';
+
                         const total = o.pricing?.grandTotal || o.total || 0;
-                        
-                        // Mapping Items
-                        let itemsDisplay = 'Item';
-                        if (o.items && Array.isArray(o.items)) {
-                            itemsDisplay = o.items.map(i => `${i.name} (x${i.qty})`).join(', ');
-                        } else if (o.productName) {
-                            itemsDisplay = `${o.productName} (${o.qty || 1})`;
-                        }
+
+                        const items = o.items ? o.items.map(i => `${i.name} (x${i.qty})`).join(', ') : (o.productName || 'Item');
 
                         const date = new Date(o.timestamp);
 
-                        // Push Data ke Chart (kecuali batal)
+
+
+                        // Push for Chart
+
                         if (!o.status.includes('Batal')) {
-                            allOrders.push({ date: date, total: parseInt(total) });
-                            totalRev += parseInt(total);
-                            if (date.toDateString() === todayStr) totalToday += parseInt(total);
-                            if (date >= oneWeekAgo) totalWeek += parseInt(total);
+
+                            allOrders.push({ date: date, total: total });
+
+                            totalRev += total;
+
+                            if (date.toDateString() === todayStr) totalToday += total;
+
                         }
 
-                        // Warna Status
-                        let statusColor = 'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300';
-                        if (o.status.includes('Ditinjau') || o.status.includes('Menunggu')) statusColor = 'bg-orange-50 text-orange-700 border border-orange-200 animate-pulse';
-                        if (o.status.includes('Selesai') || o.status.includes('Dikirim')) statusColor = 'bg-green-50 text-green-700 border border-green-200';
-                        if (o.status.includes('Batal')) statusColor = 'bg-red-50 text-red-700 border border-red-200';
 
-                        // Render Card
+
+                        // Render List
+
+                        let statusColor = 'bg-stone-100 text-stone-600';
+
+                        if (o.status.includes('Ditinjau')) statusColor = 'bg-orange-50 text-orange-700 animate-pulse border border-orange-200';
+
+                        if (o.status.includes('Selesai') || o.status.includes('Dikirim')) statusColor = 'bg-green-50 text-green-700';
+
+                        if (o.status.includes('Batal')) statusColor = 'bg-red-50 text-red-700';
+
+
+
                         listEl.innerHTML += `
+
                             <div class="bg-white dark:bg-stone-800 p-5 rounded-2xl border border-stone-100 dark:border-stone-700 shadow-sm hover:shadow-md transition-all">
+
                                 <div class="flex justify-between items-start mb-3">
+
                                     <div>
-                                        <h4 class="font-bold text-stone-900 dark:text-white line-clamp-1">${custName}</h4>
-                                        <span class="text-[10px] text-stone-400 font-mono">ID: ${o.orderId || id.slice(-4)} • ${date.toLocaleDateString()}</span>
+
+                                        <h4 class="font-bold text-stone-900 dark:text-white">${custName}</h4>
+
+                                        <span class="text-[10px] text-stone-400">ID: ${id.slice(-4)} • ${date.toLocaleDateString()}</span>
+
                                     </div>
+
                                     <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${statusColor}">${o.status}</span>
+
                                 </div>
-                                <div class="text-sm text-stone-500 mb-3 line-clamp-2 min-h-[2.5em]">${itemsDisplay}</div>
+
+                                <div class="text-sm text-stone-500 mb-3 truncate">${items}</div>
+
                                 <div class="flex justify-between items-center mt-2 pt-2 border-t border-stone-100 dark:border-stone-700">
-                                    <span class="font-bold text-stone-900 dark:text-white">Rp ${parseInt(total).toLocaleString()}</span>
-                                    <button onclick="openStatusModal('${id}')" class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">Update Status</button>
+
+                                    <span class="font-bold text-stone-900 dark:text-white">Rp ${total.toLocaleString()}</span>
+
+                                    <button onclick="openStatusModal('${id}')" class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100">Update</button>
+
                                 </div>
+
                             </div>
+
                         `;
+
                     });
-                } else {
-                    listEl.innerHTML = `<div class="col-span-full text-center text-stone-400 py-10">Belum ada pesanan masuk.</div>`;
+
                 }
 
-                // Update Stats Dashboard
+
+
+                // Update Stats
+
                 document.getElementById('statToday').textContent = `Rp ${totalToday.toLocaleString()}`;
-                document.getElementById('statWeek').textContent = `Rp ${totalWeek.toLocaleString()}`;
+
                 document.getElementById('statRevenue').textContent = `Rp ${totalRev.toLocaleString()}`;
+
                 
-                // Force Update Chart (Tanpa Klik)
-                const activeBtn = document.querySelector('.chart-btn.active');
-                updateChart(activeBtn ? activeBtn.id.replace('btn-', '') : 'day');
+
+                // FORCE UPDATE CHART (Agar Realtime tanpa klik)
+
+                const activePeriod = document.querySelector('.chart-btn.active').id.replace('btn-', '');
+
+                updateChart(activePeriod);
+
             });
 
-            // 2. MONITOR USERS
+
+
+            // 2. Listen Users
+
             onValue(ref(db, 'users'), (snap) => {
+
                 document.getElementById('statUsers').textContent = snap.exists() ? Object.keys(snap.val()).length : 0;
+
             });
 
-            // 3. MONITOR PRODUCTS
+
+
+            // 3. Listen Products
+
             onValue(ref(db, 'products'), (snap) => {
+
                 const tbody = document.getElementById('productList');
+
                 tbody.innerHTML = '';
+
                 const data = snap.val();
+
                 if(data) {
+
                     Object.entries(data).forEach(([id, p]) => {
+
                         tbody.innerHTML += `
+
                             <tr class="border-b border-stone-50 dark:border-stone-800">
-                                <td class="p-4 font-medium text-stone-900 dark:text-white">${p.name} <br><span class="text-xs text-stone-400">Stok: ${p.stock}</span></td>
+
+                                <td class="p-4 font-medium">${p.name} <br><span class="text-xs text-stone-400">Stok: ${p.stock}</span></td>
+
                                 <td class="p-4 text-stone-500">Rp ${parseInt(p.price).toLocaleString()}</td>
+
                                 <td class="p-4 text-right">
+
                                     <button onclick="editProduct('${id}')" class="text-blue-500 hover:text-blue-700 mr-2"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+
                                     <button onclick="deleteProduct('${id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash" class="w-4 h-4"></i></button>
+
                                 </td>
+
                             </tr>`;
+
                     });
+
                     lucide.createIcons();
+
                 }
+
             });
+
         }
 
-        // --- CHART ENGINE ---
+
+
+        // --- CHART LOGIC ---
+
         window.updateChart = (period) => {
+
+            // UI Toggle
+
             document.querySelectorAll('.chart-btn').forEach(b => {
+
                 b.classList.remove('active'); b.classList.add('inactive');
+
             });
+
             document.getElementById(`btn-${period}`).classList.add('active');
+
             document.getElementById(`btn-${period}`).classList.remove('inactive');
 
+
+
             const ctx = document.getElementById('salesChart').getContext('2d');
-            const isDark = document.documentElement.classList.contains('dark');
-            const textColor = isDark ? '#a8a29e' : '#78716c';
 
             let labels = [], data = [];
+
             const now = new Date();
 
+
+
             if (allOrders.length === 0) {
+
                 if (chartInstance) chartInstance.destroy();
-                chartInstance = new Chart(ctx, { type: 'bar', data: { labels: ['No Data'], datasets: [{label: 'Empty', data:[0]}] } });
+
                 return;
+
             }
+
+
 
             if (period === 'day') {
+
                 labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+
                 data = new Array(24).fill(0);
+
                 allOrders.forEach(o => { 
+
                     if(o.date.toDateString() === now.toDateString()) data[o.date.getHours()] += o.total; 
+
                 });
+
             } else if (period === 'week') {
-                labels = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+
+                labels = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
                 data = new Array(7).fill(0);
+
                 const startOfWeek = new Date(now);
+
                 startOfWeek.setDate(now.getDate() - now.getDay());
+
                 allOrders.forEach(o => {
+
                     if (o.date >= startOfWeek) data[o.date.getDay()] += o.total;
+
                 });
+
             } else if (period === 'month') {
-                const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-                labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
-                data = new Array(daysInMonth).fill(0);
+
+                labels = Array.from({length: 30}, (_, i) => i + 1);
+
+                data = new Array(30).fill(0);
+
                 allOrders.forEach(o => {
+
                     if (o.date.getMonth() === now.getMonth()) data[o.date.getDate() - 1] += o.total;
+
                 });
+
             }
+
+
 
             if (chartInstance) chartInstance.destroy();
-            
+
             chartInstance = new Chart(ctx, {
+
                 type: 'bar',
+
                 data: {
+
                     labels: labels,
+
                     datasets: [{
+
                         label: 'Pendapatan',
+
                         data: data,
+
                         backgroundColor: '#ea580c',
-                        borderRadius: 4,
-                        barThickness: period === 'month' ? 4 : 12
+
+                        borderRadius: 4
+
                     }]
+
                 },
+
                 options: {
+
                     responsive: true,
+
                     maintainAspectRatio: false,
+
                     plugins: { legend: { display: false } },
+
                     scales: { 
-                        y: { beginAtZero: true, grid: { color: isDark ? '#292524' : '#f5f5f4' }, ticks: { color: textColor, font: {size: 9} } },
-                        x: { grid: { display: false }, ticks: { color: textColor, font: {size: 9} } }
+
+                        y: { beginAtZero: true, grid: { display: false } },
+
+                        x: { grid: { display: false } }
+
                     }
+
                 }
+
             });
+
         };
+
+
 
         // --- ACTIONS ---
+
         window.openStatusModal = (id) => {
+
             document.getElementById('statusOrderId').value = id;
+
             document.getElementById('statusModal').classList.remove('hidden');
+
         };
+
+
 
         window.setStatus = (status) => {
+
             const id = document.getElementById('statusOrderId').value;
+
             update(ref(db, 'orders/' + id), { status: status, lastStatusUpdate: Date.now() })
+
             .then(() => document.getElementById('statusModal').classList.add('hidden'));
+
         };
+
+
 
         window.switchTab = (tab) => {
+
             ['insight', 'orders', 'products'].forEach(t => {
+
                 document.getElementById('tab-' + t).classList.add('hidden');
+
                 document.getElementById('nav-' + t)?.classList.replace('bg-stone-100', 'hover:bg-stone-50');
+
                 document.getElementById('nav-' + t)?.classList.remove('font-bold');
+
             });
+
             document.getElementById('tab-' + tab).classList.remove('hidden');
+
             const nav = document.getElementById('nav-' + tab);
+
             if(nav) {
+
                 nav.classList.add('bg-stone-100', 'font-bold');
+
                 nav.classList.remove('hover:bg-stone-50', 'text-stone-500');
+
             }
+
         };
+
+
 
         // --- PRODUCT ACTIONS ---
+
         window.openProductModal = () => { document.getElementById('productForm').reset(); document.getElementById('editId').value=''; document.getElementById('productModal').classList.remove('hidden'); }
+
         window.closeProductModal = () => document.getElementById('productModal').classList.add('hidden');
+
         
+
         document.getElementById('productForm').addEventListener('submit', (e) => {
+
             e.preventDefault();
+
             const id = document.getElementById('editId').value || Date.now().toString();
+
             update(ref(db, 'products/' + id), {
+
                 name: document.getElementById('pName').value,
+
                 price: document.getElementById('pPrice').value,
+
                 stock: document.getElementById('pStock').value,
+
                 category: document.getElementById('pCategory').value,
+
                 image: document.getElementById('pImage').value,
+
                 desc: document.getElementById('pDesc').value
+
             }).then(() => closeProductModal());
+
         });
 
+
+
         window.deleteProduct = (id) => confirm('Hapus?') && remove(ref(db, 'products/'+id));
+
         window.editProduct = (id) => {
+
             get(ref(db, 'products/'+id)).then(snap => {
+
                 const p = snap.val();
+
                 document.getElementById('editId').value = id;
+
                 document.getElementById('pName').value = p.name;
+
                 document.getElementById('pPrice').value = p.price;
+
                 document.getElementById('pStock').value = p.stock;
+
                 document.getElementById('pCategory').value = p.category;
+
                 document.getElementById('pImage').value = p.image;
+
                 document.getElementById('pDesc').value = p.desc;
+
                 document.getElementById('productModal').classList.remove('hidden');
+
             });
+
         };
+
+
 
         // --- DARK MODE ---
+
         window.toggleDarkMode = () => {
+
             document.documentElement.classList.toggle('dark');
+
             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-            if(chartInstance) updateChart(document.querySelector('.chart-btn.active').id.replace('btn-', ''));
+
         };
+
         if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
 
+
+
     </script>
+
 </body>
-</html>
+
+</html
