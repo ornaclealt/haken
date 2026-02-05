@@ -181,175 +181,176 @@
         </div>
     </div>
 
-    <script type="module">
-        import { db, ref, onValue, push, set, update, get, auth, onAuthStateChanged } from './firebase-config.js';
+<script type="module">
+    import { db, ref, onValue, push, set, update, get, auth, onAuthStateChanged } from './firebase-config.js';
 
-        let currentProduct = null;
-        let currentUserData = null; // Simpan data user
-        const adminPhone = "6285959180745"; 
+    let currentProduct = null;
+    let currentUserData = null; 
+    const adminPhone = "6285959180745"; 
 
-        const params = new URLSearchParams(window.location.search);
-        const productId = params.get('id');
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
 
-            // 1. CEK USER LOGIN UNTUK AUTOFILL
-            onAuthStateChanged(auth, (user) => {
-                if(user) {
-                    onValue(ref(db, 'users/' + user.uid), (snap) => {
-                        currentUserData = snap.val();
-                    });
-                }
-            });
-
-            // 2. LOAD QRIS IMAGE DARI SETTINGS
-            onValue(ref(db, 'settings'), (snap) => {
-                const settings = snap.val();
-                if(settings && settings.qrisUrl) {
-                    document.querySelector('img[alt="QRIS"]').src = settings.qrisUrl;
-                }
-            });
-
-            if (!productId) { showError(); return; }
-
-            // 3. LOAD PRODUK & CEK DISKON
-            onValue(ref(db, 'products/' + productId), (snapshot) => {
-                const data = snapshot.val();
-                document.getElementById('loadingState').classList.add('hidden');
-
-                if (data) {
-                    currentProduct = { id: productId, ...data };
-                    renderUI(currentProduct);
-                    document.getElementById('productContent').classList.remove('hidden');
-                } else {
-                    showError();
-                }
-            });
+        // 1. CEK USER LOGIN UNTUK AUTOFILL
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
+                onValue(ref(db, 'users/' + user.uid), (snap) => {
+                    currentUserData = snap.val();
+                });
+            }
         });
 
-        function renderUI(data) {
-            document.title = data.name + " | Haken Studio";
-            document.getElementById('productName').textContent = data.name;
-            document.getElementById('category').textContent = data.category;
-            
-            // LOGIC DISKON
-            const priceEl = document.getElementById('price');
-            if (data.discountStock > 0 && data.discountPrice) {
-                // Tampilkan Harga Coret
-                priceEl.innerHTML = `
-                    <span class="line-through text-stone-400 text-lg mr-2">IDR ${parseInt(data.price).toLocaleString()}</span>
-                    <span class="text-red-600">IDR ${parseInt(data.discountPrice).toLocaleString()}</span>
-                    <span class="ml-2 bg-red-100 text-red-600 text-[10px] px-2 py-1 rounded-full align-top">PROMO</span>
-                `;
-                currentProduct.finalPrice = data.discountPrice; // Pakai harga diskon
-            } else {
-                priceEl.textContent = `IDR ${parseInt(data.price).toLocaleString()}`;
-                currentProduct.finalPrice = data.price; // Pakai harga normal
+        // 2. LOAD QRIS IMAGE DARI SETTINGS
+        onValue(ref(db, 'settings'), (snap) => {
+            const settings = snap.val();
+            if(settings && settings.qrisUrl) {
+                const qrisImg = document.querySelector('img[alt="QRIS"]');
+                if(qrisImg) qrisImg.src = settings.qrisUrl;
             }
+        });
 
-            document.getElementById('description').textContent = data.desc;
-            const imgEl = document.getElementById('mainImage');
-            imgEl.src = data.image;
-            imgEl.onload = () => imgEl.classList.remove('opacity-0');
+        if (!productId) { showError(); return; }
 
-            // Button Logic (Stok)
-            const btn = document.getElementById('btnWhatsapp');
-            const stokTersedia = (data.discountStock > 0) ? data.discountStock : data.stock; // Prioritas stok diskon jika ada
+        // 3. LOAD PRODUK
+        onValue(ref(db, 'products/' + productId), (snapshot) => {
+            const data = snapshot.val();
+            const loading = document.getElementById('loadingState');
+            if(loading) loading.classList.add('hidden');
 
-            if(parseInt(stokTersedia) <= 0) {
-                btn.textContent = "Stok Habis";
-                btn.classList.add('bg-stone-200', 'cursor-not-allowed');
-                btn.classList.remove('bg-stone-900', 'hover:bg-orange-600');
+            if (data) {
+                currentProduct = { id: productId, ...data };
+                renderUI(currentProduct);
+                document.getElementById('productContent').classList.remove('hidden');
             } else {
-                btn.onclick = (e) => { e.preventDefault(); window.openModal(); };
+                showError();
             }
+        });
+    });
+
+    function renderUI(data) {
+        document.title = data.name + " | Haken Studio";
+        document.getElementById('productName').textContent = data.name;
+        document.getElementById('category').textContent = data.category;
+        
+        const priceEl = document.getElementById('price');
+        if (data.discountStock > 0 && data.discountPrice) {
+            priceEl.innerHTML = `
+                <span class="line-through text-stone-400 text-lg mr-2">IDR ${parseInt(data.price).toLocaleString()}</span>
+                <span class="text-red-600">IDR ${parseInt(data.discountPrice).toLocaleString()}</span>
+                <span class="ml-2 bg-red-100 text-red-600 text-[10px] px-2 py-1 rounded-full align-top">PROMO</span>
+            `;
+            currentProduct.finalPrice = data.discountPrice;
+        } else {
+            priceEl.textContent = `IDR ${parseInt(data.price).toLocaleString()}`;
+            currentProduct.finalPrice = data.price;
         }
 
-        window.openModal = () => {
-            // AUTOFILL FORM DATA
-            if(currentUserData) {
-                document.getElementById('custName').value = currentUserData.fullName || '';
-                document.getElementById('custPhone').value = currentUserData.phone || '';
-                document.getElementById('custAddress').value = currentUserData.address || '';
-            }
+        document.getElementById('description').textContent = data.desc;
+        const imgEl = document.getElementById('mainImage');
+        imgEl.src = data.image;
+        imgEl.onload = () => imgEl.classList.remove('opacity-0');
 
-            document.getElementById('checkoutName').textContent = currentProduct.name;
-            document.getElementById('checkoutPrice').textContent = `IDR ${parseInt(currentProduct.finalPrice).toLocaleString()}`;
-            document.getElementById('checkoutImg').src = currentProduct.image;
-            window.updateTotal();
-            
-            const modal = document.getElementById('checkoutModal');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                modal.querySelector('div').classList.remove('scale-95');
-            }, 10);
-        };
+        const btn = document.getElementById('btnWhatsapp');
+        const stokTersedia = (data.discountStock > 0) ? data.discountStock : data.stock;
+
+        if(parseInt(stokTersedia) <= 0) {
+            btn.textContent = "Stok Habis";
+            btn.classList.add('bg-stone-200', 'cursor-not-allowed');
+            btn.classList.remove('bg-stone-900', 'hover:bg-orange-600');
+            btn.onclick = (e) => e.preventDefault();
+        } else {
+            btn.onclick = (e) => { e.preventDefault(); window.openModal(); };
+        }
+    }
+
+    // --- GLOBAL FUNCTIONS (Daftarkan ke Window agar bisa dipanggil HTML) ---
+
+    window.openModal = () => {
+        if(currentUserData) {
+            document.getElementById('custName').value = currentUserData.fullName || '';
+            document.getElementById('custPhone').value = currentUserData.phone || '';
+            document.getElementById('custAddress').value = currentUserData.address || '';
+        }
+
+        document.getElementById('checkoutName').textContent = currentProduct.name;
+        document.getElementById('checkoutPrice').textContent = `IDR ${parseInt(currentProduct.finalPrice).toLocaleString()}`;
+        document.getElementById('checkoutImg').src = currentProduct.image;
+        window.updateTotal();
         
-        // ... (Sisa fungsi window.closeModal, window.updateTotal sama seperti sebelumnya, hanya ganti price jadi finalPrice)
+        const modal = document.getElementById('checkoutModal');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.querySelector('div').classList.remove('scale-95');
+        }, 10);
+    };
 
-        window.updateTotal = () => {
-            const q = document.getElementById('custQty').value;
-            const total = currentProduct.finalPrice * q;
-            document.getElementById('grandTotal').textContent = `IDR ${total.toLocaleString('id-ID')}`;
-        };
+    window.closeModal = () => {
+        const modal = document.getElementById('checkoutModal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    };
 
-        window.sendToWhatsapp = async () => {
-            const name = document.getElementById('custName').value;
-            const phone = document.getElementById('custPhone').value;
-            const address = document.getElementById('custAddress').value;
-            const qty = parseInt(document.getElementById('custQty').value);
+    window.updateTotal = () => {
+        const q = document.getElementById('custQty').value;
+        const total = currentProduct.finalPrice * q;
+        document.getElementById('grandTotal').textContent = `IDR ${total.toLocaleString('id-ID')}`;
+    };
 
-            if(!name || !address || !phone) { alert("Lengkapi data pemesan!"); return; }
+    window.sendToWhatsapp = async () => {
+        const name = document.getElementById('custName').value;
+        const phone = document.getElementById('custPhone').value;
+        const address = document.getElementById('custAddress').value;
+        const qty = parseInt(document.getElementById('custQty').value);
 
-            // Re-Check Stok sebelum deal
-            const snap = await get(ref(db, 'products/' + currentProduct.id));
-            const serverProd = snap.val();
-            
-            let isDiscount = false;
-            let currentStock = serverProd.stock;
+        if(!name || !address || !phone) { alert("Lengkapi data pemesan!"); return; }
 
-            // Logic Cek Stok Diskon
-            if (serverProd.discountStock > 0) {
-                isDiscount = true;
-                currentStock = serverProd.discountStock;
-            }
+        const snap = await get(ref(db, 'products/' + currentProduct.id));
+        const serverProd = snap.val();
+        
+        let isDiscount = serverProd.discountStock > 0;
+        let currentStock = isDiscount ? serverProd.discountStock : serverProd.stock;
 
-            if (currentStock < qty) {
-                alert(`Maaf, stok ${isDiscount ? 'PROMO' : ''} tersisa: ${currentStock}`);
-                return;
-            }
+        if (currentStock < qty) {
+            alert(`Maaf, stok ${isDiscount ? 'PROMO' : ''} tersisa: ${currentStock}`);
+            return;
+        }
 
-            const total = currentProduct.finalPrice * qty;
+        const total = currentProduct.finalPrice * qty;
+        const newOrderRef = push(ref(db, 'orders'));
+        
+        await set(newOrderRef, {
+            productId: currentProduct.id,
+            productName: currentProduct.name,
+            qty: qty,
+            total: total,
+            customerName: name,
+            customerPhone: phone,
+            customerAddress: address,
+            status: 'Pesanan Sedang Ditinjau',
+            lastStatusUpdate: Date.now(),
+            timestamp: Date.now()
+        });
 
-            const newOrderRef = push(ref(db, 'orders'));
-            await set(newOrderRef, {
-                productId: currentProduct.id,
-                productName: currentProduct.name,
-                qty: qty,
-                total: total,
-                customerName: name,
-                customerPhone: phone,
-                customerAddress: address,
-                status: 'Pesanan Sedang Ditinjau', // Status default baru
-                lastStatusUpdate: Date.now(),
-                timestamp: Date.now()
-            });
+        if (isDiscount) {
+            await update(ref(db, 'products/' + currentProduct.id), { discountStock: serverProd.discountStock - qty });
+        } else {
+            await update(ref(db, 'products/' + currentProduct.id), { stock: serverProd.stock - qty });
+        }
 
-            // Kurangi Stok (Diskon atau Normal)
-            if (isDiscount) {
-                await update(ref(db, 'products/' + currentProduct.id), { discountStock: serverProd.discountStock - qty });
-            } else {
-                await update(ref(db, 'products/' + currentProduct.id), { stock: serverProd.stock - qty });
-            }
+        const msg = `*ORDER BARU - HAKEN*\nID: ${newOrderRef.key.slice(-5)}\n\nItem: ${currentProduct.name}\nQty: ${qty}\nTotal: IDR ${total.toLocaleString()}\n\nNama: ${name}\nAlamat: ${address}\n\n_Via Website_`;
+        window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+        window.closeModal();
+    };
 
-            const msg = `*ORDER BARU - HAKEN*\nID: ${newOrderRef.key.slice(-5)}\n\nItem: ${currentProduct.name}\nQty: ${qty}\nTotal: IDR ${total.toLocaleString()}\n\nNama: ${name}\nAlamat: ${address}\n\n_Via Website_`;
-            window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-            window.closeModal();
-        };
-
-        function showError() { /* ... kode lama ... */ }
-    </script>
+    function showError() {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+    }
+</script>
 </body>
 </html>
