@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Haken Studio</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Merriweather', 'serif'] },
+                    colors: { stone: { 50: '#fafaf9', 100: '#f5f5f4', 800: '#292524', 900: '#1c1917' } }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-stone-50 font-sans text-stone-800 antialiased min-h-screen">
+
+    <nav class="bg-white border-b border-stone-200 sticky top-0 z-40">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 text-stone-600 hover:text-stone-900 transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                <span class="font-bold text-sm">Lanjut Belanja</span>
+            </a>
+            <div class="font-serif font-bold text-lg">Checkout Securely</div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-10">
+        <div id="emptyState" class="hidden text-center py-20">
+            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <i data-lucide="shopping-cart" class="w-8 h-8 text-stone-300"></i>
+            </div>
+            <h2 class="text-2xl font-serif font-bold mb-2">Keranjang Kosong</h2>
+            <p class="text-stone-500 mb-8">Anda belum menambahkan produk apapun.</p>
+            <a href="index.html" class="px-8 py-3 bg-stone-900 text-white rounded-xl font-bold hover:bg-orange-600 transition-colors">Mulai Belanja</a>
+        </div>
+
+        <div id="checkoutContent" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-stone-100">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center font-bold text-sm">1</div>
+                        <h3 class="font-bold text-lg">Informasi Pengiriman</h3>
+                    </div>
+                    
+                    <form id="checkoutForm" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Nama Lengkap</label>
+                            <input type="text" id="custName" required class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-orange-500 outline-none transition-all" placeholder="Nama Penerima">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Nomor WhatsApp</label>
+                                <input type="tel" id="custPhone" required class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-orange-500 outline-none transition-all" placeholder="0812...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Kota / Kecamatan</label>
+                                <input type="text" id="custCity" required class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-orange-500 outline-none transition-all" placeholder="Cth: Depok, Sleman">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Alamat Lengkap</label>
+                            <textarea id="custAddress" required rows="3" class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-orange-500 outline-none transition-all" placeholder="Nama Jalan, RT/RW, Patokan Rumah..."></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-stone-100">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center font-bold text-sm">2</div>
+                        <h3 class="font-bold text-lg">Rincian Pesanan</h3>
+                    </div>
+                    <div id="orderItemsContainer" class="space-y-4 divide-y divide-stone-100">
+                        </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
+                
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl shadow-stone-200/50 border border-stone-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <i data-lucide="credit-card" class="w-32 h-32"></i>
+                    </div>
+
+                    <h3 class="font-bold text-lg mb-6 relative z-10">Ringkasan Pembayaran</h3>
+
+                    <div class="space-y-3 text-sm text-stone-600 mb-6 relative z-10">
+                        <div class="flex justify-between">
+                            <span>Subtotal Produk</span>
+                            <span id="summarySubtotal" class="font-bold">IDR 0</span>
+                        </div>
+                        <div class="flex justify-between text-orange-600">
+                            <span>Kode Unik (Verifikasi)</span>
+                            <span id="summaryCode" class="font-bold">+ 0</span>
+                        </div>
+                        <div class="h-px bg-stone-200 my-2"></div>
+                        <div class="flex justify-between text-lg text-stone-900 font-bold">
+                            <span>Total Bayar</span>
+                            <span id="summaryTotal">IDR 0</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 text-center mb-6 relative z-10">
+                        <p class="text-xs font-bold text-stone-500 uppercase tracking-widest mb-3">Scan QRIS Pembayaran</p>
+                        <div class="bg-white p-2 inline-block rounded-lg shadow-sm mb-2">
+                            <img id="qrisImage" src="https://via.placeholder.com/150?text=Loading+QRIS..." class="w-32 h-32 object-contain mx-auto mix-blend-multiply">
+                        </div>
+                        <p class="text-[10px] text-stone-400">Haken Studio Official</p>
+                    </div>
+
+                    <button onclick="processCheckout()" id="btnProcess" class="w-full py-4 bg-stone-900 text-white rounded-xl font-bold hover:bg-green-600 transition-all shadow-lg flex items-center justify-center gap-2 relative z-10">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        Selesaikan Pesanan
+                    </button>
+                    
+                    <p class="text-center text-[10px] text-stone-400 mt-4 relative z-10">
+                        Data akan dikirim ke sistem & konfirmasi via WhatsApp.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="loadingOverlay" class="hidden fixed inset-0 z-50 bg-white/90 flex flex-col items-center justify-center">
+        <div class="animate-spin w-12 h-12 border-4 border-stone-200 border-t-stone-900 rounded-full mb-4"></div>
+        <h3 class="font-bold text-lg animate-pulse">Memproses Pesanan...</h3>
+        <p class="text-sm text-stone-500">Mohon jangan tutup halaman ini</p>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const DB_URL = "https://entry-6a64d-default-rtdb.firebaseio.com";
+        const ADMIN_WA = "6285959180745"; 
+
+        // State Global
+        let cart = [];
+        let uniqueCode = 0;
+        let finalTotal = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadCart();
+            fetchSettings();
+            generateUniqueCode();
+        });
+
+        // 1. Load Keranjang dari LocalStorage
+        function loadCart() {
+            const raw = localStorage.getItem('haken_cart');
+            if (!raw || JSON.parse(raw).length === 0) {
+                document.getElementById('checkoutContent').classList.add('hidden');
+                document.getElementById('emptyState').classList.remove('hidden');
+                return;
+            }
+            
+            cart = JSON.parse(raw);
+            renderItems();
+            calculateTotal();
+        }
+
+        // 2. Render Item List
+        function renderItems() {
+            const container = document.getElementById('orderItemsContainer');
+            container.innerHTML = cart.map((item, index) => `
+                <div class="flex gap-4 py-4 items-center">
+                    <img src="${item.image}" class="w-16 h-16 rounded-lg object-cover bg-stone-100 border border-stone-200">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-stone-900 text-sm">${item.name}</h4>
+                        <p class="text-xs text-stone-500 mb-1">Qty: ${item.qty}</p>
+                        <p class="text-sm font-bold text-orange-600">IDR ${(item.price * item.qty).toLocaleString()}</p>
+                    </div>
+                    <button onclick="removeItem(${index})" class="p-2 text-stone-400 hover:text-red-500 transition-colors">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // 3. Kalkulasi Total & Kode Unik
+        function generateUniqueCode() {
+            // Kode unik acak 100 - 999
+            uniqueCode = Math.floor(Math.random() * 900) + 100;
+            document.getElementById('summaryCode').textContent = `+ ${uniqueCode}`;
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            finalTotal = subtotal + uniqueCode;
+
+            document.getElementById('summarySubtotal').textContent = `IDR ${subtotal.toLocaleString()}`;
+            document.getElementById('summaryTotal').textContent = `IDR ${finalTotal.toLocaleString()}`;
+        }
+
+        // 4. Ambil QRIS dari Database Admin
+        async function fetchSettings() {
+            try {
+                const res = await fetch(`${DB_URL}/settings.json`);
+                const data = await res.json();
+                if(data && data.qrisUrl) {
+                    document.getElementById('qrisImage').src = data.qrisUrl;
+                }
+            } catch (e) {
+                console.log("Gagal load QRIS", e);
+            }
+        }
+
+        // 5. Hapus Item
+        window.removeItem = (index) => {
+            if(confirm("Hapus produk ini?")) {
+                cart.splice(index, 1);
+                localStorage.setItem('haken_cart', JSON.stringify(cart));
+                loadCart();
+            }
+        };
+
+        // 6. PROSES CHECKOUT (CORE LOGIC)
+        window.processCheckout = async () => {
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const city = document.getElementById('custCity').value.trim();
+            const address = document.getElementById('custAddress').value.trim();
+
+            if(!name || !phone || !city || !address) {
+                alert("Mohon lengkapi semua data pengiriman.");
+                return;
+            }
+
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+
+            try {
+                // A. Validasi Stok Server Dulu (Penting!)
+                for (const item of cart) {
+                    const res = await fetch(`${DB_URL}/products/${item.productId}.json`);
+                    const serverProd = await res.json();
+                    
+                    const availableStock = item.isPromo ? serverProd.discountStock : serverProd.stock;
+                    
+                    if (availableStock < item.qty) {
+                        alert(`Stok untuk ${item.name} tidak mencukupi! Sisa: ${availableStock}`);
+                        document.getElementById('loadingOverlay').classList.add('hidden');
+                        return; // Stop process
+                    }
+                }
+
+                // B. Buat Object Order
+                const orderData = {
+                    orderId: `ORD-${Date.now().toString().slice(-6)}`, // ID simpel
+                    customer: { name, phone, city, address },
+                    items: cart,
+                    pricing: {
+                        subtotal: finalTotal - uniqueCode,
+                        uniqueCode: uniqueCode,
+                        grandTotal: finalTotal
+                    },
+                    status: 'Menunggu Pembayaran',
+                    timestamp: Date.now(),
+                    lastStatusUpdate: Date.now()
+                };
+
+                // C. Simpan ke Firebase (Orders)
+                await fetch(`${DB_URL}/orders.json`, {
+                    method: 'POST',
+                    body: JSON.stringify(orderData),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                // D. Potong Stok (Looping Patch)
+                // Kita jalankan parallel agar cepat
+                const updatePromises = cart.map(async (item) => {
+                    // Ambil stok terbaru lagi untuk memastikan
+                    const res = await fetch(`${DB_URL}/products/${item.productId}.json`);
+                    const prod = await res.json();
+                    
+                    const field = item.isPromo ? 'discountStock' : 'stock';
+                    const currentVal = prod[field];
+                    const newVal = currentVal - item.qty;
+
+                    return fetch(`${DB_URL}/products/${item.productId}.json`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ [field]: newVal })
+                    });
+                });
+
+                await Promise.all(updatePromises);
+
+                // E. Sukses! Bersihkan Keranjang & Redirect WA
+                localStorage.removeItem('haken_cart');
+                
+                const waMessage = generateWAMessage(orderData);
+                window.location.href = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(waMessage)}`;
+
+            } catch (error) {
+                console.error(error);
+                alert("Terjadi kesalahan koneksi. Silakan coba lagi.");
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }
+        };
+
+        function generateWAMessage(order) {
+            let itemsList = order.items.map(i => `- ${i.name} (${i.qty}x)`).join('\n');
+            
+            return `*KONFIRMASI PESANAN BARU*
+ID: ${order.orderId}
+
+*Detail Pesanan:*
+${itemsList}
+
+*Rincian Bayar:*
+Total: IDR ${order.pricing.grandTotal.toLocaleString()}
+(Termasuk kode unik: ${order.pricing.uniqueCode})
+
+*Data Pengiriman:*
+Nama: ${order.customer.name}
+Alamat: ${order.customer.address}, ${order.customer.city}
+
+_Mohon diproses, pembayaran sudah saya transfer._`;
+        }
+
+    </script>
+</body>
+</html>
