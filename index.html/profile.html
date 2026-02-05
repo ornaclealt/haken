@@ -1,86 +1,388 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Saya - Haken Studio</title>
+    <title>Member Dashboard - Haken Studio</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap'); body { font-family: 'Inter', sans-serif; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Merriweather', 'serif'] },
+                    colors: { stone: { 50: '#fafaf9', 100: '#f5f5f4', 800: '#292524', 900: '#1c1917' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+    </style>
 </head>
-<body class="bg-stone-50 text-stone-800">
+<body class="bg-stone-100 text-stone-800 font-sans min-h-screen flex flex-col md:flex-row">
 
-    <div class="min-h-screen flex items-center justify-center p-6">
-        <div class="bg-white max-w-lg w-full rounded-3xl shadow-xl border border-stone-100 p-8">
-            <div class="flex justify-between items-center mb-8">
-                <h1 class="text-2xl font-bold">Profil Member</h1>
-                <a href="index.html" class="text-xs font-bold text-stone-400 hover:text-orange-600">Kembali ke Beranda</a>
-            </div>
-
-            <div class="flex items-center gap-4 mb-8">
-                <img id="userAvatar" src="" class="w-16 h-16 rounded-full bg-stone-200 object-cover">
-                <div>
-                    <h2 id="displayName" class="font-bold text-lg">Loading...</h2>
-                    <p id="displayEmail" class="text-xs text-stone-400">...</p>
-                </div>
-            </div>
-
-            <form id="profileForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Nama Lengkap (Penerima)</label>
-                    <input type="text" id="pName" class="w-full p-3 rounded-xl bg-stone-50 border border-stone-200 focus:border-orange-500 outline-none transition-all font-semibold">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Nomor WhatsApp</label>
-                    <input type="tel" id="pPhone" class="w-full p-3 rounded-xl bg-stone-50 border border-stone-200 focus:border-orange-500 outline-none transition-all font-semibold">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Alamat Lengkap Pengiriman</label>
-                    <textarea id="pAddress" rows="3" class="w-full p-3 rounded-xl bg-stone-50 border border-stone-200 focus:border-orange-500 outline-none transition-all font-semibold"></textarea>
-                </div>
-
-                <div class="pt-4">
-                    <button type="submit" class="w-full py-4 bg-stone-900 text-white rounded-xl font-bold hover:bg-orange-600 transition-all shadow-lg">Simpan Perubahan</button>
-                </div>
-            </form>
-
-            <button id="btnLogout" class="mt-6 w-full py-3 border border-stone-200 text-red-500 rounded-xl font-bold hover:bg-red-50 transition-all text-sm">
-                Keluar (Logout)
-            </button>
-        </div>
+    <div class="md:hidden bg-white p-4 border-b border-stone-200 sticky top-0 z-50 flex justify-between items-center">
+        <span class="font-serif font-bold text-lg">Haken Member.</span>
+        <button id="mobileMenuBtn" class="p-2 text-stone-600"><i data-lucide="menu" class="w-6 h-6"></i></button>
     </div>
 
-    <script type="module">
-        import { db, auth, ref, set, onValue, signOut, onAuthStateChanged } from './firebase-config.js';
+    <aside id="sidebar" class="hidden md:flex flex-col w-full md:w-72 bg-white border-r border-stone-200 h-screen sticky top-0 z-40 transition-all">
+        <div class="p-8 border-b border-stone-100">
+            <h1 class="font-serif font-bold text-2xl tracking-tight text-stone-900">Haken<span class="text-orange-600">.</span></h1>
+            <p class="text-xs text-stone-400 mt-1 uppercase tracking-widest">Member Area</p>
+        </div>
 
-        lucide.createIcons();
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+            <button onclick="switchTab('overview')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium bg-stone-900 text-white shadow-lg transition-all">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Ringkasan
+            </button>
+            <button onclick="switchTab('orders')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 transition-all">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i> Riwayat Pesanan
+            </button>
+            <button onclick="switchTab('inbox')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 transition-all">
+                <div class="relative">
+                    <i data-lucide="inbox" class="w-4 h-4"></i>
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </div>
+                Kotak Masuk
+            </button>
+            <button onclick="switchTab('favorites')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 transition-all">
+                <i data-lucide="heart" class="w-4 h-4"></i> Wishlist
+            </button>
+            
+            <div class="pt-6 pb-2 text-[10px] font-bold text-stone-400 uppercase tracking-widest px-3">Pengaturan</div>
+            
+            <button onclick="switchTab('settings')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 transition-all">
+                <i data-lucide="user-cog" class="w-4 h-4"></i> Edit Profil
+            </button>
+            <button onclick="switchTab('help')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 transition-all">
+                <i data-lucide="help-circle" class="w-4 h-4"></i> Pusat Bantuan
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-stone-100">
+            <button id="btnLogout" class="w-full flex items-center gap-2 justify-center p-3 rounded-xl border border-red-100 text-red-600 text-sm font-bold hover:bg-red-50 transition-all">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto h-screen">
+        
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h2 id="pageTitle" class="text-2xl font-bold text-stone-900">Selamat Datang, Member</h2>
+                <p class="text-sm text-stone-500">Kelola aktivitas belanja Anda di sini.</p>
+            </div>
+            <a href="index.html" class="hidden md:flex items-center gap-2 text-sm font-bold text-orange-600 hover:text-orange-700">
+                Ke Katalog <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+        </header>
+
+        <div id="tab-overview" class="content-tab space-y-8 animate-fade-in-up">
+            
+            <div class="max-w-md mx-auto md:mx-0 w-full aspect-[1.6/1] bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 rounded-3xl shadow-2xl p-6 relative overflow-hidden group cursor-pointer transition-transform hover:scale-[1.02]" onclick="shareCard()">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-orange-500 via-transparent to-transparent"></div>
+                
+                <div class="relative z-10 flex flex-col justify-between h-full text-white">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500 mb-1">Haken Member</p>
+                            <h3 id="cardName" class="font-serif text-xl font-bold tracking-wide">Nama Member</h3>
+                        </div>
+                        <i data-lucide="rss" class="w-6 h-6 text-stone-600"></i>
+                    </div>
+
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <p class="text-[10px] text-stone-400 mb-1">Bergabung Sejak</p>
+                            <p id="cardJoinDate" class="font-mono text-sm">Loading...</p>
+                        </div>
+                        <div class="bg-white p-1 rounded-lg">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=HakenMember" class="w-12 h-12">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                    <div class="bg-white text-stone-900 px-4 py-2 rounded-full font-bold text-xs flex items-center gap-2">
+                        <i data-lucide="share-2" class="w-3 h-3"></i> Bagikan Kartu
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm">
+                    <div class="text-stone-400 mb-2"><i data-lucide="shopping-cart" class="w-5 h-5"></i></div>
+                    <div class="text-2xl font-bold text-stone-900" id="statOrders">0</div>
+                    <div class="text-xs text-stone-500">Total Pesanan</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm">
+                    <div class="text-stone-400 mb-2"><i data-lucide="star" class="w-5 h-5"></i></div>
+                    <div class="text-2xl font-bold text-stone-900">Basic</div>
+                    <div class="text-xs text-stone-500">Level Member</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm col-span-2 md:col-span-1">
+                    <div class="text-stone-400 mb-2"><i data-lucide="wallet" class="w-5 h-5"></i></div>
+                    <div class="text-2xl font-bold text-stone-900" id="statSpend">IDR 0</div>
+                    <div class="text-xs text-stone-500">Total Belanja</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-orders" class="content-tab hidden space-y-6">
+            <div class="bg-white rounded-2xl border border-stone-100 overflow-hidden">
+                <div class="p-6 border-b border-stone-100">
+                    <h3 class="font-bold">Riwayat Transaksi</h3>
+                </div>
+                <div id="ordersList" class="divide-y divide-stone-100">
+                    <div class="p-8 text-center text-stone-400">
+                        <div class="animate-spin w-6 h-6 border-2 border-stone-300 border-t-orange-600 rounded-full mx-auto mb-2"></div>
+                        Memuat data...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-inbox" class="content-tab hidden space-y-4">
+            <div class="bg-blue-50 p-4 rounded-xl flex gap-3 border border-blue-100">
+                <i data-lucide="info" class="w-5 h-5 text-blue-600 shrink-0"></i>
+                <div class="text-sm text-blue-800">
+                    <span class="font-bold">Info:</span> Pesan dari admin mengenai status pesanan atau promo khusus akan muncul di sini.
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="bg-white p-4 rounded-xl border border-stone-100 shadow-sm hover:shadow-md transition-all cursor-pointer">
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-sm">Selamat Datang di Haken!</h4>
+                        <span class="text-[10px] text-stone-400">Baru saja</span>
+                    </div>
+                    <p class="text-xs text-stone-500 line-clamp-2">Terima kasih telah bergabung. Lengkapi profil Anda untuk memudahkan pengiriman.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-settings" class="content-tab hidden max-w-2xl">
+            <form id="profileForm" class="bg-white p-6 md:p-8 rounded-3xl border border-stone-100 shadow-sm space-y-6">
+                
+                <div class="flex items-center gap-4 pb-6 border-b border-stone-100">
+                    <img id="editAvatar" src="" class="w-20 h-20 rounded-full bg-stone-200 object-cover">
+                    <div>
+                        <button type="button" class="text-xs font-bold bg-stone-100 px-3 py-1.5 rounded-lg hover:bg-stone-200 transition-colors">Ubah Foto</button>
+                        <p class="text-[10px] text-stone-400 mt-2">Max 2MB (JPG/PNG)</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Nama Lengkap</label>
+                        <input type="text" id="pName" class="w-full p-3 rounded-xl bg-stone-50 border border-stone-200 focus:border-orange-500 outline-none text-sm font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Email (Akun)</label>
+                        <div class="relative">
+                            <input type="email" id="pEmail" disabled class="w-full p-3 rounded-xl bg-stone-100 border border-stone-200 text-stone-500 outline-none text-sm font-semibold cursor-not-allowed">
+                            <i data-lucide="check-circle" class="absolute right-3 top-3 w-4 h-4 text-green-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Nomor WhatsApp</label>
+                    <div class="flex gap-2">
+                        <input type="tel" id="pPhone" class="flex-1 p-3 rounded-xl bg-stone-50 border border-stone-200 focus:border-orange-500 outline-none text-sm font-semibold">
+                        <button type="button" class="px-4 bg-orange-100 text-orange-600 rounded-xl text-xs font-bold hover:bg-orange-200">Verifikasi</button>
+                    </div>
+                    <p class="text-[10px] text-stone-400 mt-1">*Nomor ini digunakan untuk konfirmasi pesanan.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Alamat Utama</label>
+                    <textarea id="pAddress" rows="3" class="w-full p-3 rounded-xl bg-stone-50 border border-stone-200 focus:border-orange-500 outline-none text-sm font-semibold"></textarea>
+                </div>
+
+                <div class="pt-4 flex justify-end">
+                    <button type="submit" class="px-8 py-3 bg-stone-900 text-white rounded-xl font-bold text-sm hover:bg-orange-600 transition-all shadow-lg">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="tab-help" class="content-tab hidden max-w-2xl space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-stone-100">
+                <h3 class="font-bold text-lg mb-4">Butuh Bantuan?</h3>
+                <div class="space-y-3">
+                    <details class="group bg-stone-50 rounded-xl overflow-hidden">
+                        <summary class="flex justify-between items-center p-4 cursor-pointer font-medium text-sm text-stone-700">
+                            Bagaimana cara melacak pesanan?
+                            <i data-lucide="chevron-down" class="w-4 h-4 transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-4 pb-4 text-xs text-stone-500 leading-relaxed">
+                            Cek tab "Riwayat Pesanan". Jika statusnya "Dikirim", nomor resi akan muncul di sana.
+                        </div>
+                    </details>
+                    <details class="group bg-stone-50 rounded-xl overflow-hidden">
+                        <summary class="flex justify-between items-center p-4 cursor-pointer font-medium text-sm text-stone-700">
+                            Apakah bisa ubah alamat setelah pesan?
+                            <i data-lucide="chevron-down" class="w-4 h-4 transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="px-4 pb-4 text-xs text-stone-500 leading-relaxed">
+                            Bisa, selama pesanan belum diproses. Silakan hubungi Admin via WhatsApp segera.
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-stone-100">
+                <h3 class="font-bold text-lg mb-2">Kirim Masukan</h3>
+                <p class="text-xs text-stone-500 mb-4">Punya saran untuk Haken Studio? Tulis di sini.</p>
+                <textarea class="w-full p-3 bg-stone-50 rounded-xl text-sm border border-stone-200 mb-3" rows="3" placeholder="Tulis pesan Anda..."></textarea>
+                <button class="w-full py-3 bg-stone-200 text-stone-600 font-bold rounded-xl text-sm hover:bg-stone-300">Kirim Masukan</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { db, auth, ref, set, onValue, signOut, onAuthStateChanged, get } from './firebase-config.js';
 
         let currentUser = null;
 
+        // Init Icons
+        lucide.createIcons();
+
+        // AUTH CHECK
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                document.getElementById('userAvatar').src = user.photoURL;
-                document.getElementById('displayName').textContent = user.displayName;
-                document.getElementById('displayEmail').textContent = user.email;
-
-                // Load Data Profil dari Database
-                onValue(ref(db, 'users/' + user.uid), (snapshot) => {
-                    const data = snapshot.val();
-                    if(data) {
-                        document.getElementById('pName').value = data.fullName || user.displayName;
-                        document.getElementById('pPhone').value = data.phone || '';
-                        document.getElementById('pAddress').value = data.address || '';
-                    }
-                });
+                loadUserProfile(user);
+                loadOrderHistory(user);
             } else {
-                window.location.href = 'index.html'; // Redirect jika belum login
+                window.location.href = 'index.html';
             }
         });
 
+        // 1. LOAD PROFILE DATA
+        function loadUserProfile(user) {
+            // Update Card & Header
+            document.getElementById('cardName').textContent = user.displayName || "Member Haken";
+            document.getElementById('pageTitle').textContent = `Halo, ${user.displayName ? user.displayName.split(' ')[0] : 'Member'}`;
+            document.getElementById('cardJoinDate').textContent = "Member ID: " + user.uid.slice(0,6).toUpperCase();
+            
+            // Update Form
+            document.getElementById('pEmail').value = user.email;
+            document.getElementById('editAvatar').src = user.photoURL || "https://ui-avatars.com/api/?name=" + user.displayName;
+
+            // Load Data from Realtime DB
+            onValue(ref(db, 'users/' + user.uid), (snapshot) => {
+                const data = snapshot.val();
+                if(data) {
+                    document.getElementById('pName').value = data.fullName || user.displayName;
+                    document.getElementById('pPhone').value = data.phone || '';
+                    document.getElementById('pAddress').value = data.address || '';
+                    
+                    // Update Card Name Realtime
+                    if(data.fullName) document.getElementById('cardName').textContent = data.fullName;
+                }
+            });
+        }
+
+        // 2. LOAD ORDER HISTORY (by UID if available, fallback to Phone logic if needed)
+        // Note: Karena checkout sebelumnya pakai 'customerPhone', kita filter by Phone atau UID.
+        // Di sini kita asumsikan next order sudah simpan UID atau kita filter manual.
+        async function loadOrderHistory(user) {
+            // Ambil Nomor HP user dulu
+            const snapUser = await get(ref(db, 'users/' + user.uid));
+            const userData = snapUser.val();
+            const userPhone = userData ? userData.phone : null;
+
+            onValue(ref(db, 'orders'), (snapshot) => {
+                const orders = snapshot.val();
+                const list = document.getElementById('ordersList');
+                list.innerHTML = '';
+
+                let count = 0;
+                let totalSpend = 0;
+
+                if (orders) {
+                    // Filter Logic: Tampilkan order yang punya UID sama ATAU No HP sama
+                    const myOrders = Object.entries(orders).filter(([id, o]) => {
+                        // Cek Phone Match (bersihkan format)
+                        const orderPhone = o.customer?.phone?.replace(/\D/g,'');
+                        const profilePhone = userPhone?.replace(/\D/g,'');
+                        return orderPhone === profilePhone; 
+                    }).reverse(); // Terbaru diatas
+
+                    if(myOrders.length === 0) {
+                        list.innerHTML = `<div class="p-8 text-center text-stone-400 text-sm">Belum ada riwayat pesanan.</div>`;
+                    }
+
+                    myOrders.forEach(([id, o]) => {
+                        count++;
+                        totalSpend += (o.pricing?.grandTotal || o.total || 0);
+
+                        const statusColor = o.status.includes('Selesai') ? 'text-green-600 bg-green-50' : 'text-orange-600 bg-orange-50';
+                        
+                        // Items Preview
+                        const itemsPreview = o.items ? o.items.map(i => i.name).join(', ') : o.productName;
+
+                        const html = `
+                            <div class="p-4 hover:bg-stone-50 transition-colors cursor-pointer group">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <span class="text-[10px] font-bold text-stone-400 uppercase">#${o.orderId || id.slice(-6)}</span>
+                                        <h4 class="font-bold text-sm text-stone-900 mt-1">${itemsPreview}</h4>
+                                    </div>
+                                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${statusColor}">${o.status}</span>
+                                </div>
+                                <div class="flex justify-between items-end">
+                                    <p class="text-xs text-stone-500">${new Date(o.timestamp).toLocaleDateString()}</p>
+                                    <p class="text-sm font-bold text-stone-900">IDR ${(o.pricing?.grandTotal || o.total).toLocaleString()}</p>
+                                </div>
+                            </div>
+                        `;
+                        list.innerHTML += html;
+                    });
+                }
+
+                // Update Stats Dashboard
+                document.getElementById('statOrders').textContent = count;
+                document.getElementById('statSpend').textContent = `IDR ${(totalSpend/1000).toFixed(0)}k`;
+            });
+        }
+
+        // 3. TAB SWITCHING LOGIC
+        window.switchTab = (tabName) => {
+            // Hide all
+            document.querySelectorAll('.content-tab').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-stone-900', 'text-white', 'shadow-lg');
+                el.classList.add('text-stone-500', 'hover:bg-stone-50');
+            });
+
+            // Show selected
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            
+            // Highlight Button (Cari button yang onclick-nya match)
+            // Simpelnya kita refresh style active manual di sini agak ribet select element by onclick text.
+            // Biar gampang, styling active state saya handle sederhana via class toggle saat klik (logic UI only).
+            event.currentTarget.classList.remove('text-stone-500', 'hover:bg-stone-50');
+            event.currentTarget.classList.add('bg-stone-900', 'text-white', 'shadow-lg');
+        };
+
+        // 4. SAVE PROFILE
         document.getElementById('profileForm').addEventListener('submit', (e) => {
             e.preventDefault();
             if(!currentUser) return;
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.textContent = "Menyimpan...";
 
             set(ref(db, 'users/' + currentUser.uid), {
                 email: currentUser.email,
@@ -88,12 +390,45 @@
                 phone: document.getElementById('pPhone').value,
                 address: document.getElementById('pAddress').value
             }).then(() => {
-                alert('Data berhasil disimpan! Checkout akan lebih cepat.');
+                btn.textContent = "Tersimpan!";
+                setTimeout(() => btn.textContent = "Simpan Perubahan", 2000);
+                // Reload orders if phone changed
+                loadOrderHistory(currentUser);
             });
         });
 
+        // 5. SHARE CARD FEATURE (Web Share API)
+        window.shareCard = async () => {
+            const name = document.getElementById('cardName').textContent;
+            const shareData = {
+                title: 'Haken Member Card',
+                text: `Halo, saya ${name} adalah member Haken Studio! Cek katalog rajutan keren di sini.`,
+                url: window.location.origin // Link website utama
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    alert('Screenshot kartu ini untuk membagikannya!');
+                }
+            } catch (err) {
+                console.log('Error sharing:', err);
+            }
+        };
+
+        // LOGOUT
         document.getElementById('btnLogout').addEventListener('click', () => {
             signOut(auth).then(() => window.location.href = 'index.html');
+        });
+
+        // MOBILE MENU TOGGLE
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('fixed');
+            sidebar.classList.toggle('inset-0');
+            sidebar.classList.toggle('z-50');
         });
     </script>
 </body>
