@@ -88,65 +88,50 @@
     </section>
 
     <div id="checkoutModal" class="hidden fixed inset-0 z-[100] bg-stone-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 transition-all opacity-0">
-        <div class="bg-white rounded-t-3xl md:rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl transition-transform translate-y-full md:translate-y-0 scale-95 duration-300 relative">
+        <div class="bg-white rounded-t-3xl md:rounded-3xl w-full max-w-sm max-h-[90vh] overflow-y-auto shadow-2xl transition-transform translate-y-full md:translate-y-0 scale-95 duration-300 relative">
             
-            <div id="submitOverlay" class="hidden absolute inset-0 bg-white/90 z-50 flex flex-col items-center justify-center text-center">
-                <div class="animate-spin w-10 h-10 border-4 border-stone-200 border-t-orange-600 rounded-full mb-4"></div>
-                <h3 class="font-bold text-lg">Memproses Pesanan...</h3>
-                <p class="text-sm text-stone-500">Mohon jangan tutup halaman ini.</p>
-            </div>
-
             <div class="sticky top-0 bg-white z-10 p-5 border-b border-stone-100 flex justify-between items-center">
-                <h2 class="font-serif font-bold text-lg text-stone-900">Buat Pesanan Baru</h2>
+                <h2 class="font-serif font-bold text-lg text-stone-900">Atur Pesanan</h2>
                 <button onclick="window.closeModal()" class="p-2 bg-stone-100 rounded-full hover:bg-stone-200 transition-colors">
                     <i data-lucide="x" class="w-5 h-5 text-stone-600"></i>
                 </button>
             </div>
             
             <div class="p-6 space-y-6">
-                <div class="flex gap-4 p-4 bg-stone-50 rounded-xl border border-stone-100">
-                    <img id="modalImg" src="" class="w-16 h-16 rounded-lg object-cover bg-white shadow-sm">
+                <div class="flex gap-4 items-center">
+                    <img id="modalImg" src="" class="w-20 h-20 rounded-xl object-cover bg-stone-50 border border-stone-100">
                     <div>
-                        <h3 id="modalName" class="font-bold text-stone-900 text-sm">Product Name</h3>
-                        <p id="modalPrice" class="text-xs text-orange-600 font-bold mt-1">IDR 0</p>
+                        <h3 id="modalName" class="font-bold text-stone-900 leading-tight mb-1">Product Name</h3>
+                        <p id="modalPrice" class="text-sm text-orange-600 font-bold">IDR 0</p>
                     </div>
                 </div>
 
-                <form id="orderForm" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Nama Pemesan</label>
-                        <input type="text" id="custName" class="w-full p-3 bg-white border border-stone-200 rounded-xl text-sm focus:border-orange-500 outline-none" placeholder="Nama Lengkap">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-stone-500 mb-2">Mau pesan berapa?</label>
+                    <div class="flex items-center border border-stone-200 rounded-xl overflow-hidden">
+                        <button onclick="changeQty(-1)" class="px-4 py-3 bg-stone-50 hover:bg-stone-100 active:bg-stone-200 transition-colors border-r border-stone-200 text-stone-600">
+                            <i data-lucide="minus" class="w-4 h-4"></i>
+                        </button>
+                        <input type="number" id="custQty" value="1" min="1" onchange="window.updateTotal()" class="flex-1 w-full text-center font-bold text-stone-900 outline-none p-2">
+                        <button onclick="changeQty(1)" class="px-4 py-3 bg-stone-50 hover:bg-stone-100 active:bg-stone-200 transition-colors border-l border-stone-200 text-stone-600">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Nomor HP</label>
-                            <input type="tel" id="custPhone" class="w-full p-3 bg-white border border-stone-200 rounded-xl text-sm focus:border-orange-500 outline-none" placeholder="08...">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Jumlah</label>
-                            <input type="number" id="custQty" value="1" min="1" onchange="window.updateTotal()" class="w-full p-3 bg-white border border-stone-200 rounded-xl text-sm focus:border-orange-500 outline-none text-center font-bold">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-stone-500 mb-1.5">Alamat Pengiriman</label>
-                        <textarea id="custAddress" rows="2" class="w-full p-3 bg-white border border-stone-200 rounded-xl text-sm focus:border-orange-500 outline-none" placeholder="Alamat lengkap..."></textarea>
-                    </div>
-                </form>
+                </div>
             </div>
 
-            <div class="sticky bottom-0 bg-white p-5 border-t border-stone-100 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+            <div class="sticky bottom-0 bg-white p-5 border-t border-stone-100">
                 <div class="flex justify-between items-end mb-4">
-                    <span class="text-xs text-stone-500 font-bold uppercase">Total Tagihan</span>
+                    <span class="text-xs text-stone-500 font-bold uppercase">Subtotal</span>
                     <span id="grandTotal" class="text-2xl font-bold text-stone-900">IDR 0</span>
                 </div>
-                <button onclick="window.submitOrderAuto()" class="w-full py-3.5 bg-stone-900 text-white rounded-xl font-bold hover:bg-stone-800 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg">
-                    <i data-lucide="send" class="w-5 h-5"></i>
-                    Kirim Pesanan
+                <button onclick="window.addToCart()" class="w-full py-3.5 bg-stone-900 text-white rounded-xl font-bold hover:bg-orange-600 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg">
+                    <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                    Masuk Keranjang
                 </button>
             </div>
         </div>
     </div>
-
     <script>
         // --- KONFIGURASI DATABASE URL SAJA (AMAN KARENA NO WRITE ACCESS SELAIN DISINI) ---
         const DB_URL = "https://entry-6a64d-default-rtdb.firebaseio.com";
@@ -252,67 +237,68 @@
             document.getElementById('grandTotal').textContent = `IDR ${(currentProduct.finalPrice * qty).toLocaleString('id-ID')}`;
         };
 
-        // --- CORE FUNCTION: AUTO SUBMIT KE DB TANPA SDK ---
-        window.submitOrderAuto = async () => {
-            const name = document.getElementById('custName').value.trim();
-            const phone = document.getElementById('custPhone').value.trim();
-            const address = document.getElementById('custAddress').value.trim();
+        // Fungsi helper untuk tombol plus minus qty
+        window.changeQty = (delta) => {
+            const input = document.getElementById('custQty');
+            let val = parseInt(input.value) || 1;
+            val += delta;
+            if (val < 1) val = 1;
+            if (val > currentProduct.currentStock) {
+                val = currentProduct.currentStock;
+                alert("Stok maksimal tercapai!");
+            }
+            input.value = val;
+            window.updateTotal();
+        }
+
+        // FUNGSI BARU: SIMPAN KE LOCALSTORAGE (KERANJANG)
+        window.addToCart = () => {
             const qty = parseInt(document.getElementById('custQty').value);
+            
+            // 1. Validasi Stok
+            if(qty > currentProduct.currentStock) {
+                alert("Stok tidak mencukupi!");
+                return;
+            }
 
-            if(!name || !phone || !address) { alert("Mohon lengkapi semua data."); return; }
-
-            // Tampilkan Loading Overlay
-            document.getElementById('submitOverlay').classList.remove('hidden');
-
-            const orderData = {
+            // 2. Buat Data Item
+            const cartItem = {
                 productId: currentProduct.id,
-                productName: currentProduct.name,
+                name: currentProduct.name,
+                image: currentProduct.image,
+                price: currentProduct.finalPrice, // Harga yang sudah diproses (promo/normal)
+                weight: 100, // Default berat (opsional)
                 qty: qty,
-                total: currentProduct.finalPrice * qty,
-                customerName: name,
-                customerPhone: phone,
-                customerAddress: address,
-                status: 'Pesanan Baru (Menunggu Konfirmasi)', // Status awal
-                timestamp: Date.now(),
-                lastStatusUpdate: Date.now()
+                stockRef: currentProduct.currentStock
             };
 
-            try {
-                // 1. KIRIM DATA ORDER (POST REQUEST)
-                const resOrder = await fetch(`${DB_URL}/orders.json`, {
-                    method: 'POST',
-                    body: JSON.stringify(orderData),
-                    headers: { 'Content-Type': 'application/json' }
-                });
+            // 3. Ambil Keranjang Lama dari Browser
+            let cart = JSON.parse(localStorage.getItem('haken_cart') || '[]');
 
-                if(!resOrder.ok) throw new Error("Gagal kirim order");
-
-                // 2. UPDATE STOK (PATCH REQUEST)
-                // Note: Ini beresiko jika rules tidak mengizinkan write public.
-                // Jika error di sini, minimal order sudah masuk.
-                const stockPath = currentProduct.isPromo ? 'discountStock' : 'stock';
-                const newStock = currentProduct.currentStock - qty;
-                
-                await fetch(`${DB_URL}/products/${currentProduct.id}.json`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ [stockPath]: newStock }),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                // Sukses!
-                alert("Pesanan Berhasil Dibuat! Admin akan segera menghubungi Anda.");
-                window.location.reload();
-
-            } catch (error) {
-                console.error(error);
-                alert("Terjadi kesalahan koneksi. Silakan coba lagi.");
-                document.getElementById('submitOverlay').classList.add('hidden');
+            // 4. Cek Duplicate (Kalau produk udah ada, tambah qty-nya aja)
+            const existingIndex = cart.findIndex(item => item.productId === cartItem.productId);
+            if (existingIndex > -1) {
+                // Cek limit stok lagi sebelum nambah
+                if (cart[existingIndex].qty + qty > currentProduct.currentStock) {
+                    alert("Total qty di keranjang melebihi stok yang tersedia!");
+                    return;
+                }
+                cart[existingIndex].qty += qty;
+            } else {
+                cart.push(cartItem);
             }
-        };
 
-        function showError() {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('errorState').classList.remove('hidden');
+            // 5. Simpan Balik
+            localStorage.setItem('haken_cart', JSON.stringify(cart));
+
+            // 6. Tutup Modal & Kasih Respon
+            window.closeModal();
+            
+            // Animasi Feedback (Opsional)
+            alert("Produk berhasil masuk keranjang!");
+            
+            // Redirect opsional (Mau langsung belanja lagi atau ke checkout?)
+            // window.location.href = 'index.html'; 
         }
     </script>
 </body>
