@@ -36,7 +36,14 @@
         .dark ::-webkit-scrollbar-thumb { background: #44403c; }
         
         /* UI Components */
-        .glass-nav { @apply backdrop-blur-2xl bg-white/70 dark:bg-stone-950/70 border-stone-200/50 dark:border-stone-800/50; }
+        .glass-nav { 
+            @apply backdrop-blur-xl border-stone-200 dark:border-stone-800;
+            background-color: rgba(255, 255, 255, 0.85);
+        }
+        .dark .glass-nav {
+            background-color: rgba(12, 10, 9, 0.85);
+        }
+
         .input-field { 
             @apply w-full p-3 rounded-xl text-sm border outline-none transition-colors;
             @apply bg-white border-stone-200 text-stone-900 focus:border-orange-500;
@@ -45,9 +52,6 @@
         .btn-primary { @apply py-2.5 px-5 bg-stone-900 dark:bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-stone-200 dark:shadow-orange-900/20 hover:scale-[1.02] active:scale-95 transition-all; }
         .btn-secondary { @apply py-2.5 px-5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 rounded-xl font-bold hover:bg-stone-50 dark:hover:bg-stone-700 transition-all; }
         
-        .tab-btn { @apply px-6 py-3 text-sm font-bold border-b-2 border-transparent text-stone-400 transition-colors; }
-        .tab-btn.active { @apply border-orange-500 text-stone-900 dark:text-white; }
-
         .animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -175,8 +179,7 @@
                 <pre id="jsonViewer" class="text-xs font-mono text-stone-600 dark:text-stone-400 whitespace-pre-wrap"></pre>
             </div>
             <div class="mt-6 flex gap-3">
-                <button id="btnCopyJson" class="btn-secondary w-full">Copy JSON</button>
-                <button id="btnDeleteRecord" class="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 font-bold py-2.5 px-5 rounded-xl w-full hover:bg-red-100 transition-colors">Hapus Data</button>
+                <button id="btnDeleteRecord" class="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 font-bold py-2.5 px-5 rounded-xl w-full hover:bg-red-100 transition-colors">Hapus Data Permanen</button>
             </div>
         </div>
     </div>
@@ -238,7 +241,7 @@
                 if(currentView === 'users') renderUsers();
             });
 
-            // Load Orders
+            // Load Orders (Smart Logic)
             onValue(ref(db, 'orders'), (snap) => {
                 rawDataOrders = snap.val() || {};
                 if(currentView === 'orders') renderOrders();
@@ -312,47 +315,71 @@
             lucide.createIcons();
         }
 
+        // --- SINKRONISASI DATA PESANAN (SMART MAPPING) ---
         function renderOrders(filter = '') {
             const tbody = document.getElementById('tableOrders');
             tbody.innerHTML = '';
+            
             const orders = Object.entries(rawDataOrders)
-                .sort((a,b) => b.val.timestamp - a.val.timestamp)
-                .filter(([id, o]) => 
-                    (o.customerName || '').toLowerCase().includes(filter) || id.includes(filter)
-                );
+                .sort((a,b) => b.val().timestamp - a.val().timestamp);
 
-            document.getElementById('pageSubtitle').textContent = `Total: ${orders.length} Transaksi`;
+            let displayCount = 0;
 
             orders.forEach(([id, o]) => {
-                const date = new Date(o.timestamp).toLocaleDateString();
-                let statusColor = 'text-stone-500 bg-stone-100 dark:bg-stone-800';
-                if(o.status.includes('Selesai')) statusColor = 'text-green-600 bg-green-50 dark:bg-green-900/20';
-                if(o.status.includes('Batal')) statusColor = 'text-red-600 bg-red-50 dark:bg-red-900/20';
+                // SINKRONISASI: Baca format baru (o.customer) dan format lama (o.customerName)
+                const custName = o.customer ? o.customer.name : (o.customerName || 'Unknown');
+                const custPhone = o.customer ? o.customer.phone : (o.customerPhone || '-');
+                const grandTotal = o.pricing ? o.pricing.grandTotal : (o.total || 0);
+                
+                // Produk Display
+                let productDisplay = '';
+                let qtyDisplay = 0;
 
-                tbody.innerHTML += `
-                    <tr class="hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors">
-                        <td class="p-6">
-                            <div class="font-bold text-stone-900 dark:text-white">#${id.slice(-6)}</div>
-                            <div class="text-xs text-stone-400">${date}</div>
-                        </td>
-                        <td class="p-6">
-                            <div class="font-bold text-stone-800 dark:text-stone-200">${o.customerName}</div>
-                            <div class="text-xs text-stone-400">${o.customerPhone}</div>
-                        </td>
-                        <td class="p-6">
-                            <div class="text-sm text-stone-600 dark:text-stone-300">${o.productName}</div>
-                            <div class="text-xs text-stone-400">Qty: ${o.qty}</div>
-                        </td>
-                        <td class="p-6">
-                            <div class="font-bold text-stone-900 dark:text-white">Rp ${parseInt(o.total).toLocaleString()}</div>
-                            <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase ${statusColor}">${o.status}</span>
-                        </td>
-                        <td class="p-6 text-right">
-                            <button onclick="window.inspectData('orders', '${id}')" class="text-stone-400 hover:text-stone-900 dark:hover:text-white"><i data-lucide="eye" class="w-5 h-5"></i></button>
-                        </td>
-                    </tr>
-                `;
+                if (o.items && Array.isArray(o.items)) {
+                    productDisplay = o.items.map(i => `${i.name} (x${i.qty})`).join(', ');
+                    qtyDisplay = o.items.reduce((sum, i) => sum + parseInt(i.qty), 0);
+                } else {
+                    productDisplay = o.productName || 'Produk';
+                    qtyDisplay = o.qty || 1;
+                }
+
+                // Filter logic
+                if(custName.toLowerCase().includes(filter) || id.includes(filter)) {
+                    displayCount++;
+                    const date = new Date(o.timestamp).toLocaleDateString();
+                    
+                    let statusColor = 'text-stone-500 bg-stone-100 dark:bg-stone-800';
+                    if(o.status.includes('Selesai') || o.status.includes('Diterima')) statusColor = 'text-green-600 bg-green-50 dark:bg-green-900/20';
+                    if(o.status.includes('Batal')) statusColor = 'text-red-600 bg-red-50 dark:bg-red-900/20';
+                    if(o.status.includes('Menunggu') || o.status.includes('Ditinjau')) statusColor = 'text-orange-600 bg-orange-50 dark:bg-orange-900/20';
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors">
+                            <td class="p-6">
+                                <div class="font-bold text-stone-900 dark:text-white">#${o.orderId || id.slice(-6)}</div>
+                                <div class="text-xs text-stone-400">${date}</div>
+                            </td>
+                            <td class="p-6">
+                                <div class="font-bold text-stone-800 dark:text-stone-200">${custName}</div>
+                                <div class="text-xs text-stone-400">${custPhone}</div>
+                            </td>
+                            <td class="p-6">
+                                <div class="text-sm text-stone-600 dark:text-stone-300 max-w-xs truncate" title="${productDisplay}">${productDisplay}</div>
+                                <div class="text-xs text-stone-400">Total Qty: ${qtyDisplay}</div>
+                            </td>
+                            <td class="p-6">
+                                <div class="font-bold text-stone-900 dark:text-white">Rp ${parseInt(grandTotal).toLocaleString()}</div>
+                                <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase ${statusColor}">${o.status}</span>
+                            </td>
+                            <td class="p-6 text-right">
+                                <button onclick="window.inspectData('orders', '${id}')" class="text-stone-400 hover:text-stone-900 dark:hover:text-white"><i data-lucide="eye" class="w-5 h-5"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }
             });
+            
+            document.getElementById('pageSubtitle').textContent = `Total: ${displayCount} Transaksi`;
             lucide.createIcons();
         }
 
@@ -374,6 +401,18 @@
             }
 
             if(data.length === 0) return alert("Tidak ada data untuk diexport.");
+
+            // Flat-kan data order untuk CSV agar rapi
+            if(currentView === 'orders') {
+                data = data.map(o => ({
+                    ID: o.orderId,
+                    Tanggal: new Date(o.timestamp).toLocaleString(),
+                    Nama: o.customer ? o.customer.name : o.customerName,
+                    HP: o.customer ? o.customer.phone : o.customerPhone,
+                    Total: o.pricing ? o.pricing.grandTotal : o.total,
+                    Status: o.status
+                }));
+            }
 
             const keys = Object.keys(data[0]);
             const csvContent = [
@@ -398,7 +437,10 @@
             // Delete Logic
             document.getElementById('btnDeleteRecord').onclick = () => {
                 if(confirm('Yakin hapus data ini permanen? Data yang hilang tidak bisa kembali.')) {
-                    remove(ref(db, `${type}/${id}`)).then(() => modal.classList.add('hidden'));
+                    remove(ref(db, `${type}/${id}`)).then(() => {
+                        modal.classList.add('hidden');
+                        alert("Data terhapus.");
+                    });
                 }
             };
         };
