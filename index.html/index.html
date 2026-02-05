@@ -640,110 +640,88 @@
 </footer>
 
     <!-- JAVASCRIPT LOGIC -->
-    <script type="module">
-        import { db, ref, onValue } from './admin.html';
-
-        const container = document.getElementById('shopContainer');
-        const searchInput = document.getElementById('searchInput'); 
-
-        // Tampilkan Loading
-        if(container) {
-            container.innerHTML = `
-                <div class="col-span-full text-center py-20">
-                    <div class="animate-spin w-8 h-8 border-4 border-stone-200 border-t-orange-600 rounded-full mx-auto mb-4"></div>
-                    <p class="text-stone-400">Sedang mengambil data terbaru...</p>
-                </div>
-            `;
-
-            // Ambil Data
-            const productRef = ref(db, 'products');
+<script>
+        function loadCollectionFromBridge() {
+            const container = document.getElementById('shopContainer');
+            const searchInput = document.getElementById('searchInput');
             
-            onValue(productRef, (snapshot) => {
-                container.innerHTML = ''; 
-                const data = snapshot.val();
+            // Mengambil data dari memori browser yang dikirim oleh admin.html
+            const rawData = localStorage.getItem('haken_public_collection');
 
-                if (data) {
-                    Object.entries(data).forEach(([id, product]) => {
-                        
-                        let badgeHTML = '';
-                        let btnHTML = '';
+            if (!rawData) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-20 text-stone-400">
+                        <p class="italic text-sm">Menunggu sinkronisasi katalog...</p>
+                        <p class="text-[10px] mt-2">(Harap buka halaman Admin sekali untuk mengirim data ke sini)</p>
+                    </div>`;
+                return;
+            }
 
-                        // Logic Stok
-                        if (parseInt(product.stock) <= 0) {
-                            badgeHTML = '<span class="absolute top-4 left-4 px-3 py-1 bg-stone-500 text-white text-[10px] font-bold uppercase tracking-widest rounded shadow-md">Habis</span>';
-                            btnHTML = `<span class="block w-full text-center py-3 bg-stone-200 text-stone-400 rounded-xl text-sm font-bold cursor-not-allowed">Stok Habis</span>`;
-                        } else {
-                            if (parseInt(product.stock) < 5) {
-                                badgeHTML = '<span class="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest rounded shadow-md animate-pulse">Sisa Dikit</span>';
-                            }
-                            btnHTML = `<a href="detail-produk.html?id=${id}" class="block w-full text-center py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-colors shadow-lg shadow-stone-200">Lihat Detail</a>`;
-                        }
+            const data = JSON.parse(rawData);
+            container.innerHTML = ''; 
 
-                        // Render Card
-                        const cardHTML = `
-                            <div class="product-card group bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 hover:shadow-md transition-all hover:-translate-y-1">
-                                <div class="aspect-[4/3] bg-stone-100 relative overflow-hidden">
-                                    <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                    ${badgeHTML}
-                                </div>
-                                <div class="p-6">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <span class="text-xs font-semibold text-orange-600 uppercase tracking-wider text-card-cat">${product.category}</span>
-                                        <span class="font-bold text-stone-900">IDR ${parseInt(product.price).toLocaleString('id-ID')}</span>
-                                    </div>
-                                    <h3 class="product-name text-lg font-bold text-stone-900 mb-2 line-clamp-1">${product.name}</h3>
-                                    <p class="text-stone-500 text-sm mb-6 line-clamp-2">${product.desc || 'Produk rajutan handmade berkualitas.'}</p>
-                                    ${btnHTML}
-                                </div>
-                            </div>
-                        `;
-                        container.innerHTML += cardHTML;
-                    });
-                    
-                    // Re-init icons setelah render produk
-                    if(window.lucide) window.lucide.createIcons();
-
-                } else {
-                    container.innerHTML = `<div class="col-span-full text-center py-20 text-stone-400 border-2 border-dashed border-stone-100 rounded-3xl"><p>Belum ada produk yang dirilis.</p></div>`;
-                }
-            });
-        }
-
-        // Search Logic
-        if(searchInput) {
-            searchInput.addEventListener('keyup', (e) => {
-                const keyword = e.target.value.toLowerCase();
-                const cards = document.querySelectorAll('.product-card');
-                cards.forEach(card => {
-                    const name = card.querySelector('.product-name').textContent.toLowerCase();
-                    card.style.display = name.includes(keyword) ? 'block' : 'none';
-                });
-            });
-        }
-        
-        // Filter Logic Global Function
-        window.filterProducts = (category) => {
-            const btns = document.querySelectorAll('.filter-btn');
-            btns.forEach(b => {
-                if(b.dataset.filter === category) {
-                    b.classList.remove('bg-white', 'text-stone-600', 'border', 'hover:bg-stone-50');
-                    b.classList.add('bg-stone-900', 'text-white', 'shadow-lg');
-                } else {
-                    b.classList.add('bg-white', 'text-stone-600', 'border', 'hover:bg-stone-50');
-                    b.classList.remove('bg-stone-900', 'text-white', 'shadow-lg');
-                }
-            });
-
-            const cards = document.querySelectorAll('.product-card');
-            cards.forEach(card => {
-                const cardCatEl = card.querySelector('.text-card-cat');
-                const cardCat = cardCatEl ? cardCatEl.textContent : "";
+            // Proses render produk
+            Object.entries(data).reverse().forEach(([id, product]) => {
+                const stock = parseInt(product.stock) || 0;
+                const isPromo = product.discountStock > 0 && stock > 0;
                 
-                if(category === 'all' || cardCat.includes(category.toUpperCase())) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
+                let badgeHTML = '';
+                if (stock <= 0) {
+                    badgeHTML = '<span class="absolute top-4 left-4 px-3 py-1 bg-stone-500 text-white text-[10px] font-bold uppercase rounded z-10">Habis</span>';
+                } else if (isPromo) {
+                    badgeHTML = '<span class="absolute top-4 left-4 px-3 py-1 bg-orange-600 text-white text-[10px] font-bold uppercase rounded z-10">PROMO</span>';
                 }
+
+                const priceHTML = isPromo 
+                    ? `<span class="line-through text-stone-400 text-xs mr-2">IDR ${parseInt(product.price).toLocaleString()}</span><span class="text-orange-600 font-bold">IDR ${parseInt(product.discountPrice).toLocaleString()}</span>`
+                    : `<span class="font-bold text-stone-900">IDR ${parseInt(product.price).toLocaleString()}</span>`;
+
+                const btnHTML = stock <= 0 
+                    ? `<button disabled class="w-full py-3 bg-stone-100 text-stone-400 rounded-xl text-sm font-bold cursor-not-allowed">Stok Habis</button>`
+                    : `<a href="detail-produk.html?id=${id}" class="block w-full text-center py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-colors">Lihat Detail</a>`;
+
+                container.innerHTML += `
+                    <div class="product-card group bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 transition-all hover:-translate-y-1">
+                        <div class="aspect-[4/3] bg-stone-100 relative overflow-hidden">
+                            <img src="${product.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://via.placeholder.com/400x300'">
+                            ${badgeHTML}
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[10px] font-bold text-orange-600 uppercase tracking-widest text-card-cat">${product.category}</span>
+                                <div class="text-sm">${priceHTML}</div>
+                            </div>
+                            <h3 class="product-name text-lg font-bold text-stone-900 mb-2 line-clamp-1">${product.name}</h3>
+                            <p class="text-stone-500 text-xs mb-6 line-clamp-2">${product.desc || 'No description available.'}</p>
+                            ${btnHTML}
+                        </div>
+                    </div>`;
+            });
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        // Jalankan fungsi
+        loadCollectionFromBridge();
+
+        // Otomatis update jika data di admin berubah (saat tab admin terbuka bersamaan)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'haken_public_collection') loadCollectionFromBridge();
+        });
+
+        // Fitur Pencarian (Search)
+        document.getElementById('searchInput')?.addEventListener('keyup', (e) => {
+            const keyword = e.target.value.toLowerCase();
+            document.querySelectorAll('.product-card').forEach(card => {
+                const name = card.querySelector('.product-name').textContent.toLowerCase();
+                card.style.display = name.includes(keyword) ? 'block' : 'none';
+            });
+        });
+
+        // Fitur Filter
+        window.filterProducts = (category) => {
+            document.querySelectorAll('.product-card').forEach(card => {
+                const cardCat = card.querySelector('.text-card-cat').textContent;
+                card.style.display = (category === 'all' || cardCat.includes(category.toUpperCase())) ? 'block' : 'none';
             });
         };
     </script>
