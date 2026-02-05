@@ -903,5 +903,49 @@
         
         document.oncontextmenu=new Function("alert(message);return false")
 </script>
+    <a href="checkout.html" id="floatingCart" class="hidden fixed bottom-6 right-6 z-50 group">
+        <div class="relative">
+            <div class="bg-stone-900 text-white p-4 rounded-full shadow-2xl shadow-stone-900/40 transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-1 flex items-center justify-center border-2 border-white/10">
+                <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+            </div>
+            
+            <div id="cartCount" class="absolute -top-1 -right-1 bg-orange-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white animate-bounce">
+                0
+            </div>
+
+            <div class="absolute bottom-full right-0 mb-3 px-3 py-1 bg-stone-800 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                Lihat Keranjang
+            </div>
+        </div>
+    </a>
+
+    <script>
+        function updateFloatingCart() {
+            // Cek data di memori browser
+            const cartData = JSON.parse(localStorage.getItem('haken_cart') || '[]');
+            const btn = document.getElementById('floatingCart');
+            const badge = document.getElementById('cartCount');
+
+            if (cartData.length > 0) {
+                // Hitung total item (bukan cuma jenis produk, tapi qty-nya)
+                const totalQty = cartData.reduce((sum, item) => sum + parseInt(item.qty), 0);
+                
+                badge.textContent = totalQty;
+                btn.classList.remove('hidden');
+                
+                // Efek animasi masuk
+                btn.classList.add('animate-fade-in-up');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        // Jalankan saat halaman dibuka
+        updateFloatingCart();
+        // Update real-time jika ada perubahan di tab lain
+        window.addEventListener('storage', updateFloatingCart);
+        // Pastikan icon muncul
+        if(window.lucide) lucide.createIcons();
+    </script>
 </body>
 </html>
