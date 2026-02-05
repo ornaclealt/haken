@@ -49,12 +49,12 @@
         .desk-nav { @apply w-full flex items-center gap-3 px-4 py-3 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800/50 rounded-xl text-sm font-medium transition-all duration-300; }
         .desk-nav.active { @apply bg-stone-900 dark:bg-orange-600 text-white shadow-lg shadow-stone-200 dark:shadow-orange-900/20 font-bold translate-x-1; }
         
-        /* --- FIX: INPUT FIELD DARK MODE --- */
+        /* --- PERBAIKAN 1: INPUT FIELD DARK MODE --- */
         .input-field { 
             @apply w-full p-4 rounded-xl text-sm border outline-none transition-colors duration-200;
-            /* Light Mode Style */
+            /* Light Mode */
             @apply bg-white border-stone-200 text-stone-900 focus:border-orange-500; 
-            /* Dark Mode Style (Override) */
+            /* Dark Mode (FIXED) */
             @apply dark:bg-stone-800 dark:border-stone-700 dark:text-white dark:placeholder-stone-500 dark:focus:border-orange-500; 
         }
         
@@ -74,7 +74,7 @@
         .stat-card { @apply bg-white dark:bg-stone-900 p-6 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm hover:shadow-lg dark:hover:shadow-stone-900/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer active:scale-95; }
         .btn-primary { @apply py-3 px-6 bg-stone-900 dark:bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-stone-200 dark:shadow-orange-900/20 hover:scale-[1.02] active:scale-95 transition-all duration-300; }
 
-        /* NAVBAR GLUR & COLOR */
+        /* PERBAIKAN 4: NAVBAR BLUR & COLOR */
         .glass-nav { 
             @apply backdrop-blur-xl border-stone-200 dark:border-stone-800;
             background-color: rgba(255, 255, 255, 0.85);
@@ -401,9 +401,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
-        
-        // PERBAIKAN POIN 3: Hard Logout & Select Account
         const provider = new GoogleAuthProvider();
+        
+        // PERBAIKAN: Hard Logout
         provider.setCustomParameters({ prompt: 'select_account' });
 
         let salesChartInstance = null;
@@ -450,7 +450,6 @@
                         lucide.createIcons();
                         initAdmin(); 
                     } else {
-                        // Non-admin redirect
                         window.location.href = 'profile.html'; 
                     }
                 } catch (error) {
@@ -471,7 +470,7 @@
             loadSettings();
         }
 
-        // --- CHART & INSIGHT LOGIC (SINKRONISASI DATA V3: STRICT MODE) ---
+        // --- PERBAIKAN 2: SINKRONISASI DATA DASHBOARD ---
         function loadInsights() {
             onValue(ref(db, 'users'), (snap) => document.getElementById('statUsers').textContent = snap.exists() ? Object.keys(snap.val()).length : 0);
             
@@ -639,7 +638,7 @@
             });
         };
 
-        // --- ORDER LIST ---
+        // --- ORDER LIST (MAPPING V2) ---
         function loadOrders() {
             onValue(ref(db, 'orders'), (snapshot) => {
                 const list = document.getElementById('orderList');
@@ -647,12 +646,11 @@
                 const data = snapshot.val();
                 
                 if(data) {
-                    // Filter dan Urutkan
                     const orders = Object.entries(data).sort((a,b) => b.val().timestamp - a.val().timestamp);
                     let validOrderCount = 0;
 
                     orders.forEach(([id, o]) => {
-                        // VALIDASI: Data harus punya nama customer. Jika tidak, skip.
+                        // VALIDASI: Data harus punya nama customer.
                         const custName = o.customer ? o.customer.name : (o.customerName || null);
                         
                         if (custName) {
