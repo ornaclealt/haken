@@ -641,74 +641,77 @@
 
     <!-- JAVASCRIPT LOGIC -->
 <script>
-        function loadCollectionFromBridge() {
+        async function fetchHakenKatalog() {
             const container = document.getElementById('shopContainer');
-            const searchInput = document.getElementById('searchInput');
             
-            // Mengambil data dari memori browser yang dikirim oleh admin.html
-            const rawData = localStorage.getItem('haken_public_collection');
+            // Tampilkan loading saat mengambil data
+            container.innerHTML = `<div class="col-span-full text-center py-20 text-stone-400">Menghubungkan ke database...</div>`;
 
-            if (!rawData) {
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-20 text-stone-400">
-                        <p class="italic text-sm">Menunggu sinkronisasi katalog...</p>
-                        <p class="text-[10px] mt-2">(Harap buka halaman Admin sekali untuk mengirim data ke sini)</p>
-                    </div>`;
-                return;
-            }
+            try {
+                // MENGAMBIL DATA LANGSUNG LEWAT JALUR REST API (TANPA API KEY)
+                const response = await fetch('https://entry-6a64d-default-rtdb.firebaseio.com/products.json');
+                const data = await response.json();
 
-            const data = JSON.parse(rawData);
-            container.innerHTML = ''; 
-
-            // Proses render produk
-            Object.entries(data).reverse().forEach(([id, product]) => {
-                const stock = parseInt(product.stock) || 0;
-                const isPromo = product.discountStock > 0 && stock > 0;
-                
-                let badgeHTML = '';
-                if (stock <= 0) {
-                    badgeHTML = '<span class="absolute top-4 left-4 px-3 py-1 bg-stone-500 text-white text-[10px] font-bold uppercase rounded z-10">Habis</span>';
-                } else if (isPromo) {
-                    badgeHTML = '<span class="absolute top-4 left-4 px-3 py-1 bg-orange-600 text-white text-[10px] font-bold uppercase rounded z-10">PROMO</span>';
+                if (!data) {
+                    container.innerHTML = `<div class="col-span-full text-center py-20 text-stone-400 italic">Belum ada produk yang dirilis.</div>`;
+                    return;
                 }
 
-                const priceHTML = isPromo 
-                    ? `<span class="line-through text-stone-400 text-xs mr-2">IDR ${parseInt(product.price).toLocaleString()}</span><span class="text-orange-600 font-bold">IDR ${parseInt(product.discountPrice).toLocaleString()}</span>`
-                    : `<span class="font-bold text-stone-900">IDR ${parseInt(product.price).toLocaleString()}</span>`;
+                container.innerHTML = ''; // Bersihkan loading
 
-                const btnHTML = stock <= 0 
-                    ? `<button disabled class="w-full py-3 bg-stone-100 text-stone-400 rounded-xl text-sm font-bold cursor-not-allowed">Stok Habis</button>`
-                    : `<a href="detail-produk.html?id=${id}" class="block w-full text-center py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-colors">Lihat Detail</a>`;
+                // Render produk (Urutan terbaru di atas)
+                Object.entries(data).reverse().forEach(([id, product]) => {
+                    const stock = parseInt(product.stock) || 0;
+                    const isPromo = product.discountStock > 0 && stock > 0;
+                    
+                    let badgeHTML = '';
+                    if (stock <= 0) {
+                        badgeHTML = '<span class="absolute top-4 left-4 px-3 py-1 bg-stone-500 text-white text-[10px] font-bold uppercase rounded z-10">Habis</span>';
+                    } else if (isPromo) {
+                        badgeHTML = '<span class="absolute top-4 left-4 px-3 py-1 bg-orange-600 text-white text-[10px] font-bold uppercase rounded z-10">PROMO</span>';
+                    } else if (stock < 5) {
+                        badgeHTML = '<span class="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-[10px] font-bold uppercase rounded z-10 animate-pulse">Sisa Dikit</span>';
+                    }
 
-                container.innerHTML += `
-                    <div class="product-card group bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 transition-all hover:-translate-y-1">
-                        <div class="aspect-[4/3] bg-stone-100 relative overflow-hidden">
-                            <img src="${product.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://via.placeholder.com/400x300'">
-                            ${badgeHTML}
-                        </div>
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-[10px] font-bold text-orange-600 uppercase tracking-widest text-card-cat">${product.category}</span>
-                                <div class="text-sm">${priceHTML}</div>
+                    const priceHTML = isPromo 
+                        ? `<span class="line-through text-stone-400 text-xs mr-2">IDR ${parseInt(product.price).toLocaleString()}</span><span class="text-orange-600 font-bold">IDR ${parseInt(product.discountPrice).toLocaleString()}</span>`
+                        : `<span class="font-bold text-stone-900">IDR ${parseInt(product.price).toLocaleString()}</span>`;
+
+                    const btnHTML = stock <= 0 
+                        ? `<button disabled class="w-full py-3 bg-stone-100 text-stone-400 rounded-xl text-sm font-bold cursor-not-allowed">Stok Habis</button>`
+                        : `<a href="detail-produk.html?id=${id}" class="block w-full text-center py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-colors">Lihat Detail</a>`;
+
+                    container.innerHTML += `
+                        <div class="product-card group bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 transition-all hover:-translate-y-1">
+                            <div class="aspect-[4/3] bg-stone-100 relative overflow-hidden">
+                                <img src="${product.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://via.placeholder.com/400x300'">
+                                ${badgeHTML}
                             </div>
-                            <h3 class="product-name text-lg font-bold text-stone-900 mb-2 line-clamp-1">${product.name}</h3>
-                            <p class="text-stone-500 text-xs mb-6 line-clamp-2">${product.desc || 'No description available.'}</p>
-                            ${btnHTML}
-                        </div>
-                    </div>`;
-            });
-            if(window.lucide) window.lucide.createIcons();
+                            <div class="p-6">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-[10px] font-bold text-orange-600 uppercase tracking-widest text-card-cat">${product.category}</span>
+                                    <div class="text-sm">${priceHTML}</div>
+                                </div>
+                                <h3 class="product-name text-lg font-bold text-stone-900 mb-2 line-clamp-1">${product.name}</h3>
+                                <p class="text-stone-500 text-xs mb-6 line-clamp-2">${product.desc || 'No description.'}</p>
+                                ${btnHTML}
+                            </div>
+                        </div>`;
+                });
+
+                // Aktifkan kembali icon Lucide
+                if(window.lucide) window.lucide.createIcons();
+
+            } catch (error) {
+                console.error("Error Database:", error);
+                container.innerHTML = `<div class="col-span-full text-center py-20 text-red-400">Gagal memuat katalog. Pastikan database aktif.</div>`;
+            }
         }
 
-        // Jalankan fungsi
-        loadCollectionFromBridge();
+        // Jalankan saat halaman dibuka
+        fetchHakenKatalog();
 
-        // Otomatis update jika data di admin berubah (saat tab admin terbuka bersamaan)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'haken_public_collection') loadCollectionFromBridge();
-        });
-
-        // Fitur Pencarian (Search)
+        // Fitur Cari
         document.getElementById('searchInput')?.addEventListener('keyup', (e) => {
             const keyword = e.target.value.toLowerCase();
             document.querySelectorAll('.product-card').forEach(card => {
@@ -717,7 +720,7 @@
             });
         });
 
-        // Fitur Filter
+        // Fitur Filter Kategori
         window.filterProducts = (category) => {
             document.querySelectorAll('.product-card').forEach(card => {
                 const cardCat = card.querySelector('.text-card-cat').textContent;
