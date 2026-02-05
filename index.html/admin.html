@@ -693,6 +693,8 @@
             onValue(ref(db, 'products'), (snap) => {
                 tbody.innerHTML = ''; select.innerHTML = '<option value="">Pilih Produk...</option>'; discList.innerHTML = '';
                 const data = snap.val();
+                // Protokol Sinkronisasi: Kirim data ke index.html via LocalStorage
+                if (data) localStorage.setItem('haken_public_collection', JSON.stringify(data));
                 if(data) {
                     Object.entries(data).forEach(([id, p]) => {
                         const hasPromo = p.discountStock > 0;
