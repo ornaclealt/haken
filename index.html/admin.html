@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Haken Admin Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haken Command Center</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -14,381 +14,293 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Merriweather', 'serif'],
-                    },
-                    colors: {
-                        stone: { 850: '#1c1917', 950: '#0c0a09' }
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out',
-                        'slide-up': 'slideUp 0.4s ease-out',
-                    },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { 
+                        brand: { 500: '#f97316', 600: '#ea580c', 900: '#7c2d12' },
+                        dark: { 800: '#1c1917', 900: '#0c0a09' }
                     }
                 }
             }
         }
     </script>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); 
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
         
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 3px; }
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #44403c; }
+
+        /* Glass Components */
+        .glass-panel { @apply bg-white/80 dark:bg-dark-900/80 backdrop-blur-xl border border-gray-100 dark:border-gray-800; }
         
-        /* UI Components */
-        .desk-nav { @apply w-full flex items-center gap-3 px-4 py-3 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800/50 rounded-xl text-sm font-medium transition-all duration-300; }
-        .desk-nav.active { @apply bg-stone-900 dark:bg-orange-600 text-white shadow-lg shadow-stone-200 dark:shadow-orange-900/20 font-bold translate-x-1; }
-        
-        /* --- PERBAIKAN 1: INPUT FIELD DARK MODE --- */
-        .input-field { 
-            @apply w-full p-4 rounded-xl text-sm border outline-none transition-colors duration-200;
-            /* Light Mode */
-            @apply bg-white border-stone-200 text-stone-900 focus:border-orange-500; 
-            /* Dark Mode (FIXED) */
-            @apply dark:bg-stone-800 dark:border-stone-700 dark:text-white dark:placeholder-stone-500 dark:focus:border-orange-500; 
-        }
-        
-        /* Fix Select Arrow Color in Dark Mode */
-        .dark select.input-field { 
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); 
-            background-position: right 0.5rem center; 
-            background-repeat: no-repeat; 
-            background-size: 1.5em 1.5em; 
-            padding-right: 2.5rem; 
+        /* Inputs */
+        .input-modern { 
+            @apply w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all;
+            @apply bg-gray-50 border border-gray-200 text-gray-900 focus:border-brand-600 focus:ring-2 focus:ring-brand-100;
+            @apply dark:bg-dark-800 dark:border-gray-700 dark:text-white dark:focus:border-brand-600 dark:focus:ring-brand-900;
         }
 
-        .chart-btn { @apply flex-1 md:flex-none px-4 py-2 text-xs font-bold rounded-lg border text-center transition-all duration-200 active:scale-95 select-none; }
-        .chart-btn-inactive { @apply border-stone-200 text-stone-500 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-400 dark:hover:bg-stone-800; }
-        .chart-btn-active { @apply bg-stone-900 text-white border-stone-900 dark:bg-orange-600 dark:border-orange-600 dark:text-white shadow-md transform scale-105; }
-
-        .stat-card { @apply bg-white dark:bg-stone-900 p-6 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm hover:shadow-lg dark:hover:shadow-stone-900/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer active:scale-95; }
-        .btn-primary { @apply py-3 px-6 bg-stone-900 dark:bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-stone-200 dark:shadow-orange-900/20 hover:scale-[1.02] active:scale-95 transition-all duration-300; }
-
-        /* PERBAIKAN 4: NAVBAR BLUR & COLOR */
-        .glass-nav { 
-            @apply backdrop-blur-xl border-stone-200 dark:border-stone-800;
-            background-color: rgba(255, 255, 255, 0.85);
-        }
-        .dark .glass-nav {
-            background-color: rgba(12, 10, 9, 0.85);
-        }
-        
-        .mob-nav { @apply p-2 rounded-xl text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors; }
-        .mob-nav.active { @apply bg-stone-100 dark:bg-stone-800 text-orange-600 dark:text-orange-500 shadow-sm; }
+        /* Sidebar Link Active State */
+        .nav-item.active { @apply bg-brand-50 text-brand-600 dark:bg-brand-900/20 dark:text-brand-500 border-r-4 border-brand-600; }
     </style>
 </head>
-<body class="bg-[#FDFCFC] dark:bg-stone-950 text-stone-800 dark:text-stone-200 h-screen overflow-hidden transition-colors duration-500">
+<body class="bg-gray-50 dark:bg-black text-gray-800 dark:text-gray-200 h-screen flex overflow-hidden transition-colors duration-300">
 
-    <div id="loginGate" class="fixed inset-0 z-[100] bg-stone-50/50 dark:bg-stone-950/80 backdrop-blur-xl flex items-center justify-center p-4 transition-all duration-500">
-        <div class="bg-white dark:bg-stone-900 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl border border-white/20 dark:border-stone-800 relative overflow-hidden animate-slide-up">
-            <div class="w-24 h-24 bg-stone-50 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
-                <i data-lucide="shield-check" class="w-10 h-10 text-stone-900 dark:text-orange-500"></i>
+    <div id="loginGate" class="fixed inset-0 z-[100] bg-gray-50 dark:bg-black flex items-center justify-center p-6">
+        <div class="max-w-sm w-full text-center space-y-8 animate-fade-in">
+            <div class="inline-flex p-4 rounded-3xl bg-brand-600 shadow-2xl shadow-brand-500/30">
+                <i data-lucide="command" class="w-10 h-10 text-white"></i>
             </div>
-            <h2 class="text-3xl font-serif font-bold mb-2 text-stone-900 dark:text-white">Haken Admin</h2>
-            <p class="text-stone-500 dark:text-stone-400 text-sm mb-10">Secure Database Access.</p>
-            <button id="btnLogin" class="w-full py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-95 hover:shadow-xl transition-all">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
-                <span>Masuk dengan Google</span>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Haken Command.</h1>
+                <p class="text-gray-500 mt-2 text-sm">Verifikasi identitas Admin diperlukan.</p>
+            </div>
+            <button id="btnLogin" class="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-black rounded-2xl font-bold hover:scale-[1.02] transition-transform flex items-center justify-center gap-3">
+                <i data-lucide="lock" class="w-4 h-4"></i> Masuk Secure Area
             </button>
-            <p id="loginStatus" class="text-orange-600 text-xs mt-8 font-bold animate-pulse hidden tracking-widest uppercase">Verifying Access...</p>
         </div>
     </div>
 
-    <div id="dashboardUI" class="flex h-full hidden flex-col md:flex-row transition-opacity duration-500 opacity-0">
-        
-        <aside class="hidden md:flex w-72 bg-white dark:bg-stone-900 border-r border-stone-100 dark:border-stone-800 flex-col z-20">
-            <div class="p-8">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg shadow-orange-500/30">H</div>
-                    <div>
-                        <span class="text-xl font-bold tracking-tight text-stone-900 dark:text-white block">Haken.</span>
-                        <span class="text-[10px] text-stone-400 uppercase tracking-widest font-bold">Control Center</span>
-                    </div>
-                </div>
-                <div class="p-4 bg-stone-50 dark:bg-stone-800/50 rounded-2xl border border-stone-100 dark:border-stone-700/50 mb-2 flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-xs font-bold">A</div>
-                    <div class="overflow-hidden">
-                        <p class="text-[10px] text-stone-400 font-bold uppercase">Admin</p>
-                        <p id="adminEmailDisplay" class="text-xs font-bold truncate">...</p>
-                    </div>
-                </div>
+    <aside class="hidden md:flex w-72 flex-col bg-white dark:bg-dark-900 border-r border-gray-100 dark:border-gray-800 z-20">
+        <div class="p-8">
+            <div class="flex items-center gap-3 text-brand-600">
+                <i data-lucide="hexagon" class="w-8 h-8 fill-current"></i>
+                <span class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Haken.</span>
             </div>
+        </div>
 
-            <nav class="flex-1 px-6 space-y-2 overflow-y-auto no-scrollbar">
-                <button onclick="window.switchTab('insight')" id="desk-insight" class="desk-nav active"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard</button>
-                <button onclick="window.switchTab('orders')" id="desk-orders" class="desk-nav"><i data-lucide="shopping-bag" class="w-4 h-4"></i> Pesanan</button>
-                <button onclick="window.switchTab('products')" id="desk-products" class="desk-nav"><i data-lucide="package" class="w-4 h-4"></i> Inventaris</button>
-                <button onclick="window.switchTab('discounts')" id="desk-discounts" class="desk-nav"><i data-lucide="ticket-percent" class="w-4 h-4"></i> Promo</button>
-                <button onclick="window.switchTab('settings')" id="desk-settings" class="desk-nav"><i data-lucide="settings" class="w-4 h-4"></i> Pengaturan</button>
-            </nav>
-
-            <div class="p-6 border-t border-stone-50 dark:border-stone-800 space-y-4">
-                <button onclick="window.toggleDarkMode()" class="w-full flex items-center justify-between px-4 py-3 bg-stone-50 dark:bg-stone-800 rounded-xl text-xs font-bold dark:text-white">
-                    <span class="dark:hidden flex items-center gap-2"><i data-lucide="moon" class="w-4 h-4"></i> Dark Mode</span>
-                    <span class="hidden dark:flex items-center gap-2 text-orange-400"><i data-lucide="sun" class="w-4 h-4"></i> Light Mode</span>
-                </button>
-                <button onclick="window.logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors">
-                    <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
-                </button>
-            </div>
-        </aside>
-
-        <main class="flex-1 overflow-y-auto bg-[#FDFCFC] dark:bg-stone-950 pb-24 md:pb-0 relative scroll-smooth" id="mainScroll">
-            
-            <div class="md:hidden sticky top-0 z-30 glass-nav px-6 py-4 flex justify-between items-center border-b border-stone-200 dark:border-stone-800 shadow-sm">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center text-white font-serif font-bold">H</div>
-                    <span class="font-bold text-lg dark:text-white">Admin</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="window.toggleDarkMode()" class="p-2 bg-stone-100 dark:bg-stone-800 rounded-full text-stone-600 dark:text-stone-300">
-                        <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
-                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                    </button>
-                    <button onclick="window.logout()" class="p-2 bg-red-50 dark:bg-red-900/20 rounded-full text-red-500"><i data-lucide="log-out" class="w-5 h-5"></i></button>
-                </div>
-            </div>
-
-            <div class="p-6 md:p-10 max-w-7xl mx-auto space-y-8 min-h-screen">
-                
-                <div id="tab-insight" class="animate-fade-in space-y-8">
-                    
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <h1 class="text-3xl font-bold text-stone-900 dark:text-white mb-1">Overview</h1>
-                            <p class="text-stone-500 dark:text-stone-400 text-sm">Monitor performa real-time.</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                        <div onclick="window.location.href='database.html'" class="stat-card group col-span-2 md:col-span-1 cursor-pointer hover:ring-2 hover:ring-orange-500 transition-all">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded-2xl">
-                                    <i data-lucide="users" class="w-6 h-6 text-stone-900 dark:text-white"></i>
-                                </div>
-                                    <span class="text-[10px] font-bold text-stone-400 bg-stone-50 dark:bg-stone-800 px-3 py-1 rounded-full">USER</span>
-                                </div>
-                            <h3 class="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-1" id="statUsers">0</h3>
-                            <p class="text-xs text-stone-500 dark:text-stone-400">Pengguna Terdaftar</p>
-                        </div>
-
-                        <div onclick="window.focusChart('day')" class="stat-card group hover:ring-2 hover:ring-orange-500">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-2xl"><i data-lucide="zap" class="w-6 h-6"></i></div>
-                            </div>
-                            <h3 class="text-2xl md:text-3xl font-bold text-stone-900 dark:text-white mb-1" id="statToday">Rp 0</h3>
-                            <p class="text-xs text-stone-500">Pendapatan Hari Ini</p>
-                        </div>
-
-                        <div onclick="window.focusChart('week')" class="stat-card group hover:ring-2 hover:ring-orange-500">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl"><i data-lucide="bar-chart-2" class="w-6 h-6"></i></div>
-                            </div>
-                            <h3 class="text-2xl md:text-3xl font-bold text-stone-900 dark:text-white mb-1" id="statWeek">Rp 0</h3>
-                            <p class="text-xs text-stone-500">Minggu Ini</p>
-                        </div>
-                        
-                        <div onclick="window.focusChart('month')" class="stat-card group hover:ring-2 hover:ring-orange-500">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-2xl"><i data-lucide="calendar" class="w-6 h-6"></i></div>
-                            </div>
-                            <h3 class="text-2xl md:text-3xl font-bold text-stone-900 dark:text-white mb-1" id="statMonth">Rp 0</h3>
-                            <p class="text-xs text-stone-500">Bulan Ini</p>
-                        </div>
-
-                        <div onclick="window.focusChart('total')" class="stat-card group col-span-2 hover:ring-2 hover:ring-green-500">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-3 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-2xl"><i data-lucide="wallet" class="w-6 h-6"></i></div>
-                                <span class="text-[10px] font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full">LIFETIME</span>
-                            </div>
-                            <h3 class="text-4xl font-bold text-stone-900 dark:text-white mb-1" id="statRevenue">Rp 0</h3>
-                            <p class="text-xs text-stone-500 dark:text-stone-400">Total Nilai Order (Semua Status)</p>
-                        </div>
-                    </div>
-
-                    <div id="chartSection" class="bg-white dark:bg-stone-900 p-6 md:p-8 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm relative overflow-hidden transition-all duration-500">
-                        <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 relative z-10">
-                            <div>
-                                <h2 class="text-xl font-bold text-stone-900 dark:text-white">Analitik Penjualan</h2>
-                                <p class="text-sm text-stone-400">Termasuk pesanan yang belum dibayar.</p>
-                            </div>
-                            <div class="flex flex-wrap gap-2 w-full md:w-auto justify-center md:justify-end">
-                                <button onclick="window.updateChart('day')" class="chart-btn chart-btn-inactive" id="btn-chart-day">24 Jam</button>
-                                <button onclick="window.updateChart('week')" class="chart-btn chart-btn-inactive" id="btn-chart-week">Minggu</button>
-                                <button onclick="window.updateChart('month')" class="chart-btn chart-btn-inactive" id="btn-chart-month">Bulan</button>
-                                <button onclick="window.updateChart('total')" class="chart-btn chart-btn-inactive" id="btn-chart-total">Total</button>
-                            </div>
-                        </div>
-                        
-                        <div class="relative h-80 w-full z-10">
-                            <canvas id="salesChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-orders" class="hidden animate-fade-in pb-20">
-                    <div class="flex justify-between items-center mb-8">
-                        <h1 class="text-3xl font-bold text-stone-900 dark:text-white">Pesanan Masuk</h1>
-                        <span id="orderCountBadge" class="px-4 py-1.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 text-xs font-bold rounded-full shadow-lg">0 Order</span>
-                    </div>
-                    <div id="orderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                </div>
-
-                <div id="tab-products" class="hidden animate-fade-in pb-20">
-                    <div class="flex justify-between items-center mb-8">
-                        <div>
-                            <h1 class="text-3xl font-bold text-stone-900 dark:text-white">Inventaris</h1>
-                            <p class="text-sm text-stone-400">Kelola katalog produk.</p>
-                        </div>
-                        <button onclick="window.openProductModal()" class="btn-primary flex items-center gap-2">
-                            <i data-lucide="plus" class="w-5 h-5"></i> <span class="hidden md:inline">Tambah Produk</span>
-                        </button>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-stone-900 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm whitespace-nowrap">
-                                <thead class="bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-400 font-bold uppercase text-xs tracking-wider">
-                                    <tr>
-                                        <th class="p-6">Produk</th>
-                                        <th class="p-6 hidden md:table-cell">Kategori</th> <th class="p-6">Stok & Harga</th>
-                                        <th class="p-6 text-right">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="productTableBody" class="divide-y divide-stone-50 dark:divide-stone-800 text-stone-600 dark:text-stone-300"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-discounts" class="hidden animate-fade-in pb-20">
-                    <h1 class="text-3xl font-bold text-stone-900 dark:text-white mb-8">Flash Sale</h1>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-2 bg-white dark:bg-stone-900 p-8 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm">
-                            <h3 class="font-bold text-lg mb-6 dark:text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-orange-500"></i> Buat Diskon Baru</h3>
-                            <div class="space-y-6">
-                                <div>
-                                    <label class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 block">1. Pilih Produk</label>
-                                    <div class="relative">
-                                        <select id="discProductSelect" class="input-field appearance-none cursor-pointer"></select>
-                                        <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none"></i>
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 block">2. Harga Promo (Rp)</label>
-                                        <input type="number" id="discPrice" class="input-field" placeholder="Contoh: 150000">
-                                    </div>
-                                    <div>
-                                        <label class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 block">3. Kuota (Pcs)</label>
-                                        <input type="number" id="discStock" class="input-field" placeholder="Contoh: 10">
-                                    </div>
-                                </div>
-                                <button onclick="window.applyDiscount()" class="btn-primary w-full mt-2">Terapkan Diskon</button>
-                            </div>
-                        </div>
-
-                        <div class="bg-white dark:bg-stone-900 p-8 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm h-fit">
-                            <h3 class="font-bold text-lg mb-6 text-orange-600 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5"></i> Sedang Aktif</h3>
-                            <ul id="activeDiscounts" class="space-y-4">
-                                <li class="text-sm text-stone-400 italic text-center py-4">Belum ada promo aktif.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-settings" class="hidden animate-fade-in">
-                    <h1 class="text-3xl font-bold text-stone-900 dark:text-white mb-8">Pengaturan Toko</h1>
-                    <div class="max-w-2xl bg-white dark:bg-stone-900 p-8 rounded-[2rem] border border-stone-100 dark:border-stone-800 shadow-sm">
-                        <label class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 block">URL Gambar QRIS</label>
-                        <div class="flex flex-col md:flex-row gap-4">
-                            <input type="text" id="settingQris" class="input-field" placeholder="https://...">
-                            <button onclick="window.saveSettings()" class="btn-primary whitespace-nowrap">Simpan</button>
-                        </div>
-                        <div class="mt-8 p-4 bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-800/30 text-orange-800 dark:text-orange-200 text-xs rounded-2xl flex gap-3 items-start leading-relaxed">
-                            <i data-lucide="shield-alert" class="w-5 h-5 shrink-0 mt-0.5"></i>
-                            <div>
-                                <p class="font-bold mb-1">Secure Admin Zone</p>
-                                <p>Hanya akun yang terdaftar dalam whitelist database yang dapat menyimpan perubahan ini.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </main>
-
-        <nav class="md:hidden fixed bottom-0 left-0 w-full glass-nav flex justify-around items-center px-4 py-3 pb-[env(safe-area-inset-bottom)] z-40 border-t border-stone-200 dark:border-stone-800 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
-            <button onclick="window.switchTab('insight')" id="mob-insight" class="mob-nav active"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></button>
-            <button onclick="window.switchTab('orders')" id="mob-orders" class="mob-nav relative"><i data-lucide="shopping-bag" class="w-5 h-5"></i></button>
-            <button onclick="window.switchTab('products')" id="mob-products" class="mob-nav"><i data-lucide="package" class="w-5 h-5"></i></button>
-            <button onclick="window.switchTab('discounts')" id="mob-discounts" class="mob-nav"><i data-lucide="ticket-percent" class="w-5 h-5"></i></button>
-            <button onclick="window.switchTab('settings')" id="mob-settings" class="mob-nav"><i data-lucide="settings" class="w-5 h-5"></i></button>
+        <nav class="flex-1 px-4 space-y-2">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-gray-500 dark:text-gray-400 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-all">
+                <i data-lucide="layout-grid" class="w-5 h-5"></i> Dashboard
+            </button>
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-gray-500 dark:text-gray-400 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-all">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i> Pesanan
+                <span id="badgeOrderSide" class="ml-auto bg-brand-600 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
+            </button>
+            <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-item w-full flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-gray-500 dark:text-gray-400 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-all">
+                <i data-lucide="package" class="w-5 h-5"></i> Inventaris
+            </button>
+            <button onclick="window.location.href='database.html'" class="nav-item w-full flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-gray-500 dark:text-gray-400 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-all">
+                <i data-lucide="database" class="w-5 h-5"></i> Master Data
+            </button>
         </nav>
 
-    </div>
-
-    <div id="productModal" class="hidden fixed inset-0 z-[60] bg-stone-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 transition-all">
-        <div class="bg-white dark:bg-stone-900 w-full md:max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-8 shadow-2xl animate-slide-up md:animate-fade-in max-h-[95vh] overflow-y-auto border dark:border-stone-800">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-bold text-stone-900 dark:text-white">Editor Produk</h2>
-                <button onclick="window.closeProductModal()" class="p-3 bg-stone-50 dark:bg-stone-800 rounded-full hover:rotate-90 transition-transform"><i data-lucide="x" class="w-5 h-5 dark:text-white"></i></button>
+        <div class="p-6 border-t border-gray-100 dark:border-gray-800">
+            <div class="flex items-center gap-3 mb-4 px-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-brand-500 to-purple-600"></div>
+                <div class="overflow-hidden">
+                    <p class="text-xs font-bold text-gray-900 dark:text-white">Administrator</p>
+                    <p id="adminEmail" class="text-[10px] text-gray-400 truncate">...</p>
+                </div>
             </div>
-            <form id="productForm" class="space-y-5">
-                <input type="hidden" id="editId">
-                <input type="text" id="pName" placeholder="Nama Produk" required class="input-field font-bold text-lg">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="number" id="pPrice" placeholder="Harga (Rp)" required class="input-field">
-                    <input type="number" id="pStock" placeholder="Stok" required class="input-field">
+            <div class="flex gap-2">
+                <button onclick="toggleTheme()" class="flex-1 p-2 rounded-lg border border-gray-200 dark:border-gray-700 flex justify-center hover:bg-gray-50 dark:hover:bg-dark-800">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i>
+                </button>
+                <button onclick="handleLogout()" class="flex-1 p-2 rounded-lg border border-red-100 dark:border-red-900/30 text-red-500 flex justify-center hover:bg-red-50 dark:hover:bg-red-900/20">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto relative scroll-smooth" id="mainArea">
+        <div class="md:hidden sticky top-0 z-30 glass-panel px-6 py-4 flex justify-between items-center border-b dark:border-gray-800">
+            <span class="font-bold text-lg">Haken.</span>
+            <button onclick="handleLogout()" class="text-red-500"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+        </div>
+
+        <div class="p-6 md:p-10 max-w-7xl mx-auto space-y-8 min-h-screen">
+
+            <div id="tab-dashboard" class="space-y-8 animate-in fade-in zoom-in duration-300">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Overview</h2>
+                        <p class="text-gray-500 text-sm">Performansi toko real-time.</p>
+                    </div>
+                    <span class="flex items-center gap-2 text-xs font-bold text-green-500 bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full animate-pulse">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span> Live Update
+                    </span>
                 </div>
-                <div class="relative">
-                      <select id="pCategory" class="input-field appearance-none cursor-pointer">
-                        <option value="Small Items">Small Items</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Statement">Statement</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none"></i>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-6 rounded-3xl bg-white dark:bg-dark-900 border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <div class="flex justify-between mb-4">
+                            <div class="p-2 bg-brand-50 dark:bg-brand-900/20 rounded-lg text-brand-600"><i data-lucide="wallet" class="w-5 h-5"></i></div>
+                        </div>
+                        <p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Pendapatan Hari Ini</p>
+                        <h3 class="text-2xl font-bold mt-1" id="statToday">Rp 0</h3>
+                    </div>
+                    <div class="p-6 rounded-3xl bg-white dark:bg-dark-900 border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <div class="flex justify-between mb-4">
+                            <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600"><i data-lucide="shopping-cart" class="w-5 h-5"></i></div>
+                        </div>
+                        <p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Order Aktif</p>
+                        <h3 class="text-2xl font-bold mt-1" id="statActiveOrders">0</h3>
+                    </div>
+                    <div class="p-6 rounded-3xl bg-white dark:bg-dark-900 border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <div class="flex justify-between mb-4">
+                            <div class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600"><i data-lucide="users" class="w-5 h-5"></i></div>
+                        </div>
+                        <p class="text-xs text-gray-400 uppercase font-bold tracking-wider">Total Member</p>
+                        <h3 class="text-2xl font-bold mt-1" id="statUsers">0</h3>
+                    </div>
+                    <div class="p-6 rounded-3xl bg-gray-900 dark:bg-white text-white dark:text-black shadow-lg">
+                        <div class="flex justify-between mb-4">
+                            <i data-lucide="trending-up" class="w-6 h-6 opacity-80"></i>
+                        </div>
+                        <p class="text-xs opacity-60 uppercase font-bold tracking-wider">Total Revenue</p>
+                        <h3 class="text-2xl font-bold mt-1" id="statRevenue">Rp 0</h3>
+                    </div>
                 </div>
-                <input type="text" id="pImage" placeholder="URL Gambar Produk" required class="input-field">
-                <textarea id="pDesc" placeholder="Deskripsi Singkat" rows="3" class="input-field"></textarea>
-                <button type="submit" class="btn-primary w-full">Simpan Perubahan</button>
-            </form>
+
+                <div class="p-6 md:p-8 rounded-[2rem] bg-white dark:bg-dark-900 border border-gray-100 dark:border-gray-800 shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-lg">Tren Penjualan</h3>
+                        <div class="flex gap-2 bg-gray-100 dark:bg-dark-800 p-1 rounded-xl">
+                            <button onclick="updateChart('day')" id="btn-day" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-dark-900 shadow-sm transition-all">24J</button>
+                            <button onclick="updateChart('week')" id="btn-week" class="px-4 py-1.5 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-900 transition-all">7H</button>
+                        </div>
+                    </div>
+                    <div class="h-64 w-full">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-orders" class="hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold">Pesanan Masuk</h2>
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1 bg-white dark:bg-dark-800 border dark:border-gray-800 rounded-lg text-xs font-bold flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+                            Live
+                        </span>
+                    </div>
+                </div>
+
+                <div id="ordersContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    </div>
+            </div>
+
+            <div id="tab-inventory" class="hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold">Inventaris</h2>
+                    <button onclick="openProductModal()" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-brand-600/20 transition-all flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Tambah
+                    </button>
+                </div>
+
+                <div class="bg-white dark:bg-dark-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-50 dark:bg-dark-800 text-gray-500 uppercase text-xs font-bold">
+                            <tr>
+                                <th class="p-6">Produk</th>
+                                <th class="p-6">Harga</th>
+                                <th class="p-6">Stok</th>
+                                <th class="p-6 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryList" class="divide-y divide-gray-100 dark:divide-gray-800">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <nav class="md:hidden fixed bottom-0 w-full bg-white/90 dark:bg-dark-900/90 backdrop-blur-md border-t dark:border-gray-800 flex justify-around p-4 z-40 pb-[env(safe-area-inset-bottom)]">
+        <button onclick="switchTab('dashboard')" class="text-brand-600"><i data-lucide="layout-grid" class="w-6 h-6"></i></button>
+        <button onclick="switchTab('orders')" class="relative text-gray-400">
+            <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+            <span id="badgeOrderMob" class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full hidden"></span>
+        </button>
+        <button onclick="switchTab('inventory')" class="text-gray-400"><i data-lucide="package" class="w-6 h-6"></i></button>
+    </nav>
+
+    <div id="statusModal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-dark-900 w-full max-w-sm rounded-[2rem] p-8 shadow-2xl border dark:border-gray-800 transform scale-95 transition-transform duration-300">
+            <h3 class="font-bold text-xl mb-6 text-center">Update Status Pesanan</h3>
+            <input type="hidden" id="statusOrderId">
+            
+            <div class="space-y-3 relative">
+                <div class="absolute left-4 top-4 bottom-4 w-0.5 bg-gray-100 dark:bg-gray-800 -z-10"></div>
+
+                <button onclick="setStatus('Pesanan Sedang Ditinjau')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors text-left group">
+                    <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xs shadow-sm group-hover:scale-110 transition-transform">1</div>
+                    <div><div class="font-bold text-sm">Ditinjau</div><div class="text-[10px] text-gray-400">Cek pembayaran</div></div>
+                </button>
+                <button onclick="setStatus('Pesanan Sedang Dikemas')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors text-left group">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shadow-sm group-hover:scale-110 transition-transform">2</div>
+                    <div><div class="font-bold text-sm">Dikemas</div><div class="text-[10px] text-gray-400">Siapkan barang</div></div>
+                </button>
+                <button onclick="setStatus('Pesanan Dikirim')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors text-left group">
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs shadow-sm group-hover:scale-110 transition-transform">3</div>
+                    <div><div class="font-bold text-sm">Dikirim</div><div class="text-[10px] text-gray-400">Serahkan ke kurir</div></div>
+                </button>
+                <button onclick="setStatus('Selesai')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors text-left group">
+                    <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-xs shadow-sm group-hover:scale-110 transition-transform">4</div>
+                    <div><div class="font-bold text-sm">Selesai</div><div class="text-[10px] text-gray-400">Transaksi beres</div></div>
+                </button>
+                <div class="h-px bg-gray-100 dark:bg-gray-800 my-2"></div>
+                <button onclick="setStatus('Dibatalkan')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors text-left text-red-500">
+                    <div class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center font-bold text-xs shadow-sm"><i data-lucide="x" class="w-4 h-4"></i></div>
+                    <div class="font-bold text-sm">Batalkan Pesanan</div>
+                </button>
+            </div>
+            
+            <button onclick="closeModal('statusModal')" class="mt-6 w-full py-3 bg-gray-100 dark:bg-dark-800 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-200 transition-colors">Tutup</button>
         </div>
     </div>
 
-    <div id="statusModal" class="hidden fixed inset-0 z-[60] bg-stone-900/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 transition-all">
-        <div class="bg-white dark:bg-stone-900 w-full md:max-w-sm rounded-t-[2.5rem] md:rounded-[2.5rem] p-8 shadow-2xl animate-slide-up md:animate-fade-in border dark:border-stone-800">
-            <h2 class="text-xl font-bold mb-6 text-center dark:text-white">Update Status</h2>
-            <input type="hidden" id="statusOrderId">
-            <div class="space-y-3">
-                <button onclick="window.setStatus('Pesanan Sedang Ditinjau')" class="w-full text-left p-4 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 font-bold text-sm hover:scale-[1.02] transition-transform border border-orange-100 dark:border-orange-800/30">1. Ditinjau</button>
-                <button onclick="window.setStatus('Pesanan Sedang Dikemas')" class="w-full text-left p-4 rounded-xl bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-bold text-sm hover:scale-[1.02] transition-transform">2. Dikemas</button>
-                <button onclick="window.setStatus('Pesanan Sedang Diantarkan ke Jasa Logistik')" class="w-full text-left p-4 rounded-xl bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-bold text-sm hover:scale-[1.02] transition-transform">3. OTW Logistik</button>
-                <button onclick="window.setStatus('Pesanan Sedang Diantarkan oleh Jasa Logistik')" class="w-full text-left p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-bold text-sm hover:scale-[1.02] transition-transform border border-blue-100 dark:border-blue-800/30">4. Dikirim Kurir</button>
-                <button onclick="window.setStatus('Pesanan Diterima')" class="w-full text-left p-4 rounded-xl bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 font-bold text-sm hover:scale-[1.02] transition-transform border border-green-100 dark:border-green-800/30">5. Selesai (Diterima)</button>
-                <div class="h-px bg-stone-100 dark:bg-stone-800 my-2"></div>
-                <button onclick="window.setStatus('Pesanan Dibatalkan')" class="w-full text-left p-4 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 font-bold text-sm hover:scale-[1.02] transition-transform border border-red-100 dark:border-red-800/30">X. Batalkan</button>
+    <div id="productModal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-900 w-full max-w-md rounded-[2rem] p-8 shadow-2xl border dark:border-gray-800 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-xl">Editor Produk</h3>
+                <button onclick="closeModal('productModal')" class="p-2 bg-gray-100 dark:bg-dark-800 rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
-            <button onclick="document.getElementById('statusModal').classList.add('hidden')" class="mt-6 w-full py-3 text-stone-400 hover:text-stone-900 dark:hover:text-white font-bold text-sm transition-colors">Tutup</button>
+            <form id="productForm" class="space-y-4">
+                <input type="hidden" id="editId">
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase ml-1">Nama Produk</label>
+                    <input type="text" id="pName" required class="input-modern mt-1">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase ml-1">Harga (Rp)</label>
+                        <input type="number" id="pPrice" required class="input-modern mt-1">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase ml-1">Stok</label>
+                        <input type="number" id="pStock" required class="input-modern mt-1">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase ml-1">Kategori</label>
+                    <input type="text" id="pCategory" required class="input-modern mt-1">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase ml-1">URL Gambar</label>
+                    <input type="text" id="pImage" required class="input-modern mt-1">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase ml-1">Deskripsi</label>
+                    <textarea id="pDesc" rows="3" class="input-modern mt-1"></textarea>
+                </div>
+                <button type="submit" class="w-full py-4 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all">Simpan Perubahan</button>
+            </form>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, remove, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Konfigurasi Project
         const firebaseConfig = {
             apiKey: "AIzaSyApD7dueaFuPv9hHGajcwo17LADEVriqRw",
             authDomain: "entry-6a64d.firebaseapp.com",
@@ -396,222 +308,207 @@
             projectId: "entry-6a64d",
             storageBucket: "entry-6a64d.firebasestorage.app",
             messagingSenderId: "939693440034",
-            appId: "1:939693440034:web:ecd3d0366acf207add1e7b",
-            measurementId: "G-RPTFXQK08B"
+            appId: "1:939693440034:web:ecd3d0366acf207add1e7b"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-        
-        // PERBAIKAN: Hard Logout
         provider.setCustomParameters({ prompt: 'select_account' });
 
-        let salesChartInstance = null;
-        let allOrdersData = [];
+        let allOrders = [];
+        let chartInstance = null;
 
-        // --- DARK MODE LOGIC ---
-        window.toggleDarkMode = () => {
-            const html = document.documentElement;
-            if(html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-            if(salesChartInstance) window.updateChart(document.querySelector('.chart-btn-active').id.replace('btn-chart-', ''));
-        };
-
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
-
-        // --- AUTH LOGIC ---
+        // AUTH HANDLER
         onAuthStateChanged(auth, async (user) => {
-            const loginGate = document.getElementById('loginGate');
-            const dashboardUI = document.getElementById('dashboardUI');
-            const loginStatus = document.getElementById('loginStatus');
-
             if (user) {
-                if(loginStatus) {
-                    loginStatus.classList.remove('hidden');
-                    loginStatus.textContent = "VERIFYING SECURE ACCESS...";
-                }
-
-                try {
-                    const snapshot = await get(ref(db, 'admins/' + user.uid));
-                    if (snapshot.exists() && snapshot.val() === true) {
-                        // Admin Success
-                        loginGate.classList.add('opacity-0', 'pointer-events-none');
-                        setTimeout(() => loginGate.style.display = 'none', 500);
-                        dashboardUI.classList.remove('hidden');
-                        setTimeout(() => dashboardUI.classList.remove('opacity-0'), 100);
-                        document.getElementById('adminEmailDisplay').textContent = user.email;
-                        lucide.createIcons();
-                        initAdmin(); 
-                    } else {
-                        window.location.href = 'profile.html'; 
-                    }
-                } catch (error) {
-                    console.error(error);
-                    alert("Koneksi database bermasalah.");
+                // Cek Admin Rights
+                const snap = await get(ref(db, 'admins/' + user.uid));
+                if (snap.exists() && snap.val() === true) {
+                    document.getElementById('loginGate').classList.add('hidden');
+                    document.getElementById('adminEmail').textContent = user.email;
+                    initRealtimeListeners();
+                } else {
+                    alert("Akses Ditolak: Anda bukan Admin.");
+                    window.location.href = 'index.html';
                 }
             }
         });
 
         document.getElementById('btnLogin').addEventListener('click', () => signInWithPopup(auth, provider));
-        
-        window.logout = () => signOut(auth).then(() => window.location.href = 'index.html');
+        window.handleLogout = () => signOut(auth).then(() => window.location.reload());
 
-        function initAdmin() {
-            loadInsights();
-            loadProducts();
-            loadOrders();
-            loadSettings();
-        }
+        // --- REALTIME DATA CORE ---
+        function initRealtimeListeners() {
+            lucide.createIcons();
 
-        // --- PERBAIKAN 2: SINKRONISASI DATA DASHBOARD ---
-        function loadInsights() {
-            onValue(ref(db, 'users'), (snap) => document.getElementById('statUsers').textContent = snap.exists() ? Object.keys(snap.val()).length : 0);
-            
-            onValue(ref(db, 'orders'), (snap) => {
-                let total = 0, monthTotal = 0, todayTotal = 0, weekTotal = 0, yearTotal = 0;
-                const now = new Date();
-                const todayStr = now.toDateString();
-                const currentYear = now.getFullYear();
+            // 1. LISTEN ORDERS (AUTO UPDATE CHART & LIST)
+            onValue(ref(db, 'orders'), (snapshot) => {
+                const data = snapshot.val();
+                allOrders = [];
+                let revenue = 0, todayRev = 0, activeCount = 0;
+                const todayStr = new Date().toDateString();
 
-                const d = new Date(now);
-                const day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1); 
-                const monday = new Date(d.setDate(diff)); monday.setHours(0,0,0,0);
+                const listContainer = document.getElementById('ordersContainer');
+                listContainer.innerHTML = ''; // Reset UI
 
-                allOrdersData = [];
+                if (data) {
+                    const sorted = Object.entries(data).sort((a,b) => b.val().timestamp - a.val().timestamp);
+                    
+                    // Update Badge
+                    const activeOrders = sorted.filter(([_, o]) => !o.status.includes('Selesai') && !o.status.includes('Batal'));
+                    document.getElementById('badgeOrderSide').textContent = activeOrders.length;
+                    document.getElementById('badgeOrderSide').classList.remove('hidden');
+                    document.getElementById('badgeOrderMob').classList.remove('hidden');
 
-                if (snap.exists()) {
-                    Object.values(snap.val()).forEach(o => {
-                        // VALIDASI KETAT: Hanya hitung jika data ini LAYAK ditampilkan di list order
-                        const hasName = o.customer ? o.customer.name : o.customerName;
+                    sorted.forEach(([id, o]) => {
+                        // SINKRONISASI DATA PINTAR
+                        // Baca struktur baru (customer object) atau lama (flat)
+                        const custName = o.customer?.name || o.customerName || 'Guest';
+                        const total = o.pricing?.grandTotal || o.total || 0;
+                        const date = new Date(o.timestamp);
                         
-                        // Syarat masuk Dashboard: 
-                        // 1. Punya Nama Customer (Data valid)
-                        // 2. Status bukan 'Dibatalkan'
-                        if (hasName && !o.status.includes('Dibatalkan')) {
-                            
-                            const orderDate = new Date(o.timestamp);
-                            
-                            // Ambil harga dari struktur baru atau lama
-                            const orderValue = o.pricing ? o.pricing.grandTotal : (o.total || 0);
+                        // Items Display
+                        let itemText = o.items ? o.items.map(i => `${i.name} (x${i.qty})`).join(', ') : (o.productName || 'Unknown Item');
 
-                            allOrdersData.push({ date: orderDate, total: orderValue });
-                            
-                            total += orderValue; // Lifetime
-                            
-                            if (orderDate.getFullYear() === currentYear) {
-                                yearTotal += orderValue;
-                                if (orderDate.getMonth() === now.getMonth()) monthTotal += orderValue;
-                            }
-                            
-                            if (orderDate.toDateString() === todayStr) todayTotal += orderValue;
-                            
-                            if (orderDate >= monday) weekTotal += orderValue;
+                        // Data untuk Statistik & Chart
+                        if (!o.status.includes('Batalkan')) {
+                            allOrders.push({ date: date, total: total });
+                            revenue += total;
+                            if (date.toDateString() === todayStr) todayRev += total;
+                            if (!o.status.includes('Selesai')) activeCount++;
                         }
+
+                        // Render Card Pesanan
+                        let statusBadge = '';
+                        if(o.status.includes('Ditinjau')) statusBadge = '<span class="text-orange-600 bg-orange-100 px-2 py-1 rounded text-[10px] font-bold">DITINJAU</span>';
+                        else if(o.status.includes('Dikemas')) statusBadge = '<span class="text-blue-600 bg-blue-100 px-2 py-1 rounded text-[10px] font-bold">DIKEMAS</span>';
+                        else if(o.status.includes('Dikirim')) statusBadge = '<span class="text-indigo-600 bg-indigo-100 px-2 py-1 rounded text-[10px] font-bold">DIKIRIM</span>';
+                        else if(o.status.includes('Selesai')) statusBadge = '<span class="text-green-600 bg-green-100 px-2 py-1 rounded text-[10px] font-bold">SELESAI</span>';
+                        else statusBadge = '<span class="text-red-600 bg-red-100 px-2 py-1 rounded text-[10px] font-bold">BATAL</span>';
+
+                        const cardHTML = `
+                            <div class="bg-white dark:bg-dark-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 dark:text-white">${custName}</h4>
+                                        <p class="text-[10px] text-gray-400 font-mono">ID: ${id.slice(-6)} • ${date.toLocaleDateString()}</p>
+                                    </div>
+                                    ${statusBadge}
+                                </div>
+                                <div class="p-3 bg-gray-50 dark:bg-black/30 rounded-xl mb-3">
+                                    <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">${itemText}</p>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-brand-600">Rp ${total.toLocaleString()}</span>
+                                    <button onclick="openStatusModal('${id}')" class="text-xs font-bold bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-colors">Update Status</button>
+                                </div>
+                            </div>
+                        `;
+                        listContainer.innerHTML += cardHTML;
                     });
                 }
-                
-                // Jika tidak ada data valid sama sekali, reset semua ke 0
-                if (allOrdersData.length === 0) {
-                    total = 0; monthTotal = 0; todayTotal = 0; weekTotal = 0; yearTotal = 0;
+
+                // Update Angka Dashboard
+                document.getElementById('statToday').textContent = `Rp ${todayRev.toLocaleString()}`;
+                document.getElementById('statRevenue').textContent = `Rp ${revenue.toLocaleString()}`;
+                document.getElementById('statActiveOrders').textContent = activeCount;
+
+                // Force Update Chart Tanpa Klik
+                updateChart('day'); 
+            });
+
+            // 2. LISTEN PRODUCTS
+            onValue(ref(db, 'products'), (snapshot) => {
+                const tbody = document.getElementById('inventoryList');
+                tbody.innerHTML = '';
+                const data = snapshot.val();
+                if(data) {
+                    // Sync ke LocalStorage agar index.html tidak perlu fetch ulang
+                    localStorage.setItem('haken_public_collection', JSON.stringify(data));
+                    
+                    Object.entries(data).forEach(([id, p]) => {
+                        tbody.innerHTML += `
+                            <tr class="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors">
+                                <td class="p-6 font-medium text-gray-900 dark:text-white flex items-center gap-3">
+                                    <img src="${p.image}" class="w-10 h-10 rounded-lg object-cover bg-gray-200">
+                                    ${p.name}
+                                </td>
+                                <td class="p-6 text-gray-500">Rp ${parseInt(p.price).toLocaleString()}</td>
+                                <td class="p-6"><span class="font-bold ${p.stock < 5 ? 'text-red-500' : 'text-green-500'}">${p.stock} pcs</span></td>
+                                <td class="p-6 text-right space-x-2">
+                                    <button onclick="editProduct('${id}')" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                    <button onclick="deleteProduct('${id}')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    lucide.createIcons();
                 }
+            });
 
-                // Update Tampilan Angka
-                document.getElementById('statRevenue').textContent = 'Rp ' + total.toLocaleString('id-ID');
-                document.getElementById('statMonth').textContent = 'Rp ' + monthTotal.toLocaleString('id-ID');
-                document.getElementById('statToday').textContent = 'Rp ' + todayTotal.toLocaleString('id-ID');
-                document.getElementById('statWeek').textContent = 'Rp ' + weekTotal.toLocaleString('id-ID');
-                document.getElementById('statYear').textContent = 'Rp ' + yearTotal.toLocaleString('id-ID');
-
-                // Refresh Grafik
-                const activeBtn = document.querySelector('.chart-btn-active');
-                window.updateChart(activeBtn ? activeBtn.id.replace('btn-chart-', '') : 'day');
+            // 3. LISTEN USERS COUNT
+            onValue(ref(db, 'users'), (snap) => {
+                document.getElementById('statUsers').textContent = snap.exists() ? Object.keys(snap.val()).length : 0;
             });
         }
 
-        window.focusChart = (period) => {
-            window.updateChart(period);
-            const chartSec = document.getElementById('chartSection');
-            chartSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            chartSec.classList.add('shadow-[0_0_40px_rgba(234,88,12,0.3)]', 'border-orange-500');
-            setTimeout(() => {
-                chartSec.classList.remove('shadow-[0_0_40px_rgba(234,88,12,0.3)]', 'border-orange-500');
-            }, 1500);
-        };
-
+        // --- CHART LOGIC (AUTO RENDER) ---
         window.updateChart = (period) => {
-            document.querySelectorAll('.chart-btn').forEach(btn => {
-                btn.classList.remove('chart-btn-active');
-                btn.classList.add('chart-btn-inactive');
-            });
-            document.getElementById(`btn-chart-${period}`).classList.remove('chart-btn-inactive');
-            document.getElementById(`btn-chart-${period}`).classList.add('chart-btn-active');
-
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            const isDark = document.documentElement.classList.contains('dark');
-            const textColor = isDark ? '#a8a29e' : '#78716c';
+            const btnDay = document.getElementById('btn-day');
+            const btnWeek = document.getElementById('btn-week');
             
-            let labels = [], dataPoints = []; 
-            const now = new Date();
+            // Simple Toggle Style
+            [btnDay, btnWeek].forEach(b => {
+                b.className = "px-4 py-1.5 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-900 transition-all";
+            });
+            document.getElementById(`btn-${period}`).className = "px-4 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-dark-900 shadow-sm transition-all text-brand-600";
 
-            // Jika data kosong, tampilkan grafik kosong
-            if (allOrdersData.length === 0) {
-                if (salesChartInstance) salesChartInstance.destroy();
-                salesChartInstance = new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [] } });
-                return;
-            }
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            const now = new Date();
+            let labels = [], data = [];
 
             if (period === 'day') {
-                labels = Array.from({length: 24}, (_, i) => `${i}:00`);
-                dataPoints = new Array(24).fill(0);
-                allOrdersData.forEach(o => { if(o.date.toDateString() === now.toDateString()) dataPoints[o.date.getHours()] += o.total; });
-            } else if (period === 'week') {
-                labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-                dataPoints = new Array(7).fill(0);
-                const day = now.getDay() || 7; 
-                const monday = new Date(now); 
-                monday.setDate(now.getDate() - (day - 1)); monday.setHours(0,0,0,0);
-                
-                allOrdersData.forEach(o => {
-                    const diffDays = Math.floor((o.date - monday) / (86400000));
-                    if (diffDays >= 0 && diffDays < 7) dataPoints[diffDays] += o.total;
+                labels = Array.from({length: 12}, (_, i) => `${i*2}:00`); // 00:00, 02:00...
+                data = new Array(12).fill(0);
+                allOrders.forEach(o => {
+                    if (o.date.toDateString() === now.toDateString()) {
+                        const slot = Math.floor(o.date.getHours() / 2);
+                        data[slot] += o.total;
+                    }
                 });
-            } else if (period === 'month') {
-                const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-                labels = Array.from({length: daysInMonth}, (_, i) => `${i+1}`);
-                dataPoints = new Array(daysInMonth).fill(0);
-                allOrdersData.forEach(o => { if(o.date.getMonth() === now.getMonth()) dataPoints[o.date.getDate()-1] += o.total; });
-            } else if (period === 'year') {
-                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-                dataPoints = new Array(12).fill(0);
-                allOrdersData.forEach(o => { if(o.date.getFullYear() === now.getFullYear()) dataPoints[o.date.getMonth()] += o.total; });
-            } else if (period === 'total') {
-                const years = [...new Set(allOrdersData.map(o => o.date.getFullYear()))].sort().filter(y => y >= 2026);
-                if (years.length === 0) years.push(2026); 
-                labels = years.map(String);
-                dataPoints = years.map(y => allOrdersData.filter(o => o.date.getFullYear() === y).reduce((a,b) => a + b.total, 0));
+            } else if (period === 'week') {
+                labels = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                data = new Array(7).fill(0);
+                const startOfWeek = new Date(now);
+                startOfWeek.setDate(now.getDate() - 6);
+                allOrders.forEach(o => {
+                    if (o.date >= startOfWeek) data[o.date.getDay()] += o.total;
+                });
             }
 
-            if (salesChartInstance) salesChartInstance.destroy();
+            if (chartInstance) chartInstance.destroy();
             
-            salesChartInstance = new Chart(ctx, {
-                type: 'bar',
+            // Gradient Fill
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(234, 88, 12, 0.2)');
+            gradient.addColorStop(1, 'rgba(234, 88, 12, 0)');
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
                         label: 'Pendapatan',
-                        data: dataPoints,
-                        backgroundColor: '#ea580c',
-                        borderRadius: 6,
-                        barThickness: period === 'month' ? 4 : (period === 'total' ? 40 : 12),
+                        data: data,
+                        borderColor: '#ea580c',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        tension: 0.4, // Curved lines
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
@@ -619,236 +516,43 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            border: { display: false },
-                            grid: { color: isDark ? '#292524' : '#f5f5f4' }, 
-                            ticks: { 
-                                color: textColor, 
-                                font: { size: 10 },
-                                precision: 0,
-                                callback: function(value) { return 'Rp ' + (value/1000) + 'k'; }
-                            } 
-                        },
-                        x: { 
-                            grid: { display: false }, 
-                            ticks: { color: textColor, font: { size: 10 } }, 
-                            border: { display: false } 
-                        }
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, border: { display: false } },
+                        x: { grid: { display: false }, border: { display: false } }
                     }
                 }
             });
         };
 
-        // --- ORDER LIST (MAPPING V2) ---
-        function loadOrders() {
-            onValue(ref(db, 'orders'), (snapshot) => {
-                const list = document.getElementById('orderList');
-                list.innerHTML = '';
-                const data = snapshot.val();
-                
-                if(data) {
-                    const orders = Object.entries(data).sort((a,b) => b.val().timestamp - a.val().timestamp);
-                    let validOrderCount = 0;
-
-                    orders.forEach(([id, o]) => {
-                        // VALIDASI: Data harus punya nama customer.
-                        const custName = o.customer ? o.customer.name : (o.customerName || null);
-                        
-                        if (custName) {
-                            validOrderCount++;
-                            
-                            // Auto-complete logic
-                            if (o.status === 'Pesanan Diterima' && (Date.now() - o.lastStatusUpdate > 259200000)) {
-                                update(ref(db, 'orders/'+id), { status: 'Selesai' });
-                            }
-
-                            const custPhone = o.customer ? o.customer.phone : (o.customerPhone || '');
-                            const grandTotal = o.pricing ? o.pricing.grandTotal : (o.total || 0);
-                            
-                            let productDisplay = '';
-                            let qtyDisplay = 0;
-
-                            if (o.items && Array.isArray(o.items)) {
-                                productDisplay = o.items[0].name + (o.items.length > 1 ? ` (+${o.items.length - 1} lainnya)` : '');
-                                qtyDisplay = o.items.reduce((sum, i) => sum + parseInt(i.qty), 0);
-                            } else {
-                                productDisplay = o.productName || 'Produk Tidak Dikenal';
-                                qtyDisplay = o.qty || 1;
-                            }
-
-                            let statusColor = 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400';
-                            if(o.status.includes('Ditinjau') || o.status.includes('Menunggu') || o.status.includes('Baru')) 
-                                statusColor = 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800 animate-pulse';
-                            if(o.status.includes('Diterima') || o.status === 'Selesai') 
-                                statusColor = 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-                            if(o.status.includes('Dibatalkan')) 
-                                statusColor = 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-
-                            list.innerHTML += `
-                                <div class="stat-card group relative overflow-hidden transition-all hover:shadow-md">
-                                    <div class="flex justify-between items-start mb-4 relative z-10">
-                                        <div>
-                                            <div class="flex items-center gap-2 mb-1">
-                                                <h4 class="font-bold text-stone-900 dark:text-white text-lg line-clamp-1">${custName}</h4>
-                                                <a href="https://wa.me/${custPhone}" target="_blank" class="p-1 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 hover:scale-110 transition-transform flex-shrink-0">
-                                                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                                                </a>
-                                            </div>
-                                            <div class="text-[10px] text-stone-400 font-mono">
-                                                ${new Date(o.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'})} • 
-                                                ${o.orderId || id.slice(-4)}
-                                            </div>
-                                        </div>
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide flex-shrink-0 ${statusColor}">${o.status}</span>
-                                    </div>
-                                    
-                                    <div class="bg-stone-50 dark:bg-stone-800/50 p-4 rounded-2xl flex gap-4 mb-5 border border-stone-100 dark:border-stone-800 relative z-10">
-                                        <div class="w-12 h-12 bg-white dark:bg-stone-800 rounded-xl flex-shrink-0 flex items-center justify-center shadow-sm text-stone-300 dark:text-stone-600">
-                                            <i data-lucide="package" class="w-6 h-6"></i>
-                                        </div>
-                                        <div class="overflow-hidden flex-1">
-                                            <div class="font-bold text-sm truncate text-stone-800 dark:text-stone-200">
-                                                ${productDisplay}
-                                            </div>
-                                            <div class="flex justify-between items-center w-full mt-1 gap-4">
-                                                <span class="text-xs text-stone-500 bg-white dark:bg-stone-800 px-2 py-0.5 rounded border border-stone-100 dark:border-stone-700">${qtyDisplay} item</span>
-                                                <span class="text-xs font-bold text-orange-600 dark:text-orange-400">Rp ${parseInt(grandTotal).toLocaleString()}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button onclick="window.openStatusModal('${id}')" class="w-full py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity shadow-lg">Update Status</button>
-                                </div>`;
-                        }
-                    });
-                    
-                    document.getElementById('orderCountBadge').textContent = `${validOrderCount} Order`;
-                    lucide.createIcons();
-
-                    if(validOrderCount === 0) {
-                        list.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-24 bg-stone-50 dark:bg-stone-900 rounded-[2.5rem] border-2 border-dashed border-stone-200 dark:border-stone-800 text-stone-400">
-                            <i data-lucide="inbox" class="w-10 h-10 mb-2 opacity-50"></i>
-                            <p>Belum ada pesanan masuk.</p>
-                        </div>`;
-                        lucide.createIcons();
-                    }
-                } else {
-                    list.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-24 bg-stone-50 dark:bg-stone-900 rounded-[2.5rem] border-2 border-dashed border-stone-200 dark:border-stone-800 text-stone-400">
-                        <i data-lucide="inbox" class="w-10 h-10 mb-2 opacity-50"></i>
-                        <p>Belum ada pesanan masuk.</p>
-                    </div>`;
-                    lucide.createIcons();
-                }
-            });
-        }
-
-        window.openStatusModal = (id) => { document.getElementById('statusOrderId').value = id; document.getElementById('statusModal').classList.remove('hidden'); };
-        window.setStatus = (status) => {
-            const id = document.getElementById('statusOrderId').value;
-            update(ref(db, 'orders/' + id), { status: status, lastStatusUpdate: Date.now() })
-            .then(() => document.getElementById('statusModal').classList.add('hidden'))
-            .catch((err) => alert("Gagal: Izin Ditolak."));
-        };
-
-        // --- PRODUCT LOGIC ---
-        function loadProducts() {
-            const tbody = document.getElementById('productTableBody');
-            const select = document.getElementById('discProductSelect');
-            const discList = document.getElementById('activeDiscounts');
-            
-            onValue(ref(db, 'products'), (snap) => {
-                tbody.innerHTML = ''; select.innerHTML = '<option value="">Pilih Produk...</option>'; discList.innerHTML = '';
-                const data = snap.val();
-                if (data) localStorage.setItem('haken_public_collection', JSON.stringify(data));
-                if(data) {
-                    Object.entries(data).forEach(([id, p]) => {
-                        const hasPromo = p.discountStock > 0;
-                        
-                        tbody.innerHTML += `
-                            <tr class="hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors group">
-                                <td class="p-6">
-                                    <div class="flex items-center gap-4">
-                                        <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover bg-stone-100 shadow-sm" onerror="this.src='https://via.placeholder.com/150'">
-                                        <div>
-                                            <div class="font-bold text-stone-900 dark:text-white">${p.name}</div>
-                                            <div class="text-[10px] text-stone-400 font-mono mt-0.5">${id.slice(-4)}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="p-6 hidden md:table-cell">
-                                    <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 uppercase tracking-wide border border-stone-200 dark:border-stone-700">${p.category}</span>
-                                </td>
-                                <td class="p-6">
-                                    <div class="font-bold ${p.stock < 5 ? 'text-red-500' : 'text-stone-800 dark:text-stone-200'}">${p.stock} pcs</div>
-                                    <div class="text-xs text-stone-400">Rp ${parseInt(p.price).toLocaleString()}</div>
-                                    ${hasPromo ? '<span class="text-[10px] text-red-500 font-bold block mt-1 animate-pulse">🔥 Promo Aktif</span>' : ''}
-                                </td>
-                                <td class="p-6 text-right">
-                                    <div class="flex justify-end gap-2">
-                                        <button onclick="window.editProduct('${id}')" class="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 transition-colors"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                                        <button onclick="window.deleteProduct('${id}')" class="p-2 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-lg hover:bg-red-100 transition-colors"><i data-lucide="trash" class="w-4 h-4"></i></button>
-                                    </div>
-                                </td>
-                            </tr>`;
-                        
-                        select.innerHTML += `<option value="${id}">${p.name}</option>`;
-                        if(hasPromo) {
-                            discList.innerHTML += `
-                                <li class="flex justify-between items-center bg-orange-50 dark:bg-orange-900/10 p-4 rounded-2xl border border-orange-100 dark:border-orange-800/30">
-                                    <div>
-                                        <div class="text-sm font-bold text-stone-900 dark:text-white">${p.name}</div>
-                                        <div class="text-xs text-orange-600 dark:text-orange-400 font-bold mt-1">Rp ${parseInt(p.discountPrice).toLocaleString()}</div>
-                                        <div class="text-[10px] text-stone-500 mt-1">Sisa Kuota: ${p.discountStock}</div>
-                                    </div>
-                                    <button onclick="window.stopDiscount('${id}')" class="text-xs font-bold text-red-500 bg-white dark:bg-stone-800 px-3 py-2 rounded-xl hover:bg-red-50 transition-colors shadow-sm">Stop</button>
-                                </li>`;
-                        }
-                    });
-                    if (discList.innerHTML === '') discList.innerHTML = '<li class="text-sm text-stone-400 italic text-center py-4">Belum ada promo aktif.</li>';
-                    lucide.createIcons();
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-stone-400">Belum ada produk.</td></tr>';
-                }
-            });
-        }
-
-        // --- UTILS ---
-        window.applyDiscount = () => {
-            const id = document.getElementById('discProductSelect').value;
-            const price = document.getElementById('discPrice').value;
-            const stock = document.getElementById('discStock').value;
-            if(!id || !price || !stock) return alert("Lengkapi data promo!");
-            update(ref(db, 'products/' + id), { discountPrice: parseInt(price), discountStock: parseInt(stock) }).then(()=>alert("Promo Berhasil!")).catch(err => alert("Gagal: Izin Ditolak."));
-        };
-        window.stopDiscount = (id) => update(ref(db, 'products/' + id), { discountStock: 0 });
-        window.saveSettings = () => set(ref(db, 'settings'), { qrisUrl: document.getElementById('settingQris').value }).then(()=>alert("Disimpan!")).catch(err => alert("Gagal: Izin Ditolak."));
-        function loadSettings() { onValue(ref(db, 'settings'), (snap) => { if(snap.val()?.qrisUrl) document.getElementById('settingQris').value = snap.val().qrisUrl; }); }
-
+        // --- MODAL & TABS ---
         window.switchTab = (tab) => {
-            ['insight', 'orders', 'products', 'discounts', 'settings'].forEach(t => {
+            ['dashboard', 'orders', 'inventory'].forEach(t => {
                 document.getElementById('tab-'+t).classList.add('hidden');
-                document.getElementById('desk-'+t)?.classList.remove('active');
-                document.getElementById('mob-'+t)?.classList.remove('active');
+                document.getElementById('nav-'+t)?.classList.remove('bg-brand-50', 'text-brand-600', 'dark:bg-brand-900/20', 'dark:text-brand-500', 'active');
             });
             document.getElementById('tab-'+tab).classList.remove('hidden');
-            document.getElementById('desk-'+tab)?.classList.add('active');
-            document.getElementById('mob-'+tab)?.classList.add('active');
+            const nav = document.getElementById('nav-'+tab);
+            if(nav) nav.classList.add('bg-brand-50', 'text-brand-600', 'dark:bg-brand-900/20', 'dark:text-brand-500', 'active');
         };
 
-        const form = document.getElementById('productForm');
-        form.addEventListener('submit', (e) => {
+        // Product Logic
+        window.openProductModal = () => { document.getElementById('productForm').reset(); document.getElementById('editId').value=''; openModal('productModal'); }
+        document.getElementById('productForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value || Date.now().toString();
             update(ref(db, 'products/' + id), {
-                name: document.getElementById('pName').value, price: document.getElementById('pPrice').value, stock: document.getElementById('pStock').value,
-                category: document.getElementById('pCategory').value, image: document.getElementById('pImage').value, desc: document.getElementById('pDesc').value
-            }).then(() => window.closeProductModal()).catch(err => alert("Gagal: Izin Ditolak."));
+                name: document.getElementById('pName').value,
+                price: document.getElementById('pPrice').value,
+                stock: document.getElementById('pStock').value,
+                category: document.getElementById('pCategory').value,
+                image: document.getElementById('pImage').value,
+                desc: document.getElementById('pDesc').value
+            }).then(() => closeModal('productModal'));
         });
-
-        window.deleteProduct = (id) => { if(confirm('Hapus produk ini?')) remove(ref(db, 'products/' + id)); };
+        
+        window.deleteProduct = (id) => confirm('Hapus?') && remove(ref(db, 'products/'+id));
         window.editProduct = (id) => {
-            get(ref(db, 'products/' + id)).then((snapshot) => {
-                const p = snapshot.val();
+            get(ref(db, 'products/'+id)).then(snap => {
+                const p = snap.val();
                 document.getElementById('editId').value = id;
                 document.getElementById('pName').value = p.name;
                 document.getElementById('pPrice').value = p.price;
@@ -856,11 +560,41 @@
                 document.getElementById('pCategory').value = p.category;
                 document.getElementById('pImage').value = p.image;
                 document.getElementById('pDesc').value = p.desc;
-                window.openProductModal();
+                openModal('productModal');
             });
         };
-        window.openProductModal = () => { document.getElementById('productForm').reset(); document.getElementById('editId').value = ''; document.getElementById('productModal').classList.remove('hidden'); };
-        window.closeProductModal = () => document.getElementById('productModal').classList.add('hidden');
+
+        // Status Logic
+        window.openStatusModal = (id) => {
+            document.getElementById('statusOrderId').value = id;
+            openModal('statusModal');
+        };
+        window.setStatus = (status) => {
+            const id = document.getElementById('statusOrderId').value;
+            update(ref(db, 'orders/' + id), { status: status, lastStatusUpdate: Date.now() })
+            .then(() => closeModal('statusModal'));
+        };
+
+        // Helper Modals
+        window.openModal = (id) => {
+            const el = document.getElementById(id);
+            el.classList.remove('hidden');
+            setTimeout(() => { el.classList.remove('opacity-0'); el.firstElementChild.classList.remove('scale-95'); }, 10);
+        }
+        window.closeModal = (id) => {
+            const el = document.getElementById(id);
+            el.classList.add('opacity-0');
+            el.firstElementChild.classList.add('scale-95');
+            setTimeout(() => el.classList.add('hidden'), 300);
+        }
+
+        // Theme Toggle
+        window.toggleTheme = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        };
+        if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+
     </script>
 </body>
 </html>
