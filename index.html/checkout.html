@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout Aman - Haken Studio</title>
+    <title>Checkout - Haken Studio</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -40,9 +40,9 @@
             <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-stone-100">
                 <i data-lucide="shopping-bag" class="w-10 h-10 text-stone-300"></i>
             </div>
-            <h2 class="text-2xl font-serif font-bold text-stone-900 mb-2">Keranjang Anda Kosong</h2>
-            <p class="text-stone-500 mb-8">Mari isi dengan karya rajutan spesial kami.</p>
-            <a href="index.html" class="inline-flex px-8 py-3 bg-stone-900 text-white rounded-xl font-bold hover:bg-orange-600 transition-all shadow-lg hover:shadow-orange-600/20">
+            <h2 class="text-2xl font-serif font-bold text-stone-900 mb-2">Keranjang Kosong</h2>
+            <p class="text-stone-500 mb-8">Belum ada item yang akan dibayar.</p>
+            <a href="index.html" class="inline-flex px-8 py-3 bg-stone-900 text-white rounded-xl font-bold hover:bg-orange-600 transition-all shadow-lg">
                 Lihat Katalog
             </a>
         </div>
@@ -56,28 +56,28 @@
                         <div class="w-10 h-10 rounded-full bg-stone-900 text-white flex items-center justify-center font-bold font-serif">1</div>
                         <div>
                             <h3 class="font-bold text-lg text-stone-900">Alamat Pengiriman</h3>
-                            <p class="text-xs text-stone-400">Pastikan data Anda benar</p>
+                            <p class="text-xs text-stone-400">Data ini akan masuk ke Admin Panel.</p>
                         </div>
                     </div>
                     
                     <form id="checkoutForm" class="space-y-5">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-stone-500 mb-2 tracking-wider">Nama Lengkap</label>
-                            <input type="text" id="custName" class="w-full p-4 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-stone-900 focus:ring-0 outline-none transition-all font-medium" placeholder="Cth: Latiefa Cahyaning">
+                            <label class="block text-xs font-bold uppercase text-stone-500 mb-2 tracking-wider">Nama Penerima</label>
+                            <input type="text" id="custName" class="w-full p-4 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-stone-900 focus:ring-0 outline-none transition-all font-medium" placeholder="Nama Lengkap">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs font-bold uppercase text-stone-500 mb-2 tracking-wider">Nomor WhatsApp</label>
-                                <input type="tel" id="custPhone" class="w-full p-4 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-stone-900 focus:ring-0 outline-none transition-all font-medium" placeholder="0812...">
+                                <input type="tel" id="custPhone" class="w-full p-4 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-stone-900 focus:ring-0 outline-none transition-all font-medium" placeholder="08...">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold uppercase text-stone-500 mb-2 tracking-wider">Kota / Kecamatan</label>
-                                <input type="text" id="custCity" class="w-full p-4 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-stone-900 focus:ring-0 outline-none transition-all font-medium" placeholder="Cth: Sleman, Jogja">
+                                <input type="text" id="custCity" class="w-full p-4 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-stone-900 focus:ring-0 outline-none transition-all font-medium" placeholder="Kota Tujuan">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-stone-500 mb-2 tracking-wider">Alamat Lengkap</label>
-                            <textarea id="custAddress" rows="3" class="w-full p-4 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-stone-900 focus:ring-0 outline-none transition-all font-medium" placeholder="Nama Jalan, No. Rumah, RT/RW..."></textarea>
+                            <textarea id="custAddress" rows="3" class="w-full p-4 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-stone-900 focus:ring-0 outline-none transition-all font-medium" placeholder="Nama Jalan, No. Rumah..."></textarea>
                         </div>
                     </form>
                 </div>
@@ -87,8 +87,8 @@
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-stone-100 text-stone-900 flex items-center justify-center font-bold font-serif">2</div>
                             <div>
-                                <h3 class="font-bold text-lg text-stone-900">Daftar Pesanan</h3>
-                                <p class="text-xs text-stone-400">Cek kembali belanjaan Anda</p>
+                                <h3 class="font-bold text-lg text-stone-900">Daftar Barang</h3>
+                                <p class="text-xs text-stone-400">Total item: <span id="totalItemsCount">0</span></p>
                             </div>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
                     <div class="text-center mb-8">
                         <div class="inline-block p-1 rounded-2xl border-2 border-dashed border-stone-200 bg-stone-50 mb-3">
                             <div class="bg-white rounded-xl overflow-hidden p-2">
-                                <img id="qrisImage" src="https://via.placeholder.com/200?text=Loading..." class="w-48 h-48 object-contain mix-blend-multiply mx-auto">
+                                <img id="qrisImage" src="https://via.placeholder.com/200?text=Memuat+QRIS..." class="w-48 h-48 object-contain mix-blend-multiply mx-auto">
                             </div>
                         </div>
                         <p class="text-xs font-bold text-stone-400 uppercase tracking-widest">Scan QRIS Pembayaran</p>
@@ -112,18 +112,16 @@
 
                     <div class="space-y-3 mb-8">
                         <div class="flex justify-between text-sm text-stone-600">
-                            <span>Total Harga Barang</span>
+                            <span>Subtotal</span>
                             <span id="summarySubtotal" class="font-bold text-stone-900">IDR 0</span>
                         </div>
                         <div class="flex justify-between text-sm text-orange-600 bg-orange-50 p-2 rounded-lg">
                             <span class="flex items-center gap-1.5">
-                                <i data-lucide="hash" class="w-3 h-3"></i> Kode Unik (Jumlah Qty)
+                                <i data-lucide="hash" class="w-3 h-3"></i> Kode Unik
                             </span>
                             <span id="summaryCode" class="font-bold">+ 0</span>
                         </div>
-                        
                         <div class="h-px bg-stone-100 my-2"></div>
-                        
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-bold text-stone-500">Total Transfer</span>
                             <span id="summaryTotal" class="text-2xl font-serif font-bold text-stone-900">IDR 0</span>
@@ -134,12 +132,12 @@
                         <div class="absolute inset-0 w-full h-full bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                         <span class="relative flex items-center gap-2">
                             <i data-lucide="check-circle" class="w-5 h-5"></i>
-                            Saya Sudah Transfer
+                            Konfirmasi Pembayaran
                         </span>
                     </button>
                     
                     <p class="text-center text-[10px] text-stone-400 mt-4 leading-relaxed">
-                        Dengan mengklik tombol di atas, pesanan akan otomatis masuk ke sistem kami dan Anda akan diarahkan ke WhatsApp untuk konfirmasi.
+                        Data pesanan akan langsung dikirim ke sistem Admin Haken.
                     </p>
                 </div>
             </div>
@@ -147,14 +145,9 @@
     </main>
 
     <div id="loadingOverlay" class="hidden fixed inset-0 z-50 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center transition-all">
-        <div class="relative">
-            <div class="animate-spin w-16 h-16 border-4 border-stone-100 border-t-stone-900 rounded-full mb-6"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -mt-3">
-                <i data-lucide="loader" class="w-6 h-6 text-stone-900 animate-pulse"></i>
-            </div>
-        </div>
-        <h3 class="font-serif font-bold text-xl text-stone-900 mb-2">Memproses Pesanan...</h3>
-        <p class="text-sm text-stone-500">Mohon tunggu sebentar, jangan tutup halaman ini.</p>
+        <div class="animate-spin w-16 h-16 border-4 border-stone-100 border-t-stone-900 rounded-full mb-6"></div>
+        <h3 class="font-serif font-bold text-xl text-stone-900 mb-2">Mengirim Pesanan...</h3>
+        <p class="text-sm text-stone-500">Menyinkronkan dengan database admin...</p>
     </div>
 
     <script>
@@ -162,16 +155,14 @@
         const DB_URL = "https://entry-6a64d-default-rtdb.firebaseio.com";
         const ADMIN_WA = "6285959180745"; 
 
-        // State Global
         let cart = [];
         let uniqueCode = 0;
-        let totalQty = 0;
         let finalTotal = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             loadCart();
-            fetchSettings(); // Ambil QRIS
+            fetchSettings(); // Ambil QRIS dari Admin
         });
 
         // 1. LOAD KERANJANG
@@ -188,14 +179,17 @@
             calculateTotal();
         }
 
-        // 2. RENDER ITEM (Tampilan List Bagus)
+        // 2. RENDER ITEMS
         function renderItems() {
             const container = document.getElementById('orderItemsContainer');
-            container.innerHTML = cart.map((item, index) => `
+            let totalQty = 0;
+            
+            container.innerHTML = cart.map((item, index) => {
+                totalQty += parseInt(item.qty);
+                return `
                 <div class="flex gap-4 items-center group p-3 rounded-xl hover:bg-stone-50 transition-colors">
                     <div class="relative w-20 h-20 rounded-xl overflow-hidden border border-stone-200">
                         <img src="${item.image}" class="w-full h-full object-cover">
-                        ${item.isPromo ? '<div class="absolute top-0 right-0 bg-red-500 w-3 h-3 rounded-bl-lg"></div>' : ''}
                     </div>
                     <div class="flex-1">
                         <div class="flex justify-between items-start">
@@ -204,32 +198,27 @@
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
-                        <p class="text-xs text-stone-500 mb-2">Harga Satuan: IDR ${parseInt(item.price).toLocaleString()}</p>
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between mt-2">
                             <span class="px-2 py-1 bg-white border border-stone-200 rounded text-xs font-bold text-stone-600">x${item.qty}</span>
                             <span class="font-bold text-stone-900">IDR ${(item.price * item.qty).toLocaleString()}</span>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
+            
+            document.getElementById('totalItemsCount').textContent = totalQty;
             lucide.createIcons();
         }
 
-        // 3. HITUNG TOTAL & KODE UNIK (REQ: Berdasarkan Jumlah Barang)
+        // 3. HITUNG TOTAL & KODE UNIK
         function calculateTotal() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const totalQty = cart.reduce((sum, item) => sum + parseInt(item.qty), 0);
             
-            // Hitung Total Qty Barang
-            totalQty = cart.reduce((sum, item) => sum + parseInt(item.qty), 0);
-            
-            // LOGIKA KODE UNIK: 100 + Total Qty
-            // Contoh: Beli 5 barang -> Kode 105
-            // Contoh: Beli 12 barang -> Kode 112
+            // Kode unik: 100 + Jumlah Barang (Sesuai request)
             uniqueCode = 100 + totalQty;
-
             finalTotal = subtotal + uniqueCode;
 
-            // Render ke UI
             document.getElementById('summarySubtotal').textContent = `IDR ${subtotal.toLocaleString()}`;
             document.getElementById('summaryCode').textContent = `+ ${uniqueCode}`;
             document.getElementById('summaryTotal').textContent = `IDR ${finalTotal.toLocaleString()}`;
@@ -246,16 +235,15 @@
             } catch (e) { console.log("Gagal load QRIS"); }
         }
 
-        // 5. HAPUS ITEM
         window.removeItem = (index) => {
-            if(confirm("Hapus produk ini dari pesanan?")) {
+            if(confirm("Hapus produk?")) {
                 cart.splice(index, 1);
                 localStorage.setItem('haken_cart', JSON.stringify(cart));
                 loadCart();
             }
         };
 
-        // 6. PROSES CHECKOUT (DATABASE + WA)
+        // --- CORE: KIRIM KE DATABASE (SINKRON DENGAN ADMIN) ---
         window.processCheckout = async () => {
             const name = document.getElementById('custName').value.trim();
             const phone = document.getElementById('custPhone').value.trim();
@@ -263,15 +251,14 @@
             const address = document.getElementById('custAddress').value.trim();
 
             if(!name || !phone || !city || !address) {
-                alert("Mohon lengkapi semua data pengiriman (Nomor 1).");
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                alert("Mohon lengkapi semua data pengiriman.");
                 return;
             }
 
             document.getElementById('loadingOverlay').classList.remove('hidden');
 
             try {
-                // A. VALIDASI STOK SERVER
+                // A. Validasi Stok Server
                 for (const item of cart) {
                     const res = await fetch(`${DB_URL}/products/${item.productId}.json`);
                     const serverProd = await res.json();
@@ -284,15 +271,22 @@
                     }
                 }
 
-                // B. SIMPAN ORDER KE FIREBASE
-                const orderId = `ORD-${Date.now().toString().slice(-6)}`;
+                // B. STRUKTUR DATA (SINKRON DENGAN ADMIN BARU)
                 const orderData = {
-                    orderId: orderId,
-                    customer: { name, phone, city, address },
+                    orderId: `ORD-${Date.now().toString().slice(-6)}`,
+                    // Data Customer (Admin akan membaca: o.customer.name)
+                    customer: {
+                        name: name,
+                        phone: phone,
+                        city: city,
+                        address: address
+                    },
+                    // Data Barang (Admin akan membaca: o.items)
                     items: cart,
+                    // Data Harga (Admin akan membaca: o.pricing.grandTotal)
                     pricing: {
                         subtotal: finalTotal - uniqueCode,
-                        uniqueCode: uniqueCode, // Ini yang sesuai Qty tadi
+                        uniqueCode: uniqueCode,
                         grandTotal: finalTotal
                     },
                     status: 'Menunggu Konfirmasi Pembayaran',
@@ -300,27 +294,26 @@
                     lastStatusUpdate: Date.now()
                 };
 
+                // C. KIRIM KE FIREBASE
                 await fetch(`${DB_URL}/orders.json`, {
                     method: 'POST',
                     body: JSON.stringify(orderData),
                     headers: { 'Content-Type': 'application/json' }
                 });
 
-                // C. POTONG STOK OTOMATIS
+                // D. UPDATE STOK
                 const updates = cart.map(async (item) => {
                     const res = await fetch(`${DB_URL}/products/${item.productId}.json`);
                     const prod = await res.json();
                     const field = item.isPromo ? 'discountStock' : 'stock';
-                    const newVal = prod[field] - item.qty;
-
                     return fetch(`${DB_URL}/products/${item.productId}.json`, {
                         method: 'PATCH',
-                        body: JSON.stringify({ [field]: newVal })
+                        body: JSON.stringify({ [field]: prod[field] - item.qty })
                     });
                 });
                 await Promise.all(updates);
 
-                // D. CLEAR CART & REDIRECT WA
+                // E. SELESAI
                 localStorage.removeItem('haken_cart');
                 const waLink = generateWAMessage(orderData);
                 window.location.href = waLink;
@@ -334,7 +327,6 @@
 
         function generateWAMessage(order) {
             let itemsList = order.items.map(i => `- ${i.name} (${i.qty} pcs)`).join('\n');
-            
             const msg = `*KONFIRMASI PEMBAYARAN - HAKEN*
 Order ID: ${order.orderId}
 
@@ -349,8 +341,7 @@ IDR ${order.pricing.grandTotal.toLocaleString()}
 ${order.customer.name}
 ${order.customer.city}
 
-_Bukti transfer terlampir (Screenshot)._`;
-
+_Bukti transfer terlampir._`;
             return `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(msg)}`;
         }
     </script>
